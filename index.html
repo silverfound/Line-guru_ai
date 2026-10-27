@@ -10,29 +10,34 @@
     <div class="container">
         <h2>Cricket Match Prediction & Position Analysis</h2>
         
+        <!-- Team 1 with Directory Datalist -->
         <div class="form-group">
             <label for="team1">Team 1 (Batting/First Team):</label>
-            <input type="text" id="team1" placeholder="مثلاً: افغانستان">
+            <input type="text" id="team1" list="teamsList" placeholder="نام لکھیں یا سلیکٹ کریں">
         </div>
 
+        <!-- Captain 1 with Directory Datalist -->
         <div class="form-group">
-            <label for="team1Captain">Team 1 Captain:</label>
-            <input type="text" id="captain1" placeholder="مثلاً: إبراھم زدران">
+            <label for="captain1">Team 1 Captain:</label>
+            <input type="text" id="captain1" list="captainsList" placeholder="کپتان کا نام لکھیں یا سلیکٹ کریں">
         </div>
 
+        <!-- Team 2 with Directory Datalist -->
         <div class="form-group">
             <label for="team2">Team 2 (Bowling/Second Team):</label>
-            <input type="text" id="team2" placeholder="مثلاً: زمبابوی">
+            <input type="text" id="team2" list="teamsList" placeholder="نام لکھیں یا سلیکٹ کریں">
         </div>
 
+        <!-- Captain 2 with Directory Datalist -->
         <div class="form-group">
-            <label for="team2Captain">Team 2 Captain:</label>
-            <input type="text" id="captain2" placeholder="مثلاً: سکندر رضا">
+            <label for="captain2">Team 2 Captain:</label>
+            <input type="text" id="captain2" list="captainsList" placeholder="کپتان کا نام لکھیں یا سلیکٹ کریں">
         </div>
 
+        <!-- Ground / Venue with Directory Datalist -->
         <div class="form-group">
             <label for="ground">Match Ground / Venue:</label>
-            <input type="text" id="ground" placeholder="مثلاً: شارجه">
+            <input type="text" id="ground" list="venuesList" placeholder="گراؤنڈ کا نام لکھیں یا سلیکٹ کریں">
         </div>
 
         <!-- Venue Local Time Input -->
@@ -64,6 +69,48 @@
             <div id="outputContent"></div>
         </div>
     </div>
+
+    <!-- 📁 Name Directory Lists (Teams, Captains, Venues) -->
+    <datalist id="teamsList">
+        <option value="افغانستان">
+        <option value="پاکستان">
+        <option value="بھارت">
+        <option value="آسٹریلیا">
+        <option value="انگلینڈ">
+        <option value="جنوبی افریقہ">
+        <option value="نیوزی لینڈ">
+        <option value="سری لنکا">
+        <option value="بنگلا دیش">
+        <option value="زمبابوی">
+        <option value="ویسٹ انڈیز">
+        <option value="آئرلینڈ">
+    </datalist>
+
+    <datalist id="captainsList">
+        <option value="إبراھم زدران">
+        <option value="راشد خان">
+        <option value="بابر اعظم">
+        <option value="محمد رضوان">
+        <option value="روہت شرما">
+        <option value="پ্যাট کمنز">
+        <option value="جوس بٹلر">
+        <option value="سکنر رضا">
+        <option value="शाकिब अल हसन">
+    </datalist>
+
+    <datalist id="venuesList">
+        <option value="شارجه">
+        <option value="دبﯽ">
+        <option value="ابوظہبی">
+        <option value="لاہور">
+        <option value="کراچی">
+        <option value="راولپنڈی">
+        <option value="ممبئی">
+        <option value="کولکتہ">
+        <option value="ملبورن">
+        <option value="سڈنی">
+        <option value="برمنگھم">
+    </datalist>
 
     <script src="script.js"></script>
 </body>
