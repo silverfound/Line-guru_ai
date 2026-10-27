@@ -34,6 +34,12 @@ function getUrduAbjadValue(text) {
     return sum;
 }
 
+// Boroj (Zodiac) aur Jafri Element Calculation
+function getZodiacElement(val) {
+    const elements = ["آتشي (Fire)", "خاكي (Earth)", "هوائي (Air)", "آبي (Water)"];
+    return elements[val % 4];
+}
+
 // Huroof-e-Shamsi wa Qamari Check
 function getSolarLunarType(text) {
     if (!text) return "qamari";
@@ -83,18 +89,21 @@ function calculatePrediction() {
     let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
 
-    // 1. Asli Urdu/Arabic Abjad Values
+    // 1. Asli Urdu/Arabic Abjad & Boroj Values
     let t1Val = getUrduAbjadValue(team1);
     let c1Val = getUrduAbjadValue(captain1);
     let t2Val = getUrduAbjadValue(team2);
     let c2Val = getUrduAbjadValue(captain2);
     let groundVal = getUrduAbjadValue(ground);
 
-    // 2. Advanced Planetary Hours & Toss Calculation Logic
+    let t1Element = getZodiacElement(t1Val);
+    let t2Element = getZodiacElement(t2Val);
+
+    // 2. Advanced Planetary Hours & Toss Calculation Logic (Independent Toss)
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
     let activePlanet = "مشتری";
     let earlyPressureTeam = tossTeam;
-    let hour = 12; // default
+    let hour = 12;
 
     let c1TossPower = c1Val;
     let c2TossPower = c2Val;
@@ -171,26 +180,28 @@ function calculatePrediction() {
         predictedTossTeam = team1;
     }
 
-    // 3. Shamsi & Qamari Based Toss Impact Formula
+    // 3. Jafri Zodiac & Shamsi/Qamari Toss Impact Formula
     let tossCaptainChar = tossWinnerName.trim()[0];
     let isShamsiCaptain = ['ت', 'ث', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ل', 'ن'].includes(tossCaptainChar);
     
     let tossImpactScore = 0;
     let tossImpactText = "";
-
-    // Agar din/raat ki sa'at aur captain ka haroof (Shamsi/Qamari) match kare toh positive power milti hai, warna pressure/negative
     let isDayTime = (hour >= 6 && hour < 18);
+
     if ((isShamsiCaptain && isDayTime) || (!isShamsiCaptain && !isDayTime)) {
-        tossImpactScore = 9; // Strong Positive Power
-        tossImpactText = `کپतान (${tossWinnerName}) کا پہلا حرف اور موجودہ ساعت کی توانائی ہم آہنگ ہونے کی وجہ سے سکہ جیتنے پر ان کے ستارے کو **زبردست مثبت (Positive) طاقت** ملی ہے!`;
+        tossImpactScore = 10; 
+        tossImpactText = `کپتان (${tossWinnerName}) کے برج اور ساعت کی حروفی موافقت کی وجہ سے سکہ جیتنے پر ان کے ستارے کو **قوی جفری طاقت (Positive Energy)** ملی ہے!`;
     } else {
-        tossImpactScore = -7; // Negative Pressure
-        tossImpactText = `سکہ (${tossTeam}) کے جیتنے کے باوجود وقت کی ساعت اور حرفی موافقت نہ ہونے کی وجہ سے ان کے ستارے پر **دباؤ (Negative Impact)** پڑا ہے، جو اسکور کو متاثر کرے گا۔`;
+        tossImpactScore = -8; 
+        tossImpactText = `سکہ (${tossTeam}) کے جیتنے کے باوجود وقت کی ساعت اور برج کے اختلاف کی وجہ سے ان کے ستارے پر **دباؤ (Jafri Pressure)** درج کیا گیا ہے۔`;
     }
 
-    // 4. Final Power Scores Calculation (Connected with Shamsi/Qamari Toss Impact)
-    let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + timeScoreBonus1 + (tossWinnerChoice === "captain1" ? tossImpactScore : 0);
-    let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + timeScoreBonus2 + (tossWinnerChoice === "captain2" ? tossImpactScore : 0);
+    // 4. Final Jafri Power Scores Calculation (Connected with Toss Impact & Zodiac Elements)
+    let zodicBoost1 = (t1Element.includes("آتشي") || t1Element.includes("هوائي")) ? 5 : 2;
+    let zodicBoost2 = (t2Element.includes("آتشي") || t2Element.includes("هوائي")) ? 5 : 2;
+
+    let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + timeScoreBonus1 + zodicBoost1 + (tossWinnerChoice === "captain1" ? tossImpactScore : 0);
+    let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + timeScoreBonus2 + zodicBoost2 + (tossWinnerChoice === "captain2" ? tossImpactScore : 0);
 
     let winningTeam = (score1 >= score2) ? team1 : team2;
 
@@ -202,8 +213,8 @@ function calculatePrediction() {
     let analysisHTML = `
         <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
             <strong>🪙 سکہ اچھالنے کا فیصلہ (Toss Analysis):</strong> 
-            <br>حاکم سیارہ <span style="color: #38bdf8; font-weight: bold;">${activePlanet}</span> کی روشنی میں، کپتانوں (${captain1} بمقابلہ ${captain2}) کی ابجد پاور کے حساب سے سکہ جیتنے کی سب سے زیادہ صلاحیت <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> کی ہے۔
-            <br><br>🌙☀️ **حروفی و ساعت کا اثر (Toss Energy Impact):** ${tossImpactText}
+            <br>حاکم سیارہ <span style="color: #38bdf8; font-weight: bold;">${activePlanet}</span> کی روشنی میں، کپتانوں (${captain1} بمقابلہ ${captain2}) کی ابجد پاور کے حساب سے سکہ جیتنے کی سب سے زیادہ صلاحیت <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> की है۔
+            <br><br>✨🔮 **جفری و برج کا اثر (Jafri Toss Impact):** ${tossImpactText}
         </div>
 
         <div class="analysis-section" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
@@ -213,21 +224,23 @@ function calculatePrediction() {
         </div>
 
         <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
-            <strong>🏟️ گراؤنڈ اور سیاروی ساعت:</strong> فارمیٹ: <strong>${formatLabel}</strong>، حاکم سیارہ: <span style="color: #38bdf8;">${activePlanet}</span>، چاند کی <span style="color: #38bdf8;">${lunarDateVal}</span> تاریخ اور گراؤنڈ (${ground}) کی توانائی کے ساتھ میچ آگے بڑھے گا۔
+            <strong>🏟️ گراؤنڈ، عنصر (Zodiac) اور ساعت:</strong> 
+            <br>• ٹیم 1 عنصر: <span style="color: #38bdf8;">${t1Element}</span> | ٹیم 2 عنصر: <span style="color: #38bdf8;">${t2Element}</span>
+            <br>• حاکم سیارہ: <span style="color: #38bdf8;">${activePlanet}</span>، چاند کی <span style="color: #38bdf8;">${lunarDateVal}</span> تاریخ اور گراؤنڈ (${ground})۔
         </div>
 
         <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
             <strong>⚡ میچ کا آغاز اور دباؤ:</strong> 
-            <br>• شروعاتی اوورز (ابتدائی دباؤ): ساعت اور سکہ کی توانائی کے تحت <span style="color: #38bdf8;">${earlyPressureTeam}</span> شروعات میں میچ پر حاوی رہ سکتی ہے۔
-            <br>• اسکور کا طاقتی وزن (شمسی و قمری اثر کے ساتھ): ٹیم 1 (${score1}) بمقابلہ ٹیم 2 (${score2})۔
+            <br>• شروعاتی اوورز (ابتدائی دباؤ): ساعت اور جفری توانائی کے تحت <span style="color: #38bdf8;">${earlyPressureTeam}</span> شروعات میں میچ پر حاوی رہ سکتی ہے۔
+            <br>• جفری طاقتی وزن: ٹیم 1 (${score1}) بمقابلہ ٹیم 2 (${score2})۔
         </div>
 
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: right; direction: rtl;">
             <strong>🔮 ستاروں کا حتمی نتیجہ:</strong> 
-            <br>ٹاس کے حروفی اور گھنٹے کے اثرات کا حساب لگانے کے بعد، اصلی ابجد-ع-کبیر اور وقت کی پوری توانائی کے حساب سے آخر میں <strong style="color: #38bdf8;">${winningTeam}</strong> فتح اپنے نام کرے گی!
+            <br>بروج، عناصر اور ساعت کے گہرے جفری حساب کے بعد، وقت کی پوری توانائی کے مطابق آخر میں <strong style="color: #38bdf8;">${winningTeam}</strong> فتح اپنے نام کرے گی!
         </div>
     `;
 
     document.getElementById("outputContent").innerHTML = analysisHTML;
     document.getElementById("resultBox").classList.remove("hidden");
-                }
+}
