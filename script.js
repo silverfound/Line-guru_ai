@@ -82,7 +82,6 @@ function calculatePrediction() {
 
     let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
-    let otherTeam = (tossWinnerChoice === "captain1") ? team2 : team1;
 
     // 1. Asli Urdu/Arabic Abjad Values
     let t1Val = getUrduAbjadValue(team1);
@@ -95,6 +94,7 @@ function calculatePrediction() {
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
     let activePlanet = "مشتری";
     let earlyPressureTeam = tossTeam;
+    let hour = 12; // default
 
     let c1TossPower = c1Val;
     let c2TossPower = c2Val;
@@ -119,7 +119,7 @@ function calculatePrediction() {
         let dateObj = new Date(matchTimeInput);
         if (!isNaN(dateObj.getTime())) {
             let dayOfWeek = dateObj.getDay(); 
-            let hour = dateObj.getHours();    
+            hour = dateObj.getHours();    
             
             if (dayOfWeek % 2 === 0) {
                 dayFactor1 = 2;
@@ -171,22 +171,24 @@ function calculatePrediction() {
         predictedTossTeam = team1;
     }
 
-    // 3. Toss Impact Calculation (Positive / Negative Connection with Winning Power)
+    // 3. Shamsi & Qamari Based Toss Impact Formula
+    let tossCaptainChar = tossWinnerName.trim()[0];
+    let isShamsiCaptain = ['ت', 'ث', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ل', 'ن'].includes(tossCaptainChar);
+    
     let tossImpactScore = 0;
     let tossImpactText = "";
-    
-    // Agar toss jeetne wali team ka captain ya naam ka abjad waqt ki sa'at ke sath match kare toh Positive (+) warna Negative (-)
-    let tossTeamAbjad = (tossWinnerChoice === "captain1") ? c1Val : c2Val;
-    
-    if (tossTeamAbjad % 2 === 0) {
-        tossImpactScore = 8; // Positive Power Bonus
-        tossImpactText = `سکہ (${tossTeam}) کے حق میں गिरने से उनके ستارے پر **مضبوط مثبت (Positive) اثر** پڑا ہے، جس سے ان کی توانائی میں اضافہ ہوا ہے۔`;
+
+    // Agar din/raat ki sa'at aur captain ka haroof (Shamsi/Qamari) match kare toh positive power milti hai, warna pressure/negative
+    let isDayTime = (hour >= 6 && hour < 18);
+    if ((isShamsiCaptain && isDayTime) || (!isShamsiCaptain && !isDayTime)) {
+        tossImpactScore = 9; // Strong Positive Power
+        tossImpactText = `کپतान (${tossWinnerName}) کا پہلا حرف اور موجودہ ساعت کی توانائی ہم آہنگ ہونے کی وجہ سے سکہ جیتنے پر ان کے ستارے کو **زبردست مثبت (Positive) طاقت** ملی ہے!`;
     } else {
-        tossImpactScore = -6; // Negative Pressure Penalty
-        tossImpactText = `سکہ (${tossTeam}) کے جیتنے کے باوجود وقت کی ساعت کے حساب سے ان کے ستارے پر **دباؤ (Negative Impact)** دیکھا گیا ہے، جو ان کے اسکور پر اثر انداز ہوگا۔`;
+        tossImpactScore = -7; // Negative Pressure
+        tossImpactText = `سکہ (${tossTeam}) کے جیتنے کے باوجود وقت کی ساعت اور حرفی موافقت نہ ہونے کی وجہ سے ان کے ستارے پر **دباؤ (Negative Impact)** پڑا ہے، جو اسکور کو متاثر کرے گا۔`;
     }
 
-    // 4. Final Power Scores Calculation (Connected with Toss Impact)
+    // 4. Final Power Scores Calculation (Connected with Shamsi/Qamari Toss Impact)
     let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + timeScoreBonus1 + (tossWinnerChoice === "captain1" ? tossImpactScore : 0);
     let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + timeScoreBonus2 + (tossWinnerChoice === "captain2" ? tossImpactScore : 0);
 
@@ -201,7 +203,7 @@ function calculatePrediction() {
         <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
             <strong>🪙 سکہ اچھالنے کا فیصلہ (Toss Analysis):</strong> 
             <br>حاکم سیارہ <span style="color: #38bdf8; font-weight: bold;">${activePlanet}</span> کی روشنی میں، کپتانوں (${captain1} بمقابلہ ${captain2}) کی ابجد پاور کے حساب سے سکہ جیتنے کی سب سے زیادہ صلاحیت <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> کی ہے۔
-            <br><br>💡 **ستاروی اثر (Toss Impact):** ${tossImpactText}
+            <br><br>🌙☀️ **حروفی و ساعت کا اثر (Toss Energy Impact):** ${tossImpactText}
         </div>
 
         <div class="analysis-section" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
@@ -216,16 +218,16 @@ function calculatePrediction() {
 
         <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
             <strong>⚡ میچ کا آغاز اور دباؤ:</strong> 
-            <br>• شروعاتی اوورز (ابتدائی دباؤ): ساعت اور سکہ اچھالنے کی ابتدائی توانائی کے تحت <span style="color: #38bdf8;">${earlyPressureTeam}</span> شروعات میں میچ پر حاوی رہ سکتی ہے۔
-            <br>• اسکور کا طاقتی وزن (تطبیق شدہ اثر کے ساتھ): ٹیم 1 (${score1}) بمقابلہ ٹیم 2 (${score2})۔
+            <br>• شروعاتی اوورز (ابتدائی دباؤ): ساعت اور سکہ کی توانائی کے تحت <span style="color: #38bdf8;">${earlyPressureTeam}</span> شروعات میں میچ پر حاوی رہ سکتی ہے۔
+            <br>• اسکور کا طاقتی وزن (شمسی و قمری اثر کے ساتھ): ٹیم 1 (${score1}) بمقابلہ ٹیم 2 (${score2})۔
         </div>
 
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: right; direction: rtl;">
             <strong>🔮 ستاروں کا حتمی نتیجہ:</strong> 
-            <br>ٹاس کے مثبت یا منفی اثرات کو شامل کرنے کے بعد، اصلی ابجد-ع-کبیر اور وقت کی پوری توانائی کے حساب سے آخر میں <strong style="color: #38bdf8;">${winningTeam}</strong> فتح اپنے نام کرے گی!
+            <br>ٹاس کے حروفی اور گھنٹے کے اثرات کا حساب لگانے کے بعد، اصلی ابجد-ع-کبیر اور وقت کی پوری توانائی کے حساب سے آخر میں <strong style="color: #38bdf8;">${winningTeam}</strong> فتح اپنے نام کرے گی!
         </div>
     `;
 
     document.getElementById("outputContent").innerHTML = analysisHTML;
     document.getElementById("resultBox").classList.remove("hidden");
-}
+                }
