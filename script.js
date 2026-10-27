@@ -1,3 +1,130 @@
+// International & League Teams Database with Format-wise Captains
+const teamsData = [
+    {
+        name: "پاکستان (Pakistan)",
+        captains: { t20: "بابر اعظم", odi: "محمد رضوان", test: "شان مسعود" }
+    },
+    {
+        name: "بھارت (India)",
+        captains: { t20: "سوریا کمار یادو", odi: "روہت شرما", test: "روہت شرما" }
+    },
+    {
+        name: "آسٹریلیا (Australia)",
+        captains: { t20: "مچل مارش", odi: "پیٹ کمنز", test: "پیٹ کمنز" }
+    },
+    {
+        name: "انگلینڈ (England)",
+        captains: { t20: "جوس بٹلر", odi: "جوس بٹلر", test: "بین اسٹوکس" }
+    },
+    {
+        name: "جنوبی افریقہ (South Africa)",
+        captains: { t20: "ایدین مارکرم", odi: "ٹেম্বا باوما", test: "ٹেম্বا باوما" }
+    },
+    {
+        name: "نیوزی لینڈ (New Zealand)",
+        captains: { t20: "مچل سینٹنر", odi: "ٹم ساؤتھی", test: "کین ولیمسن" }
+    },
+    {
+        name: "سری لنکا (Sri Lanka)",
+        captains: { t20: "چارت اسالنکا", odi: "چارت اسالنکا", test: "دھنঞ্জয়া ڈی سلوا" }
+    },
+    {
+        name: "بنگلہ دیش (Bangladesh)",
+        captains: { t20: "نجم الحسل شانتو", odi: "مہدی حسن", test: "نجم الحسل شانتو" }
+    },
+    {
+        name: "ویسٹ انڈیز (West Indies)",
+        captains: { t20: "روومین پاول", odi: "شائے ہوپ", test: "کریگ بریتھویٹ" }
+    },
+    {
+        name: "لاہور قلندرز (PSL - Lahore Qalandars)",
+        captains: { t20: "شاہین آفریدی", odi: "شاہین آفریدی", test: "شاہین آفریدی" }
+    },
+    {
+        name: "کراچی کنگز (PSL - Karachi Kings)",
+        captains: { t20: "شان مسعود", odi: "شان مسعود", test: "شان مسعود" }
+    },
+    {
+        name: "پشاور زلمی (PSL - Peshawar Zalmi)",
+        captains: { t20: "بابراعظم", odi: "بابراعظم", test: "بابراعظم" }
+    },
+    {
+        name: "ملتان سلطانز (PSL - Multan Sultans)",
+        captains: { t20: "محمد رضوان", odi: "محمد رضوان", test: "محمد رضوان" }
+    },
+    {
+        name: "اسلام آباد یونائیٹڈ (PSL - Islamabad United)",
+        captains: { t20: "شاداب خان", odi: "شاداب خان", test: "شاداب خان" }
+    },
+    {
+        name: "کوئٹہ گلیڈی ایٹرز (PSL - Quetta Gladiators)",
+        captains: { t20: "رعوس کوہلی", odi: "رعوس کوہلی", test: "رعوس کوہلی" }
+    }
+];
+
+// Populate Team Dropdowns on Page Load
+document.addEventListener("DOMContentLoaded", () => {
+    populateTeamDropdowns();
+    let timeField = document.getElementById("matchTime");
+    if (timeField) {
+        timeField.addEventListener("change", autoEstimateLunarDate);
+        timeField.addEventListener("input", autoEstimateLunarDate);
+    }
+});
+
+function populateTeamDropdowns() {
+    let t1Select = document.getElementById("team1Select");
+    let t2Select = document.getElementById("team2Select");
+    
+    if (!t1Select || !t2Select) return;
+
+    t1Select.innerHTML = '<option value="">-- ٹیم منتخب کریں --</option>';
+    t2Select.innerHTML = '<option value="">-- ٹیم منتخب کریں --</option>';
+
+    teamsData.forEach((team, index) => {
+        let opt1 = document.createElement("option");
+        opt1.value = index;
+        opt1.textContent = team.name;
+        t1Select.appendChild(opt1);
+
+        let opt2 = document.createElement("option");
+        opt2.value = index;
+        opt2.textContent = team.name;
+        t2Select.appendChild(opt2);
+    });
+}
+
+function onTeam1Change() {
+    let t1Select = document.getElementById("team1Select");
+    let format = document.getElementById("matchFormat").value;
+    let teamInput = document.getElementById("team1");
+    let captainInput = document.getElementById("captain1");
+
+    if (t1Select.value !== "") {
+        let selectedTeam = teamsData[t1Select.value];
+        teamInput.value = selectedTeam.name;
+        captainInput.value = selectedTeam.captains[format] || "";
+    }
+}
+
+function onTeam2Change() {
+    let t2Select = document.getElementById("team2Select");
+    let format = document.getElementById("matchFormat").value;
+    let teamInput = document.getElementById("team2");
+    let captainInput = document.getElementById("captain2");
+
+    if (t2Select.value !== "") {
+        let selectedTeam = teamsData[t2Select.value];
+        teamInput.value = selectedTeam.name;
+        captainInput.value = selectedTeam.captains[format] || "";
+    }
+}
+
+function updateFormatCaptains() {
+    onTeam1Change();
+    onTeam2Change();
+}
+
 // Asli Arabic / Urdu Abjad-e-Kabeer Table (Jumtal-Jummal)
 function getUrduAbjadValue(text) {
     if (!text) return 1;
@@ -34,13 +161,11 @@ function getUrduAbjadValue(text) {
     return sum;
 }
 
-// Boroj (Zodiac) aur Jafri Element Calculation
 function getZodiacElement(val) {
     const elements = ["آتشي (Fire)", "خاكي (Earth)", "هوائي (Air)", "آبي (Water)"];
     return elements[val % 4];
 }
 
-// Huroof-e-Shamsi wa Qamari Check
 function getSolarLunarType(text) {
     if (!text) return "qamari";
     let firstChar = text.trim()[0];
@@ -51,7 +176,6 @@ function getSolarLunarType(text) {
     return "qamari";
 }
 
-// Venue ki tareekh se automatic chand ki tareekh ka andaza lagane ka function
 function autoEstimateLunarDate() {
     let matchTimeInput = document.getElementById("matchTime").value;
     let lunarInput = document.getElementById("lunarDate");
@@ -66,15 +190,6 @@ function autoEstimateLunarDate() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    let timeField = document.getElementById("matchTime");
-    if (timeField) {
-        timeField.addEventListener("change", autoEstimateLunarDate);
-        timeField.addEventListener("input", autoEstimateLunarDate);
-    }
-});
-
-// Professional Loading Animation Wrapper
 function startPredictionAnimation() {
     let loader = document.getElementById("loaderBox");
     let resultBox = document.getElementById("resultBox");
@@ -88,7 +203,6 @@ function startPredictionAnimation() {
     }, 800);
 }
 
-// Asli Jafri aur Zodiac Prediction Engine
 function calculatePrediction() {
     let team1 = document.getElementById("team1").value || "Team 1";
     let captain1 = document.getElementById("captain1").value || "Captain 1";
@@ -104,7 +218,6 @@ function calculatePrediction() {
     let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
 
-    // 1. Asli Urdu/Arabic Abjad & Boroj Values
     let t1Val = getUrduAbjadValue(team1);
     let c1Val = getUrduAbjadValue(captain1);
     let t2Val = getUrduAbjadValue(team2);
@@ -114,7 +227,6 @@ function calculatePrediction() {
     let t1Element = getZodiacElement(t1Val);
     let t2Element = getZodiacElement(t2Val);
 
-    // 2. Advanced Planetary Hours & Independent Toss Calculation
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
     let activePlanet = "مشتری";
     let earlyPressureTeam = tossTeam;
@@ -195,7 +307,6 @@ function calculatePrediction() {
         predictedTossTeam = team1;
     }
 
-    // 3. Jafri Zodiac & Shamsi/Qamari Toss Impact Formula
     let tossCaptainChar = tossWinnerName.trim()[0] || 'ا';
     let isShamsiCaptain = ['ت', 'ث', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ل', 'ن'].includes(tossCaptainChar);
     
@@ -211,7 +322,6 @@ function calculatePrediction() {
         tossImpactText = `سکہ (${tossTeam}) کے جیتنے کے باوجود وقت کی ساعت اور برج کے اختلاف کی وجہ سے ان کے ستارے پر **دباؤ (Jafri Pressure)** درج کیا گیا ہے۔`;
     }
 
-    // 4. Final Jafri Power Scores Calculation
     let zodicBoost1 = (t1Element.includes("آتشي") || t1Element.includes("هوائي")) ? 5 : 2;
     let zodicBoost2 = (t2Element.includes("آتشي") || t2Element.includes("هوائي")) ? 5 : 2;
 
