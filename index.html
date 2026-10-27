@@ -40,7 +40,8 @@
                 </div>
                 <div class="input-group">
                     <label for="captain1">پہلی ٹیم کا کپتان</label>
-                    <input type="text" id="captain1" placeholder="یا خود نام لکھیں" value="بابراعظم">
+                    <input type="text" id="captain1" placeholder="یا خود نام لکھیں">
+                    <input type="hidden" id="team1">
                 </div>
 
                 <!-- Team 2 Selection -->
@@ -52,13 +53,14 @@
                 </div>
                 <div class="input-group">
                     <label for="captain2">دوسری ٹیم کا کپتان</label>
-                    <input type="text" id="captain2" placeholder="یا خود نام لکھیں" value="بٹلر">
+                    <input type="text" id="captain2" placeholder="یا خود نام لکھیں">
+                    <input type="hidden" id="team2">
                 </div>
 
                 <!-- Match Details -->
                 <div class="input-group">
                     <label for="ground">گراؤنڈ / شہر</label>
-                    <input type="text" id="ground" placeholder="مثال: راولپنڈی" value="راولپنڈی">
+                    <input type="text" id="ground" placeholder="مثال: راولپنڈی">
                 </div>
 
                 <div class="input-group">
@@ -73,10 +75,10 @@
 
                 <!-- Toss Choice -->
                 <div class="input-group full-width">
-                    <label for="tossWinner">ٹاس کون سی ٹیم جیتے گی؟ (فرض کریں)</label>
+                    <label for="tossWinner">ٹاس کون سی ٹیم جیتے گی؟</label>
                     <select id="tossWinner">
-                        <option value="captain1">پہلی ٹیم (کپتان 1)</option>
-                        <option value="captain2">دوسری ٹیم (کپتان 2)</option>
+                        <option value="captain1">پہلی ٹیم کا کپتان</option>
+                        <option value="captain2">دوسری ٹیم کا کپتان</option>
                     </select>
                 </div>
             </div>
