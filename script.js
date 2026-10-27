@@ -1,4 +1,3 @@
-                                                      }
 // Asli Arabic / Urdu Abjad-e-Kabeer Table (Jumtal-Jummal)
 function getUrduAbjadValue(text) {
     if (!text) return 1;
@@ -49,16 +48,14 @@ function getSolarLunarType(text) {
 // Venue ki tareekh se automatic chand ki tareekh ka andaza lagane ka function
 function autoEstimateLunarDate() {
     let matchTimeInput = document.getElementById("matchTime").value;
-    if (matchTimeInput) {
+    let lunarInput = document.getElementById("lunarDate");
+    
+    if (matchTimeInput && lunarInput) {
         let dateObj = new Date(matchTimeInput);
         if (!isNaN(dateObj.getTime())) {
             let dayOfMonth = dateObj.getDate();
             let estimatedLunar = (dayOfMonth % 29) + 1; 
-            
-            let lunarInput = document.getElementById("lunarDate");
-            if (lunarInput) {
-                lunarInput.value = estimatedLunar;
-            }
+            lunarInput.value = estimatedLunar;
         }
     }
 }
@@ -67,6 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let timeField = document.getElementById("matchTime");
     if (timeField) {
         timeField.addEventListener("change", autoEstimateLunarDate);
+        timeField.addEventListener("input", autoEstimateLunarDate);
     }
 });
 
@@ -103,7 +101,6 @@ function calculatePrediction() {
     let predictedTossWinner = captain1;
     let predictedTossTeam = team1;
 
-    // Format-based Base Score Ranges
     let baseScore1 = 165;
     let baseScore2 = 155;
     let formatLabel = "T20 Match";
@@ -168,7 +165,6 @@ function calculatePrediction() {
         }
     }
 
-    // Mathematical Toss Winner Decision
     if (c2TossPower > c1TossPower) {
         predictedTossWinner = captain2;
         predictedTossTeam = team2;
@@ -177,19 +173,16 @@ function calculatePrediction() {
         predictedTossTeam = team1;
     }
 
-    // 3. Final Power Scores Calculation
     let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain1" ? 5 : 0) + timeScoreBonus1;
     let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain2" ? 5 : 0) + timeScoreBonus2;
 
     let winningTeam = (score1 >= score2) ? team1 : team2;
 
-    // Strict Mathematical Total Score Calculation based on Format and Ground Adad
     let multiplier = (matchFormat === "odi") ? 1.8 : (matchFormat === "test" ? 2.5 : 1);
     let estimatedTotal1 = Math.round(baseScore1 + (groundVal * multiplier) + ((score1 - score2) > 0 ? (score1 - score2) * 2 : 5));
     let estimatedTotal2 = Math.round(baseScore2 + (groundVal * (multiplier * 0.9)) + (lunarDateVal > 15 ? 12 : -5));
     let rangeSpan = (matchFormat === "test") ? 40 : (matchFormat === "odi" ? 25 : 15);
 
-    // 4. Structured Display with Format Section
     let analysisHTML = `
         <div class="analysis-section" style="border-left: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 10px; margin-bottom: 10px; border-radius: 4px;">
             <strong>🪙 Toss Ki Paheli Prediction (Toss Analysis):</strong> 
@@ -220,4 +213,4 @@ function calculatePrediction() {
 
     document.getElementById("outputContent").innerHTML = analysisHTML;
     document.getElementById("resultBox").classList.remove("hidden");
-        }
+}
