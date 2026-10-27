@@ -20,24 +20,39 @@
         <!-- Main Form Card -->
         <main class="prediction-card">
             <div class="input-grid">
-                <!-- Team 1 -->
+                
+                <!-- Format Selection -->
+                <div class="input-group full-width">
+                    <label for="matchFormat">میچ کا فارمیٹ</label>
+                    <select id="matchFormat" onchange="updateFormatCaptains()">
+                        <option value="t20" selected>ٹی ٹوئنٹی میچ (T20 & Leagues)</option>
+                        <option value="odi">یک روزہ میچ (ODI)</option>
+                        <option value="test">ٹیسٹ میچ (Test)</option>
+                    </select>
+                </div>
+
+                <!-- Team 1 Selection -->
                 <div class="input-group">
-                    <label for="team1">پہلی ٹیم کا نام</label>
-                    <input type="text" id="team1" placeholder="مثال: پاکستان" value="پاکستان">
+                    <label for="team1Select">پہلی ٹیم منتخب کریں</label>
+                    <select id="team1Select" onchange="onTeam1Change()">
+                        <option value="">-- ٹیم چنیں --</option>
+                    </select>
                 </div>
                 <div class="input-group">
                     <label for="captain1">پہلی ٹیم کا کپتان</label>
-                    <input type="text" id="captain1" placeholder="مثال: بابراعظم" value="بابراعظم">
+                    <input type="text" id="captain1" placeholder="یا خود نام لکھیں" value="بابراعظم">
                 </div>
 
-                <!-- Team 2 -->
+                <!-- Team 2 Selection -->
                 <div class="input-group">
-                    <label for="team2">دوسری ٹیم کا نام</label>
-                    <input type="text" id="team2" placeholder="مثال: انگلینڈ" value="انگلینڈ">
+                    <label for="team2Select">دوسری ٹیم منتخب کریں</label>
+                    <select id="team2Select" onchange="onTeam2Change()">
+                        <option value="">-- ٹیم چنیں --</option>
+                    </select>
                 </div>
                 <div class="input-group">
                     <label for="captain2">دوسری ٹیم کا کپتان</label>
-                    <input type="text" id="captain2" placeholder="مثال: بٹلر" value="بٹلر">
+                    <input type="text" id="captain2" placeholder="یا خود نام لکھیں" value="بٹلر">
                 </div>
 
                 <!-- Match Details -->
@@ -45,22 +60,15 @@
                     <label for="ground">گراؤنڈ / شہر</label>
                     <input type="text" id="ground" placeholder="مثال: راولپنڈی" value="راولپنڈی">
                 </div>
-                <div class="input-group">
-                    <label for="matchFormat">میچ کا فارمیٹ</label>
-                    <select id="matchFormat">
-                        <option value="t20">ٹی ٹوئنٹی میچ (T20)</option>
-                        <option value="odi" selected>یک روزہ میچ (ODI)</option>
-                        <option value="test">ٹیسٹ میچ (Test)</option>
-                    </select>
-                </div>
 
-                <div class="input-group">
-                    <label for="matchTime">میچ کی تاریخ اور وقت</label>
-                    <input type="datetime-local" id="matchTime">
-                </div>
                 <div class="input-group">
                     <label for="lunarDate">چاند کی تاریخ (قمری)</label>
                     <input type="number" id="lunarDate" min="1" max="30" value="15">
+                </div>
+
+                <div class="input-group full-width">
+                    <label for="matchTime">میچ کی تاریخ اور وقت</label>
+                    <input type="datetime-local" id="matchTime">
                 </div>
 
                 <!-- Toss Choice -->
