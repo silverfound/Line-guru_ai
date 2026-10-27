@@ -74,6 +74,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// Professional Loading Animation Wrapper
+function startPredictionAnimation() {
+    let loader = document.getElementById("loaderBox");
+    let resultBox = document.getElementById("resultBox");
+    
+    if (loader) loader.classList.remove("hidden");
+    if (resultBox) resultBox.classList.add("hidden");
+    
+    setTimeout(() => {
+        if (loader) loader.classList.add("hidden");
+        calculatePrediction();
+    }, 800);
+}
+
+// Asli Jafri aur Zodiac Prediction Engine
 function calculatePrediction() {
     let team1 = document.getElementById("team1").value || "Team 1";
     let captain1 = document.getElementById("captain1").value || "Captain 1";
@@ -99,7 +114,7 @@ function calculatePrediction() {
     let t1Element = getZodiacElement(t1Val);
     let t2Element = getZodiacElement(t2Val);
 
-    // 2. Advanced Planetary Hours & Toss Calculation Logic (Independent Toss)
+    // 2. Advanced Planetary Hours & Independent Toss Calculation
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
     let activePlanet = "مشتری";
     let earlyPressureTeam = tossTeam;
@@ -181,7 +196,7 @@ function calculatePrediction() {
     }
 
     // 3. Jafri Zodiac & Shamsi/Qamari Toss Impact Formula
-    let tossCaptainChar = tossWinnerName.trim()[0];
+    let tossCaptainChar = tossWinnerName.trim()[0] || 'ا';
     let isShamsiCaptain = ['ت', 'ث', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ل', 'ن'].includes(tossCaptainChar);
     
     let tossImpactScore = 0;
@@ -196,7 +211,7 @@ function calculatePrediction() {
         tossImpactText = `سکہ (${tossTeam}) کے جیتنے کے باوجود وقت کی ساعت اور برج کے اختلاف کی وجہ سے ان کے ستارے پر **دباؤ (Jafri Pressure)** درج کیا گیا ہے۔`;
     }
 
-    // 4. Final Jafri Power Scores Calculation (Connected with Toss Impact & Zodiac Elements)
+    // 4. Final Jafri Power Scores Calculation
     let zodicBoost1 = (t1Element.includes("آتشي") || t1Element.includes("هوائي")) ? 5 : 2;
     let zodicBoost2 = (t2Element.includes("آتشي") || t2Element.includes("هوائي")) ? 5 : 2;
 
