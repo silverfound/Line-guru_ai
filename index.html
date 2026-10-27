@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cricket Match Prediction & Position Analysis</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Directory aur Alignment ko 100% Right-to-Left fix karne ke liye */
+        body, .container, input, select, textarea, button, .result-box, .analysis-section {
+            direction: rtl !important;
+            text-align: right !important;
+        }
+        input, select {
+            text-align: right !important;
+            padding: 8px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -47,13 +58,13 @@
         <div class="form-group">
             <label for="matchTime">Venue Ka Local Date & Time ⏰:</label>
             <input type="datetime-local" id="matchTime" class="form-control">
-            <small style="color: #94a3b8;">Wahi waqt dalein jo match ke ground (Venue) ka local time hai</small>
+            <small style="color: #94a3b8; display: block; text-align: right;">Wahi waqt dalein jo match ke ground (Venue) ka local time hai</small>
         </div>
 
         <div class="form-group">
             <label for="lunarDate">Chand ki Qamri Tareekh 🌙 (Auto/Editable):</label>
             <input type="number" id="lunarDate" class="form-control" value="15" min="1" max="29">
-            <small style="color: #94a3b8;">English tareekh se automatic aayegi, zaroorat parne par khud badal sakte hain</small>
+            <small style="color: #94a3b8; display: block; text-align: right;">English tareekh se automatic aayegi, zaroorat parne par khud badal sakte hain</small>
         </div>
 
         <div class="form-group">
