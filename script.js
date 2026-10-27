@@ -96,11 +96,14 @@ function calculatePrediction() {
     let activePlanet = "Mushtari (Jupiter)";
     let earlyPressureTeam = tossTeam;
 
-    // Separate Toss Calculation Power based strictly on Captain Abjad & Sa'at
     let c1TossPower = c1Val;
     let c2TossPower = c2Val;
     let predictedTossWinner = captain1;
     let predictedTossTeam = team1;
+
+    // Total Score Base Calculation Variables
+    let baseScore1 = 165; // Standard T20 base
+    let baseScore2 = 155;
 
     if (matchTimeInput) {
         let dateObj = new Date(matchTimeInput);
@@ -152,7 +155,7 @@ function calculatePrediction() {
         }
     }
 
-    // Mathematical Toss Winner Decision (Before actual toss)
+    // Mathematical Toss Winner Decision
     if (c2TossPower > c1TossPower) {
         predictedTossWinner = captain2;
         predictedTossTeam = team2;
@@ -161,26 +164,39 @@ function calculatePrediction() {
         predictedTossTeam = team1;
     }
 
-    // 3. Final Power Scores Calculation for Match Winner
+    // 3. Final Power Scores Calculation for Match Winner & Total Score Estimation
     let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain1" ? 5 : 0) + timeScoreBonus1;
     let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain2" ? 5 : 0) + timeScoreBonus2;
 
     let winningTeam = (score1 >= score2) ? team1 : team2;
 
-    // 4. Exact Mathematical Breakdown Display including Toss Prediction
+    // Strict Mathematical Total Score Calculation based on Ground Adad, Planet & Abjad
+    let estimatedTotal1 = baseScore1 + (groundVal * 2) + ((score1 - score2) > 0 ? (score1 - score2) * 3 : 5);
+    let estimatedTotal2 = baseScore2 + (groundVal * 1.5) + (lunarDateVal > 15 ? 10 : -5);
+
+    // 4. Structured Display with Separate Sections
     let analysisHTML = `
-        <div class="analysis-section" style="border-left: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 8px; margin-bottom: 10px;">
-            <strong>🪙 Toss Ki Paheli Prediction (Before Toss):</strong> 
+        <div class="analysis-section" style="border-left: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+            <strong>🪙 Toss Ki Paheli Prediction (Toss Analysis):</strong> 
             <br>Waqt (${formattedTimeDisplay}) aur Hakim Sayara <span class="highlight">${activePlanet}</span> ki roshni mein, Captains (${captain1} vs ${captain2}) ki Abjad power ke hisab se **Toss jeetne ki sabse zyada salahiyat <span class="highlight">${predictedTossWinner} (${predictedTossTeam})</span> ki hai.**
         </div>
+
+        <div class="analysis-section" style="border-left: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+            <strong>📊 Total Score Prediction (Innings Estimates):</strong> 
+            <br>• <strong>Pehli Innings (1st Innings Projected Score):</strong> <span class="highlight">${estimatedTotal1} - ${estimatedTotal1 + 15} Runs</span> (Ground Adad aur Sa'at ke wazan par).
+            <br>• <strong>Doosri Innings (2nd Innings Target Range):</strong> <span class="highlight">${estimatedTotal2} - ${estimatedTotal2 + 15} Runs</span> (Pitch aur Phase energy ke mutabiq).
+        </div>
+
         <div class="analysis-section">
             <strong>🏟️ Venue & Planetary Sa'at:</strong> Waqt (${formattedTimeDisplay}), Hakim Sayara: <span class="highlight">${activePlanet}</span>, 🌙 <strong>Chand ki ${lunarDateVal} Tareekh</strong> aur Ground (${ground}, Adad: ${groundVal}) ki energy ke sath match aage barhega.
         </div>
+
         <div class="analysis-section">
             <strong>⚡ Phase-wise Flow (Pehle 10 Overs vs Aakhir):</strong> 
             <br>• <strong>Shuruati 10 Overs (Early Pressure):</strong> Sa'at aur Toss ki initial energy ke tehat <span class="highlight">${earlyPressureTeam}</span> shuru mein match par haavi rah sakti hai.
             <br>• <strong>Asli Abjad Power:</strong> Team 1 Score (${score1}) vs Team 2 Score (${score2}) ka mathematical wazan.
         </div>
+
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 10px; margin-top: 10px;">
             <strong>🔮 Final Sitaron Ka Natija:</strong> 
             <br>Shuruati overs ke utaar-chadhaw aur pressure ke baad, Asli Abjad-e-Kabeer aur waqt ki poori energy ke hisab se aakhir mein <strong>${winningTeam}</strong> jeet apne naam karegi!
@@ -189,4 +205,4 @@ function calculatePrediction() {
 
     document.getElementById("outputContent").innerHTML = analysisHTML;
     document.getElementById("resultBox").classList.remove("hidden");
-                    }
+}
