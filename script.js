@@ -80,7 +80,6 @@ function calculatePrediction() {
     
     let lunarDateVal = parseInt(document.getElementById("lunarDate") ? document.getElementById("lunarDate").value : 15) || 15;
 
-    let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
 
     // 1. Asli Urdu/Arabic Abjad Values
@@ -92,7 +91,6 @@ function calculatePrediction() {
 
     // 2. Advanced Planetary Hours & Toss Calculation Logic
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
-    let formattedTimeDisplay = "مقرر وقت";
     let activePlanet = "مشتری";
     let earlyPressureTeam = tossTeam;
 
@@ -160,8 +158,6 @@ function calculatePrediction() {
             } else {
                 earlyPressureTeam = team1;
             }
-
-            formattedTimeDisplay = dateObj.toLocaleString();
         }
     }
 
@@ -184,30 +180,30 @@ function calculatePrediction() {
     let rangeSpan = (matchFormat === "test") ? 40 : (matchFormat === "odi" ? 25 : 15);
 
     let analysisHTML = `
-        <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 10px; margin-bottom: 10px; border-radius: 4px; text-align: right;">
-            <strong>🪙 ٹॉस کی پیشگوئی (Toss Analysis):</strong> 
-            <br>مقرر وقت (${formattedTimeDisplay}) اور حاکم سیارہ <span class="highlight">${activePlanet}</span> کی روشنی میں، کپتانوں (${captain1} بمقابلہ ${captain2}) کی ابجد پاور کے حساب سے **ٹॉस جیتنے کی سب سے زیادہ صلاحیت ${predictedTossWinner} (${predictedTossTeam}) کی ہے۔**
+        <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
+            <strong>🪙 سکہ اچھالنے کا فیصلہ (Toss Analysis):</strong> 
+            <br>حاکم سیارہ <span style="color: #38bdf8; font-weight: bold;">${activePlanet}</span> کی روشنی میں، کپتانوں (${captain1} بمقابلہ ${captain2}) کی ابجد پاور کے حساب سے سکہ جیتنے کی سب سے زیادہ صلاحیت <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> کی ہے۔
         </div>
 
-        <div class="analysis-section" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 10px; margin-bottom: 10px; border-radius: 4px; text-align: right;">
+        <div class="analysis-section" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
             <strong>📊 ٹوٹل سکور کا تخمینہ (${formatLabel}):</strong> 
-            <br>• <strong>پہلی اننگز کا متوقع سکور:</strong> <span class="highlight">${estimatedTotal1} تا ${estimatedTotal1 + rangeSpan} رنز</span>
-            <br>• <strong>دوسری اننگز کا ہدف/رینج:</strong> <span class="highlight">${estimatedTotal2} تا ${estimatedTotal2 + rangeSpan} رنز</span>
+            <br>• پہلی اننگز کا متوقع اسکور: <span style="color: #a855f7; font-weight: bold;">${estimatedTotal1} سے ${estimatedTotal1 + rangeSpan} رنز</span>
+            <br>• دوسری اننگز کا ہدف یا رینج: <span style="color: #a855f7; font-weight: bold;">${estimatedTotal2} سے ${estimatedTotal2 + rangeSpan} رنز</span>
         </div>
 
-        <div class="analysis-section" style="text-align: right; margin-bottom: 10px;">
-            <strong>🏟️ گراؤنڈ اور سیاروی ساعت:</strong> فارمیٹ: <strong>${formatLabel}</strong>، وقت (${formattedTimeDisplay})، حاکم سیارہ: <span class="highlight">${activePlanet}</span>، 🌙 <strong>چاند کی ${lunarDateVal} تاریخ</strong> اور گراؤنڈ (${ground}) کی توانائی کے ساتھ میچ آگے بڑھے گا۔
+        <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
+            <strong>🏟️ گراؤنڈ اور سیاروی ساعت:</strong> فارمیٹ: <strong>${formatLabel}</strong>، حاکم سیارہ: <span style="color: #38bdf8;">${activePlanet}</span>، چاند کی <span style="color: #38bdf8;">${lunarDateVal}</span> تاریخ اور گراؤنڈ (${ground}) کی توانائی کے ساتھ میچ آگے بڑھے گا۔
         </div>
 
-        <div class="analysis-section" style="text-align: right; margin-bottom: 10px;">
+        <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
             <strong>⚡ میچ کا آغاز اور دباؤ:</strong> 
-            <br>• <strong>شروعاتی اوورز (شروعاتی دباؤ):</strong> ساعت اور ٹॉस کی ابتدائی توانائی کے تحت <span class="highlight">${earlyPressureTeam}</span> شروعات میں میچ پر حاوی رہ سکتی ہے۔
-            <br>• <strong>اسکور کی طاقتی توازن:</strong> ٹیم 1 (${score1}) بمقابلہ ٹیم 2 (${score2}) کا ریاضیاتی وزن۔
+            <br>• شروعاتی اوورز (ابتدائی دباؤ): ساعت اور سکہ اچھالنے کی ابتدائی توانائی کے تحت <span style="color: #38bdf8;">${earlyPressureTeam}</span> شروعات میں میچ پر حاوی رہ سکتی ہے۔
+            <br>• اسکور کا طاقتی وزن: ٹیم 1 (${score1}) بمقابلہ ٹیم 2 (${score2})۔
         </div>
 
-        <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 10px; margin-top: 10px; text-align: right;">
+        <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: right; direction: rtl;">
             <strong>🔮 ستاروں کا حتمی نتیجہ:</strong> 
-            <br>شروعاتی اوورز کے اتار چڑھاؤ اور دباؤ کے بعد، اصلی ابجد-ع-کبیر اور وقت کی پوری توانائی کے حساب سے آخر میں <strong>${winningTeam}</strong> فتح اپنے نام کرے گی!
+            <br>شروعاتی اوورز کے اتار چڑھاؤ اور دباؤ کے بعد، اصلی ابجد-ع-کبیر اور وقت کی پوری توانائی کے حساب سے آخر میں <strong style="color: #38bdf8;">${winningTeam}</strong> فتح اپنے نام کرے گی!
         </div>
     `;
 
