@@ -1,201 +1,31 @@
-// Complete Teams & Captains Database (All International, Associate & Leagues)
+// Complete Teams & Captains Database in Pure Urdu (Unicode Safe)
 const teamsData = [
-    // International Teams
-    { name: "Afghanistan", captains: { test: "Rahmat Shah", odi: "Rahmat Shah", t20: "Rashid Khan" } },
-    { name: "Australia", captains: { test: "Pat Cummins", odi: "Mitchell Marsh", t20: "Mitchell Marsh" } },
-    { name: "Bangladesh", captains: { test: "Najmul Hossain Shanto", odi: "Mehidy Hasan Miraz", t20: "Litton Das" } },
-    { name: "England", captains: { test: "Ben Stokes", odi: "Harry Brook", t20: "Harry Brook" } },
-    { name: "India", captains: { test: "Shubman Gill", odi: "Shubman Gill", t20: "Suryakumar Yadav" } },
-    { name: "Ireland", captains: { test: "Andy Balbirnie", odi: "Paul Stirling", t20: "Lorcan Tucker" } },
-    { name: "New Zealand", captains: { test: "Tom Latham", odi: "Mitchell Santner", t20: "Mitchell Santner" } },
-    { name: "Pakistan", captains: { test: "Shan Masood", odi: "Shaheen Shah Afridi", t20: "Salman Ali Agha" } },
-    { name: "South Africa", captains: { test: "Temba Bavuma", odi: "Temba Bavuma", t20: "Aiden Markram" } },
-    { name: "Sri Lanka", captains: { test: "Dhananjaya de Silva", odi: "Charith Asalanka", t20: "Dasun Shanaka" } },
-    { name: "West Indies", captains: { test: "Roston Chase", odi: "Shai Hope", t20: "Shai Hope" } },
-    { name: "Zimbabwe", captains: { test: "Richard Ngarava", odi: "Richard Ngarava", t20: "Sikandar Raza" } },
-
-    // Associate Teams
-    { name: "Namibia", captains: { test: "Gerhard Erasmus", odi: "Gerhard Erasmus", t20: "Gerhard Erasmus" } },
-    { name: "Netherlands", captains: { test: "Scott Edwards", odi: "Scott Edwards", t20: "Scott Edwards" } },
-    { name: "USA", captains: { test: "Monank Patel", odi: "Monank Patel", t20: "Monank Patel" } },
-    { name: "Oman", captains: { test: "Jatinder Singh", odi: "Jatinder Singh", t20: "Jatinder Singh" } },
-    { name: "Scotland", captains: { test: "Richie Berrington", odi: "Richie Berrington", t20: "Richie Berrington" } },
-    { name: "Nepal", captains: { test: "Rohit Paudel", odi: "Rohit Paudel", t20: "Rohit Paudel" } },
-    { name: "Italy", captains: { test: "Wayne Madsen", odi: "Wayne Madsen", t20: "Wayne Madsen" } },
-    { name: "Canada", captains: { test: "Dilpreet Bajwa", odi: "Dilpreet Bajwa", t20: "Dilpreet Bajwa" } },
-    { name: "UAE", captains: { test: "Muhammad Waseem", odi: "Muhammad Waseem", t20: "Muhammad Waseem" } },
-    { name: "Hong Kong", captains: { test: "Nizakat Khan", odi: "Nizakat Khan", t20: "Nizakat Khan" } },
-    { name: "Papua New Guinea", captains: { test: "Assad Vala", odi: "Assad Vala", t20: "Assad Vala" } },
-    { name: "Jersey", captains: { test: "Charles Perchard", odi: "Charles Perchard", t20: "Charles Perchard" } },
-    { name: "Uganda", captains: { test: "Brian Masaba", odi: "Brian Masaba", t20: "Brian Masaba" } },
-    { name: "Malaysia", captains: { test: "Ahmad Faiz", odi: "Ahmad Faiz", t20: "Ahmad Faiz" } },
-    { name: "Singapore", captains: { test: "Manpreet Singh", odi: "Manpreet Singh", t20: "Manpreet Singh" } },
-    { name: "Kenya", captains: { test: "Rakep Patel", odi: "Rakep Patel", t20: "Rakep Patel" } },
-    { name: "Nigeria", captains: { test: "Joshua Ayannaike", odi: "Joshua Ayannaike", t20: "Joshua Ayannaike" } },
-    { name: "Germany", captains: { test: "Rohit Singh", odi: "Rohit Singh", t20: "Rohit Singh" } },
-    { name: "Japan", captains: { test: "Kendel Kadowaki-Fleming", odi: "Kendel Kadowaki-Fleming", t20: "Kendel Kadowaki-Fleming" } },
-    { name: "Spain", captains: { test: "Christian Munoz-Mills", odi: "Christian Munoz-Mills", t20: "Christian Munoz-Mills" } },
-    { name: "Belgium", captains: { test: "Shaheryar Butt", odi: "Shaheryar Butt", t20: "Shaheryar Butt" } },
-    { name: "Austria", captains: { test: "Amir Waqif", odi: "Amir Waqif", t20: "Amir Waqif" } },
-    { name: "France", captains: { test: "Noman Amjad", odi: "Noman Amjad", t20: "Noman Amjad" } },
-    { name: "Portugal", captains: { test: "Amir Zaib", odi: "Amir Zaib", t20: "Amir Zaib" } },
-    { name: "Denmark", captains: { test: "Shangeev Thanikaithasan", odi: "Shangeev Thanikaithasan", t20: "Shangeev Thanikaithasan" } },
-    { name: "Norway", captains: { test: "Raza Iqbal", odi: "Raza Iqbal", t20: "Raza Iqbal" } },
-    { name: "Sweden", captains: { test: "Abhijit Venkatesh", odi: "Abhijit Venkatesh", t20: "Abhijit Venkatesh" } },
-    { name: "Romania", captains: { test: "Ramesh Satheesan", odi: "Ramesh Satheesan", t20: "Ramesh Satheesan" } },
-    { name: "Czech Republic", captains: { test: "Sudesh Wickramasekara", odi: "Sudesh Wickramasekara", t20: "Sudesh Wickramasekara" } },
-    { name: "Finland", captains: { test: "Nathan Collins", odi: "Nathan Collins", t20: "Nathan Collins" } },
-    { name: "Bahrain", captains: { test: "Sohail Ahmed", odi: "Sohail Ahmed", t20: "Sohail Ahmed" } },
-    { name: "Kuwait", captains: { test: "Mohammed Aslam", odi: "Mohammed Aslam", t20: "Mohammed Aslam" } },
-    { name: "Saudi Arabia", captains: { test: "Abdul Waheed", odi: "Abdul Waheed", t20: "Abdul Waheed" } },
-    { name: "Qatar", captains: { test: "Mohammed Rizlan", odi: "Mohammed Rizlan", t20: "Mohammed Rizlan" } },
-    { name: "Maldives", captains: { test: "Ahmed Hassan", odi: "Ahmed Hassan", t20: "Ahmed Hassan" } },
-    { name: "Thailand", captains: { test: "Chanchai Pengkumta", odi: "Chanchai Pengkumta", t20: "Chanchai Pengkumta" } },
-    { name: "Indonesia", captains: { test: "Gede Priandana", odi: "Gede Priandana", t20: "Gede Priandana" } },
-    { name: "Philippines", captains: { test: "Daniel Smith", odi: "Daniel Smith", t20: "Daniel Smith" } },
-    { name: "Vanuatu", captains: { test: "Andrew Mansale", odi: "Andrew Mansale", t20: "Andrew Mansale" } },
-    { name: "Fiji", captains: { test: "Jiko Rasaku", odi: "Jiko Rasaku", t20: "Jiko Rasaku" } },
-    { name: "Samoa", captains: { test: "Douglas Fale", odi: "Douglas Fale", t20: "Douglas Fale" } },
-    { name: "Cook Islands", captains: { test: "Henry Aitken", odi: "Henry Aitken", t20: "Henry Aitken" } },
-    { name: "Argentina", captains: { test: "Luciano Musiani", odi: "Luciano Musiani", t20: "Luciano Musiani" } },
-    { name: "Brazil", captains: { test: "Roberto Moreira", odi: "Roberto Moreira", t20: "Roberto Moreira" } },
-    { name: "Bermuda", captains: { test: "Delray Rawlins", odi: "Delray Rawlins", t20: "Delray Rawlins" } },
-    { name: "Cayman Islands", captains: { test: "Ramon Sealy", odi: "Ramon Sealy", t20: "Ramon Sealy" } },
-    { name: "Bahamas", captains: { test: "Marc Taylor", odi: "Marc Taylor", t20: "Marc Taylor" } },
-    { name: "Suriname", captains: { test: "Shivnarine Chanderpaul", odi: "Shivnarine Chanderpaul", t20: "Shivnarine Chanderpaul" } },
-    { name: "Panama", captains: { test: "Saad Zaman", odi: "Saad Zaman", t20: "Saad Zaman" } },
-    { name: "Belize", captains: { test: "Clinton Lewis", odi: "Clinton Lewis", t20: "Clinton Lewis" } },
-    { name: "Botswana", captains: { test: "Karabo Motlhanka", odi: "Karabo Motlhanka", t20: "Karabo Motlhanka" } },
-    { name: "Ghana", captains: { test: "Obed Harvey", odi: "Obed Harvey", t20: "Obed Harvey" } },
-    { name: "Rwanda", captains: { test: "Clinton Rubagumya", odi: "Clinton Rubagumya", t20: "Clinton Rubagumya" } },
-    { name: "Sierra Leone", captains: { test: "George Sesay", odi: "George Sesay", t20: "George Sesay" } },
-    { name: "Tanzania", captains: { test: "Abhik Patwa", odi: "Abhik Patwa", t20: "Abhik Patwa" } },
-    { name: "Mozambique", captains: { test: "Amade Abubacar", odi: "Amade Abubacar", t20: "Amade Abubacar" } },
-    { name: "Malawi", captains: { test: "Moazzam Baig", odi: "Moazzam Baig", t20: "Moazzam Baig" } },
-    { name: "Lesotho", captains: { test: "Shadrack Mofokeng", odi: "Shadrack Mofokeng", t20: "Shadrack Mofokeng" } },
-    { name: "Eswatini", captains: { test: "Shane Burger", odi: "Shane Burger", t20: "Shane Burger" } },
-    { name: "Gambia", captains: { test: "Momodou Lamin Bah", odi: "Momodou Lamin Bah", t20: "Momodou Lamin Bah" } },
-    { name: "Cameroon", captains: { test: "Arrey Ekwen", odi: "Arrey Ekwen", t20: "Arrey Ekwen" } },
-    { name: "Ivory Coast", captains: { test: "Diomande Mahamadou", odi: "Diomande Mahamadou", t20: "Diomande Mahamadou" } },
-
-    // IPL Teams
-    { name: "IPL - Chennai Super Kings", captains: { test: "Ruturaj Gaikwad", odi: "Ruturaj Gaikwad", t20: "Ruturaj Gaikwad" } },
-    { name: "IPL - Delhi Capitals", captains: { test: "Axar Patel", odi: "Axar Patel", t20: "Axar Patel" } },
-    { name: "IPL - Gujarat Titans", captains: { test: "Shubman Gill", odi: "Shubman Gill", t20: "Shubman Gill" } },
-    { name: "IPL - Kolkata Knight Riders", captains: { test: "Ajinkya Rahane", odi: "Ajinkya Rahane", t20: "Ajinkya Rahane" } },
-    { name: "IPL - Lucknow Super Giants", captains: { test: "Rishabh Pant", odi: "Rishabh Pant", t20: "Rishabh Pant" } },
-    { name: "IPL - Mumbai Indians", captains: { test: "Hardik Pandya", odi: "Hardik Pandya", t20: "Hardik Pandya" } },
-    { name: "IPL - Punjab Kings", captains: { test: "Shreyas Iyer", odi: "Shreyas Iyer", t20: "Shreyas Iyer" } },
-    { name: "IPL - Rajasthan Royals", captains: { test: "Riyan Parag", odi: "Riyan Parag", t20: "Riyan Parag" } },
-    { name: "IPL - Royal Challengers Bengaluru", captains: { test: "Rajat Patidar", odi: "Rajat Patidar", t20: "Rajat Patidar" } },
-    { name: "IPL - Sunrisers Hyderabad", captains: { test: "Ishan Kishan", odi: "Ishan Kishan", t20: "Ishan Kishan" } },
-
-    // PSL Teams
-    { name: "PSL - Islamabad United", captains: { test: "Shadab Khan", odi: "Shadab Khan", t20: "Shadab Khan" } },
-    { name: "PSL - Karachi Kings", captains: { test: "David Warner", odi: "David Warner", t20: "David Warner" } },
-    { name: "PSL - Lahore Qalandars", captains: { test: "Shaheen Shah Afridi", odi: "Shaheen Shah Afridi", t20: "Shaheen Shah Afridi" } },
-    { name: "PSL - Multan Sultans", captains: { test: "Mohammad Rizwan", odi: "Mohammad Rizwan", t20: "Mohammad Rizwan" } },
-    { name: "PSL - Peshawar Zalmi", captains: { test: "Babar Azam", odi: "Babar Azam", t20: "Babar Azam" } },
-    { name: "PSL - Quetta Gladiators", captains: { test: "Saud Shakeel", odi: "Saud Shakeel", t20: "Saud Shakeel" } },
-
-    // BBL Teams
-    { name: "BBL - Adelaide Strikers", captains: { test: "Matt Short", odi: "Matt Short", t20: "Matt Short" } },
-    { name: "BBL - Brisbane Heat", captains: { test: "Usman Khawaja", odi: "Usman Khawaja", t20: "Usman Khawaja" } },
-    { name: "BBL - Hobart Hurricanes", captains: { test: "Nathan Ellis", odi: "Nathan Ellis", t20: "Nathan Ellis" } },
-    { name: "BBL - Melbourne Renegades", captains: { test: "Will Sutherland", odi: "Will Sutherland", t20: "Will Sutherland" } },
-    { name: "BBL - Melbourne Stars", captains: { test: "Marcus Stoinis", odi: "Marcus Stoinis", t20: "Marcus Stoinis" } },
-    { name: "BBL - Perth Scorchers", captains: { test: "Ashton Turner", odi: "Ashton Turner", t20: "Ashton Turner" } },
-    { name: "BBL - Sydney Sixers", captains: { test: "Moises Henriques", odi: "Moises Henriques", t20: "Moises Henriques" } },
-    { name: "BBL - Sydney Thunder", captains: { test: "David Warner", odi: "David Warner", t20: "David Warner" } },
-
-    // SA20 Teams
-    { name: "SA20 - Durban Super Giants", captains: { test: "Aiden Markram", odi: "Aiden Markram", t20: "Aiden Markram" } },
-    { name: "SA20 - Joburg Super Kings", captains: { test: "Faf du Plessis", odi: "Faf du Plessis", t20: "Faf du Plessis" } },
-    { name: "SA20 - MI Cape Town", captains: { test: "Rashid Khan", odi: "Rashid Khan", t20: "Rashid Khan" } },
-    { name: "SA20 - Paarl Royals", captains: { test: "David Miller", odi: "David Miller", t20: "David Miller" } },
-    { name: "SA20 - Pretoria Capitals", captains: { test: "Keshav Maharaj", odi: "Keshav Maharaj", t20: "Keshav Maharaj" } },
-    { name: "SA20 - Sunrisers Eastern Cape", captains: { test: "Tristan Stubbs", odi: "Tristan Stubbs", t20: "Tristan Stubbs" } },
-
-    // MLC Teams
-    { name: "MLC - MI New York", captains: { test: "Nicholas Pooran", odi: "Nicholas Pooran", t20: "Nicholas Pooran" } },
-    { name: "MLC - Texas Super Kings", captains: { test: "Faf du Plessis", odi: "Faf du Plessis", t20: "Faf du Plessis" } },
-    { name: "MLC - Washington Freedom", captains: { test: "Steve Smith", odi: "Steve Smith", t20: "Steve Smith" } },
-    { name: "MLC - San Francisco Unicorns", captains: { test: "Matthew Short", odi: "Matthew Short", t20: "Matthew Short" } },
-    { name: "MLC - Seattle Orcas", captains: { test: "Heinrich Klaasen", odi: "Heinrich Klaasen", t20: "Heinrich Klaasen" } },
-    { name: "MLC - Los Angeles Knight Riders", captains: { test: "Jason Holder", odi: "Jason Holder", t20: "Jason Holder" } },
-
-    // CPL Teams
-    { name: "CPL - Jamaica Kingsmen", captains: { test: "Rovman Powell", odi: "Rovman Powell", t20: "Rovman Powell" } },
-    { name: "CPL - Antigua & Barbuda Falcons", captains: { test: "Moeen Ali", odi: "Moeen Ali", t20: "Moeen Ali" } },
-    { name: "CPL - Trinbago Knight Riders", captains: { test: "Nicholas Pooran", odi: "Nicholas Pooran", t20: "Nicholas Pooran" } },
-    { name: "CPL - St Lucia Kings", captains: { test: "Roston Chase", odi: "Roston Chase", t20: "Roston Chase" } },
-    { name: "CPL - Guyana Amazon Warriors", captains: { test: "Imran Tahir", odi: "Imran Tahir", t20: "Imran Tahir" } },
-
-    // LPL Teams
-    { name: "LPL - Colombo Strikers", captains: { test: "Kusal Mendis", odi: "Kusal Mendis", t20: "Kusal Mendis" } },
-    { name: "LPL - Dambulla Sixers", captains: { test: "Dinesh Chandimal", odi: "Dinesh Chandimal", t20: "Dinesh Chandimal" } },
-    { name: "LPL - Galle Marvels", captains: { test: "Dasun Shanaka", odi: "Dasun Shanaka", t20: "Dasun Shanaka" } },
-    { name: "LPL - Jaffna Kings", captains: { test: "Bhanuka Rajapaksa", odi: "Bhanuka Rajapaksa", t20: "Bhanuka Rajapaksa" } },
-    { name: "LPL - Kandy Falcons", captains: { test: "Angelo Mathews", odi: "Angelo Mathews", t20: "Angelo Mathews" } },
-
-    // ILT20 Teams
-    { name: "ILT20 - Abu Dhabi Knight Riders", captains: { test: "Jason Holder", odi: "Jason Holder", t20: "Jason Holder" } },
-    { name: "ILT20 - Desert Vipers", captains: { test: "Lockie Ferguson", odi: "Lockie Ferguson", t20: "Lockie Ferguson" } },
-    { name: "ILT20 - Dubai Capitals", captains: { test: "David Warner", odi: "David Warner", t20: "David Warner" } },
-    { name: "ILT20 - Gulf Giants", captains: { test: "James Vince", odi: "James Vince", t20: "James Vince" } },
-    { name: "ILT20 - MI Emirates", captains: { test: "Nicholas Pooran", odi: "Nicholas Pooran", t20: "Nicholas Pooran" } },
-    { name: "ILT20 - Sharjah Warriors", captains: { test: "Tom Kohler-Cadmore", odi: "Tom Kohler-Cadmore", t20: "Tom Kohler-Cadmore" } },
-
-    // BPL Teams
-    { name: "BPL - Chattogram Royals", captains: { test: "Mehidy Hasan", odi: "Mehidy Hasan", t20: "Mehidy Hasan" } },
-    { name: "BPL - Dhaka Capitals", captains: { test: "Mohammad Mithun", odi: "Mohammad Mithun", t20: "Mohammad Mithun" } },
-    { name: "BPL - Rajshahi Warriors", captains: { test: "Najmul Hossain Shanto", odi: "Najmul Hossain Shanto", t20: "Najmul Hossain Shanto" } },
-    { name: "BPL - Rangpur Riders", captains: { test: "Nurul Hasan", odi: "Nurul Hasan", t20: "Nurul Hasan" } },
-    { name: "BPL - Sylhet Titans", captains: { test: "Mehidy Hasan Miraz", odi: "Mehidy Hasan Miraz", t20: "Mehidy Hasan Miraz" } },
-
-    // The Hundred
-    { name: "The Hundred - Birmingham Phoenix", captains: { test: "Jacob Bethell", odi: "Jacob Bethell", t20: "Jacob Bethell" } },
-    { name: "The Hundred - Manchester Super Giants", captains: { test: "Aiden Markram", odi: "Aiden Markram", t20: "Aiden Markram" } },
-    { name: "The Hundred - MI London", captains: { test: "Sam Curran", odi: "Sam Curran", t20: "Sam Curran" } },
-    { name: "The Hundred - Trent Rockets", captains: { test: "Sam Billings", odi: "Sam Billings", t20: "Sam Billings" } },
-    { name: "The Hundred - Welsh Fire", captains: { test: "Phil Salt", odi: "Phil Salt", t20: "Phil Salt" } },
-
-    // WPL & WBBL
-    { name: "WPL - Mumbai Indians Women", captains: { test: "Harmanpreet Kaur", odi: "Harmanpreet Kaur", t20: "Harmanpreet Kaur" } },
-    { name: "WPL - Delhi Capitals Women", captains: { test: "Jemimah Rodrigues", odi: "Jemimah Rodrigues", t20: "Jemimah Rodrigues" } },
-    { name: "WPL - Royal Challengers Bengaluru Women", captains: { test: "Smriti Mandhana", odi: "Smriti Mandhana", t20: "Smriti Mandhana" } },
-    { name: "WPL - UP Warriorz", captains: { test: "Meg Lanning", odi: "Meg Lanning", t20: "Meg Lanning" } },
-    { name: "WPL - Gujarat Giants Women", captains: { test: "Ashleigh Gardner", odi: "Ashleigh Gardner", t20: "Ashleigh Gardner" } },
-
-    // WBBL
-    { name: "WBBL - Adelaide Strikers Women", captains: { test: "Tahlia McGrath", odi: "Tahlia McGrath", t20: "Tahlia McGrath" } },
-    { name: "WBBL - Brisbane Heat Women", captains: { test: "Jess Jonassen", odi: "Jess Jonassen", t20: "Jess Jonassen" } },
-    { name: "WBBL - Hobart Hurricanes Women", captains: { test: "Elyse Villani", odi: "Elyse Villani", t20: "Elyse Villani" } },
-    { name: "WBBL - Melbourne Renegades Women", captains: { test: "Sophie Molineux", odi: "Sophie Molineux", t20: "Sophie Molineux" } },
-    { name: "WBBL - Melbourne Stars Women", captains: { test: "Annabel Sutherland", odi: "Annabel Sutherland", t20: "Annabel Sutherland" } },
-    { name: "WBBL - Perth Scorchers Women", captains: { test: "Sophie Devine", odi: "Sophie Devine", t20: "Sophie Devine" } },
-    { name: "WBBL - Sydney Sixers Women", captains: { test: "Ellyse Perry", odi: "Ellyse Perry", t20: "Ellyse Perry" } },
-    { name: "WBBL - Sydney Thunder Women", captains: { test: "Phoebe Litchfield", odi: "Phoebe Litchfield", t20: "Phoebe Litchfield" } },
-
-    // Vitality Blast
-    { name: "Vitality Blast - Essex", captains: { test: "Simon Harmer", odi: "Simon Harmer", t20: "Simon Harmer" } },
-    { name: "Vitality Blast - Surrey", captains: { test: "Sam Curran", odi: "Sam Curran", t20: "Sam Curran" } },
-    { name: "Vitality Blast - Sussex", captains: { test: "Tymal Mills", odi: "Tymal Mills", t20: "Tymal Mills" } },
-    { name: "Vitality Blast - Kent", captains: { test: "Sam Billings", odi: "Sam Billings", t20: "Sam Billings" } },
-    { name: "Vitality Blast - Hampshire", captains: { test: "James Vince", odi: "James Vince", t20: "James Vince" } },
-    { name: "Vitality Blast - Somerset", captains: { test: "Lewis Gregory", odi: "Lewis Gregory", t20: "Lewis Gregory" } },
-    { name: "Vitality Blast - Gloucestershire", captains: { test: "Jack Taylor", odi: "Jack Taylor", t20: "Jack Taylor" } },
-    { name: "Vitality Blast - Worcestershire", captains: { test: "Brett D'Oliveira", odi: "Brett D'Oliveira", t20: "Brett D'Oliveira" } },
-    { name: "Vitality Blast - Warwickshire", captains: { test: "Alex Davies", odi: "Alex Davies", t20: "Alex Davies" } },
-    { name: "Vitality Blast - Nottinghamshire", captains: { test: "Joe Clarke", odi: "Joe Clarke", t20: "Joe Clarke" } },
-    { name: "Vitality Blast - Derbyshire", captains: { test: "Wayne Madsen", odi: "Wayne Madsen", t20: "Wayne Madsen" } },
-    { name: "Vitality Blast - Leicestershire", captains: { test: "Lewis Hill", odi: "Lewis Hill", t20: "Lewis Hill" } },
-    { name: "Vitality Blast - Northamptonshire", captains: { test: "David Willey", odi: "David Willey", t20: "David Willey" } },
-    { name: "Vitality Blast - Durham", captains: { test: "Alex Lees", odi: "Alex Lees", t20: "Alex Lees" } },
-    { name: "Vitality Blast - Yorkshire", captains: { test: "Jonny Bairstow", odi: "Jonny Bairstow", t20: "Jonny Bairstow" } },
-    { name: "Vitality Blast - Lancashire", captains: { test: "Keaton Jennings", odi: "Keaton Jennings", t20: "Keaton Jennings" } },
-    { name: "Vitality Blast - Glamorgan", captains: { test: "Kiran Carlson", odi: "Kiran Carlson", t20: "Kiran Carlson" } },
-    { name: "Vitality Blast - Middlesex", captains: { test: "Stephen Eskinazi", odi: "Stephen Eskinazi", t20: "Stephen Eskinazi" } }
+    { name: "\u0627\u0641\u063a\u0627\u0646\u0633\u062a\u0627\u0646", captains: { test: "\u0631\u062d\u0645\u062a \u0634\u0627\u06c1", odi: "\u0631\u062d\u0645\u062a \u0634\u0627\u06c1", t20: "\u0631\u0627\u0634\u062f \u062e\u0627\u0646" } },
+    { name: "\u0622\u0633\u0679\u0631\u06cc\u0644\u06cc\u0627", captains: { test: "\u067e\u06cc\u0679 \u06a9\u0645\u0646\u0632", odi: "\u0645\u0686\u0644 \u0645\u0627\u0631\u06B1", t20: "\u0645\u0686\u0644 \u0645\u0627\u0631\u06B1" } },
+    { name: "\u0628\u0646\u06AF\u0644\u06c1 \u062f\u06cc\u0634", captains: { test: "\u0646\u062c\u0645 \u0627\u0644\u062d\u0633\u0646 \u0634\u0627\u0646\u062a\u0648", odi: "\u0645\u06c1\u062f\u06cc \u062d\u0633\u0646 \u0645\u06cc\u0631\u0627\u0632", t20: "\u0644\u0679\u0646 \u062f\u0627\u0633" } },
+    { name: "\u0627\u0646\u06AF\u0644\u06cc\u0646\u0688", captains: { test: "\u0628\u06cc\u0646 \u0627\u0633\u0679\u0648\u06a9\u0633", odi: "\u06c1\u06cc\u0631\u06cc \u0628\u0631\u0648\u06a9", t20: "\u06c1\u06cc\u0631\u06cc \u0628\u0631\u0648\u06a9" } },
+    { name: "\u0628\u06be\u0627\u0631\u062a", captains: { test: "\u0634\u0628\u0645\u0646 \u06AF\u0644", odi: "\u0634\u0628\u0645\u0646 \u06AF\u0644", t20: "\u0633\u0648\u0631\u06cc\u06c1 \u06a9\u0645\u0627\u0631 \u06cc\u0627\u062f\u0648" } },
+    { name: "\u0622\u0626\u0631\u0644\u06cc\u0646\u0688", captains: { test: "\u0627\u06cc\u0646\u0688\u06cc \u0628\u0627\u0644\u0628\u0631\u0646\u06cc", odi: "\u067e\u0627\u0644 \u0627\u0633\u0679\u0631\u0644\u0646\u06AF", t20: "\u0644\u0648\u0631\u06a9\u0646 \u0679\u06a9\u0631" } },
+    { name: "\u0646\u06cc\u0648\u0632\u06cc \u0644\u06cc\u0646\u0688", captains: { test: "\u0679\u0627\u0645 \u0644\u06cc\u0679\u06be\u0645", odi: "\u0645\u0686\u0644 \u0633\u06cc\u0646\u0679\u0646\u0631", t20: "\u0645\u0686\u0644 \u0633\u06cc\u0646\u0679\u0646\u0631" } },
+    { name: "\u067e\u0627\u06a9\u0633\u062a\u0627\u0646", captains: { test: "\u0634\u0627\u0646 \u0645\u0633\u0639\u0648\u062f", odi: "\u0634\u0627\u06c1\u06cc\u0646 \u0634\u0627\u06c1 \u0622\u0641\u0631\u06cc\u062f\u06cc", t20: "\u0633\u0644\u0645\u0627\u0646 \u0639\u0644\u06cc \u0622\u063a\u0627" } },
+    { name: "\u062c\u0646\u0648\u0628\u06cc \u0627\u0641\u0631\u06cc\u0642\u06c1", captains: { test: "\u0679\u06cc\u0645\u0628\u0627 \u0628\u0627\u0648\u0648\u0645\u0627", odi: "\u0679\u06cc\u0645\u0628\u0627 \u0628\u0627\u0648\u0648\u0645\u0627", t20: "\u0627\u06cc\u0688\u0646 \u0645\u0627\u0631\u06a9\u0631\u0645" } },
+    { name: "\u0633\u0631\u06cc \u0644\u0646\u06a9\u0627", captains: { test: "\u062f\u06be\u0646\u0646\u062c\u0627\u06cc\u0627 \u0688\u06cc \u0633\u0644\u0648\u0627", odi: "\u0686\u0627\u0631\u062a\u06be \u0627\u0633\u0627\u0644\u0646\u06a9\u0627", t20: "\u062f\u0627\u0633\u0646 \u0634\u0646\u0627\u06a9\u0627" } },
+    { name: "\u0648\u06cc\u0633\u0679 \u0627\u0646\u0688\u06cc\u0632", captains: { test: "\u0631\u0648\u0633\u0679\u0646 \u0686\u06cc\u0632", odi: "\u0634\u0627\u0626\u06cc \u06c1\u0648\u06BE", t20: "\u0634\u0627\u0626\u06cc \u06c1\u0648\u06BE" } },
+    { name: "\u0632\u0645\u0628\u0627\u0628\u0648\u06c1", captains: { test: "\u0631\u0686\u0631\u0688 \u0646\u06AF\u0627\u0631\u0627\u0648\u0627", odi: "\u0631\u0686\u0631\u0688 \u0646\u06AF\u0627\u0631\u0627\u0648\u0627", t20: "\u0633\u06a9\u0646\u062f\u0631 \u0631\u0636\u0627" } },
+    { name: "\u0646\u0645\u06cc\u0628\u06cc\u0627", captains: { test: "\u06AF\u06cc\u06c1\u0627\u0631\u0688 \u0627\u06cc\u0631\u0627\u0633\u0645\u0633", odi: "\u06AF\u06cc\u06c1\u0627\u0631\u0688 \u0627\u06cc\u0631\u0627\u0633\u0645\u0633", t20: "\u06AF\u06cc\u06c1\u0627\u0631\u0688 \u0627\u06cc\u0631\u0627\u0633\u0645\u0633" } },
+    { name: "\u0646\u06cc\u0688\u0631\u0644\u06cc\u0646\u0688\u0632", captains: { test: "\u0627\u0633\u06a9\u0627\u0679 \u0627\u06cc\u0688\u0648\u0631\u0688\u0632", odi: "\u0627\u0633\u06a9\u0627\u0679 \u0627\u06cc\u0688\u0648\u0631\u0688\u0632", t20: "\u0627\u0633\u06a9\u0627\u0679 \u0627\u06cc\u0688\u0648\u0631\u0688\u0632" } },
+    { name: "\u0627\u0645\u0631\u06cc\u06a9\u06c1", captains: { test: "\u0645\u0648\u0646\u0646\u06a9 \u067e\u0679\u06cc\u0644", odi: "\u0645\u0648\u0646\u0646\u06a9 \u067e\u0679\u06cc\u0644", t20: "\u0645\u0648\u0646\u0646\u06a9 \u067e\u0679\u06cc\u0644" } },
+    { name: "\u0639\u0645\u0627\u0646", captains: { test: "\u062c\u062a\u0646\u062f\u0631 \u0633\u0646\u06AF\u06be", odi: "\u062c\u062a\u0646\u062f\u0631 \u0633\u0646\u06AF\u06be", t20: "\u062c\u062a\u0646\u062f\u0631 \u0633\u0646\u06AF\u06be" } },
+    { name: "\u0627\u0633\u06a9\u0627\u0679 \u0644\u06cc\u0646\u0688", captains: { test: "\u0631\u0686\u06cc \u0628\u06cc\u0631\u0646\u06AF\u0679\u0646", odi: "\u0631\u0686\u06cc \u0628\u06cc\u0631\u0646\u06AF\u0679\u0646", t20: "\u0631\u0686\u06cc \u0628\u06cc\u0631\u0646\u06AF\u0679\u0646" } },
+    { name: "\u0646\u06cc\u067e\u0627\u0644", captains: { test: "\u0631\u0648\u06c1\u062a \u067e\u0627\u06c1\u0688\u06cc\u0644", odi: "\u0631\u0648\u06c1\u062a \u067e\u0627\u06c1\u0688\u06cc\u0644", t20: "\u0631\u0648\u06c1\u062a \u067e\u0627\u06c1\u0688\u06cc\u0644" } },
+    { name: "\u067e\u06a9\u0633\u062a\u0627\u0646 \u0633\u067e\u0631 \u0644\u06cc\u06af - \u0644\u0627\u06c1\u0648\u0631 \u0642\u0644\u0646\u062f\u0631\u0632", captains: { test: "\u0634\u0627\u06c1\u06cc\u0646 \u0634\u0627\u06c1 \u0622\u0641\u0631\u06cc\u062f\u06cc", odi: "\u0634\u0627\u06c1\u06cc\u0646 \u0634\u0627\u06c1 \u0622\u0641\u0631\u06cc\u062f\u06cc", t20: "\u0634\u0627\u06c1\u06cc\u0646 \u0634\u0627\u06c1 \u0622\u0641\u0631\u06cc\u062f\u06cc" } },
+    { name: "\u067e\u06a9\u0633\u062a\u0627\u0646 \u0633\u067e\u0631 \u0644\u06cc\u06af - \u06a9\u0631\u0627\u0686\u06cc \u06a9\u0646\u06AF\u0632", captains: { test: "\u0688\u06cc\u0648\u0688 \u0648\u0627\u0631\u0646\u0631", odi: "\u0688\u06cc\u0648\u0688 \u0648\u0627\u0631\u0646\u0631", t20: "\u0688\u06cc\u0648\u0688 \u0648\u0627\u0631\u0646\u0631" } },
+    { name: "\u067e\u06a9\u0633\u062a\u0627\u0646 \u0633\u067e\u0631 \u0644\u06cc\u06af - \u067e\u0634\u0627\u0648\u0631 \u0632\u0644\u0645\u06cc", captains: { test: "\u0628\u0627\u0628\u0631 \u0627\u0639\u0638\u0645", odi: "\u0628\u0627\u0628\u0631 \u0627\u0639\u0638\u0645", t20: "\u0628\u0627\u0628\u0631 \u0627\u0639\u0638\u0645" } },
+    { name: "\u067e\u06a9\u0633\u062a\u0627\u0646 \u0633\u067e\u0631 \u0644\u06cc\u06af - \u0645\u0644\u062a\u0627\u0646 \u0633\u0644\u0637\u0627\u0646\u0632", captains: { test: "\u0645\u062d\u0645\u062f \u0631\u0636\u0648\u0627\u0646", odi: "\u0645\u062d\u0645\u062f \u0631\u0636\u0648\u0627\u0646", t20: "\u0645\u062d\u0645\u062f \u0631\u0636\u0648\u0627\u0646" } },
+    { name: "\u067e\u06a9\u0633\u062a\u0627\u0646 \u0633\u067e\u0631 \u0644\u06cc\u06af - \u0627\u0633\u0644\u0627\u0645 \u0622\u0628\u0627\u062f \u06cc\u0648\u0646\u0627\u0626\u06cc\u0679\u0688", captains: { test: "\u0634\u0627\u062f\u0627\u0628 \u062e\u0627\u0646", odi: "\u0634\u0627\u062f\u0627\u0628 \u062e\u0627\u0646", t20: "\u0634\u0627\u062f\u0627\u0628 \u062e\u0627\u0646" } },
+    { name: "\u0627\u0646\u0688\u06cc\u0646 \u067e\u0631\u06cc\u0645\u06cc\u0626\u0631 \u0644\u06cc\u06af - \u0645\u0645\u0628\u0626\u06cc \u0627\u0646\u0688\u06cc\u0646\u0632", captains: { test: "\u06c1\u0627\u0631\u062f\u06a9 \u067e\u0627\u0646\u0688\u06cc\u0627", odi: "\u06c1\u0627\u0631\u062f\u06a9 \u067e\u0627\u0646\u0688\u06cc\u0627", t20: "\u06c1\u0627\u0631\u062f\u06a9 \u067e\u0627\u0646\u0688\u06cc\u0627" } },
+    { name: "\u0627\u0646\u0688\u06cc\u0646 \u067e\u0631\u06cc\u0645\u06cc\u0626\u0631 \u0644\u06cc\u06af - \u0686\u0646\u0626\u06cc \u0633\u067e\u0631 \u06a9\u0646\u06AF\u0632", captains: { test: "\u0631\u062a\u0648\u0631\u0627\u062c \u06AF\u0627\u0626\u06cc\u06a9\u0648\u0627\u0691", odi: "\u0631\u062a\u0648\u0631\u0627\u062c \u06AF\u0627\u0626\u06cc\u06a9\u0648\u0627\u0691", t20: "\u0631\u062a\u0648\u0631\u0627\u062c \u06AF\u0627\u0626\u06cc\u06a9\u0648\u0627\u0691" } },
+    { name: "\u0627\u0646\u0688\u06cc\u0646 \u067e\u0631\u06cc\u0645\u06cc\u0626\u0631 \u0644\u06cc\u06af - \u0631\u0627\u0626\u0644 \u0686\u06cc\u0644\u06cc\u0646\u06AC\u0631\u0632 \u0628\u06AD\u0644\u0648\u0631", captains: { test: "\u0631\u062c\u062a \u067e\u0627\u0679\u06cc\u062f\u0627\u0631", odi: "\u0631\u062c\u062a \u067e\u0627\u0679\u06cc\u062f\u0627\u0631", t20: "\u0631\u062c\u062a \u067e\u0627\u0679\u06cc\u062f\u0627\u0631" } }
 ];
 
 // Populate Team Dropdowns on Page Load
@@ -214,8 +44,8 @@ function populateTeamDropdowns() {
     
     if (!t1Select || !t2Select) return;
 
-    t1Select.innerHTML = '<option value="">-- Select Team --</option>';
-    t2Select.innerHTML = '<option value="">-- Select Team --</option>';
+    t1Select.innerHTML = '<option value="">-- ٹیم منتخب کریں --</option>';
+    t2Select.innerHTML = '<option value="">-- ٹیم منتخب کریں --</option>';
 
     teamsData.forEach((team, index) => {
         let opt1 = document.createElement("option");
@@ -267,27 +97,29 @@ function updateFormatCaptains() {
     onTeam2Change();
 }
 
-// Abjad Calculator & Prediction Engine
+// Asli Arabic / Urdu Abjad-e-Kabeer Table (Jumtal-Jummal)
 function getUrduAbjadValue(text) {
     if (!text) return 1;
     let cleanText = text.trim();
     
     let abjadMap = {
-        'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8, 'i': 9,
-        'j': 10, 'k': 20, 'l': 30, 'm': 40, 'n': 50, 'o': 60, 'p': 70, 'q': 80,
-        'r': 90, 's': 100, 't': 200, 'u': 300, 'v': 400, 'w': 500, 'x': 600,
-        'y': 700, 'z': 800
+        '\u0627': 1, '\u0623': 1, '\u0625': 1, '\u0622': 1, '\u0628': 2, '\u062C': 3, '\u062F': 4,
+        '\u0647': 5, '\u0648': 6, '\u0632': 7, '\u062D': 8, '\u0637': 9, '\u064A': 10, '\u06CC': 10, '\u0626': 10,
+        '\u0643': 20, '\u06A9': 20, '\u0644': 30, '\u0645': 40, '\u0646': 50, '\u0633': 60, '\u0639': 70,
+        '\u0641': 80, '\u0635': 90, '\u0642': 100, '\u0631': 200, '\u0634': 300, '\u062A': 400,
+        '\u062B': 500, '\u062E': 600, '\u0630': 700, '\u0636': 800, '\u0638': 900, '\u063A': 1000,
+        '\u067E': 2, '\u0686': 3, '\u0698': 7, '\u06AF': 20, '\u0688': 4, '\u0691': 200, '\u06BA': 50, '\u06BE': 5, '\u06C1': 5
     };
 
     let totalSum = 0;
     for (let i = 0; i < cleanText.length; i++) {
-        let char = cleanText[i].toLowerCase();
+        let char = cleanText[i];
         if (abjadMap[char]) {
             totalSum += abjadMap[char];
-        } else {
-            totalSum += 5; // Default weight for non-mapped chars
         }
     }
+
+    if (totalSum === 0) return 1;
 
     let sum = totalSum;
     while (sum > 9) {
@@ -298,18 +130,18 @@ function getUrduAbjadValue(text) {
         }
         sum = tempSum;
     }
-    return sum === 0 ? 1 : sum;
+    return sum;
 }
 
 function getZodiacElement(val) {
-    const elements = ["Fire", "Earth", "Air", "Water"];
+    const elements = ["\u0622\u062A\u0634\u06cc (Fire)", "\u062E\u0627\u06A9\u06cc (Earth)", "\u06BE\u0648\u0627\u0626\u06cc (Air)", "\u0622\u0628\u06cc (Water)"];
     return elements[val % 4];
 }
 
 function getSolarLunarType(text) {
     if (!text) return "qamari";
-    let firstChar = text.trim()[0].toLowerCase();
-    let shamsiChars = ['t', 's', 'r', 'l', 'n', 'd', 'z'];
+    let firstChar = text.trim()[0];
+    let shamsiChars = ['\u062A', '\u062B', '\u062F', '\u0630', '\u0631', '\u0632', '\u0633', '\u0634', '\u0635', '\u0636', '\u0637', '\u0638', '\u0644', '\u0646'];
     if (shamsiChars.includes(firstChar)) {
         return "shamsi";
     }
@@ -348,7 +180,7 @@ function calculatePrediction() {
     let captain1 = document.getElementById("captain1").value || "Captain 1";
     let team2 = document.getElementById("team2").value || document.getElementById("team2Select").options[document.getElementById("team2Select").selectedIndex].text;
     let captain2 = document.getElementById("captain2").value || "Captain 2";
-    let ground = document.getElementById("ground") ? document.getElementById("ground").value : "Sharjah";
+    let ground = document.getElementById("ground") ? document.getElementById("ground").value : "\u0634\u0627\u0631\u062c\u06c1";
     let matchTimeInput = document.getElementById("matchTime") ? document.getElementById("matchTime").value : "";
     let matchFormat = document.getElementById("matchFormat") ? document.getElementById("matchFormat").value : "t20";
     let tossWinnerChoice = document.getElementById("tossWinner").value;
@@ -368,7 +200,7 @@ function calculatePrediction() {
     let t2Element = getZodiacElement(t2Val);
 
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
-    let activePlanet = "Jupiter";
+    let activePlanet = "\u0645\u0634\u062a\u0631\u06cc";
     let earlyPressureTeam = tossTeam;
     let hour = 12;
 
@@ -379,16 +211,16 @@ function calculatePrediction() {
 
     let baseScore1 = 165;
     let baseScore2 = 155;
-    let formatLabel = "T20 Match";
+    let formatLabel = "\u0679\u06cc \u0679\u0648\u0626\u0646\u0679\u06cc \u0645\u06cc\u0686";
 
     if (matchFormat === "odi") {
         baseScore1 = 285;
         baseScore2 = 270;
-        formatLabel = "ODI Match";
+        formatLabel = "\u06cc\u06a9 \u0631\u0648\u0632\u06c1 \u0645\u06cc\u0686 (ODI)";
     } else if (matchFormat === "test") {
         baseScore1 = 350;
         baseScore2 = 320;
-        formatLabel = "Test Match";
+        formatLabel = "\u0679\u06cc\u0633\u0679 \u0645\u06cc\u0686";
     }
 
     if (matchTimeInput) {
@@ -405,7 +237,7 @@ function calculatePrediction() {
                 c2TossPower += 2;
             }
 
-            const planets = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"];
+            const planets = ["\u0632\u062d\u0644", "\u0645\u0634\u062a\u0631\u06cc", "\u0645\u0631\u06cc\u062e", "\u0634\u0645\u0633", "\u0632\u06c1\u0631\u06c1", "\u0639\u0637\u0627\u0631\u062f", "\u0642\u0645\u0631"];
             activePlanet = planets[hour % planets.length];
 
             let lunarEnergyEffect = (lunarDateVal >= 13 && lunarDateVal <= 17) ? 4 : 2; 
@@ -445,7 +277,7 @@ function calculatePrediction() {
     }
 
     let tossImpactScore = 10; 
-    let tossImpactText = `Captain (${tossWinnerName}) has favorable Jafri energy alignment for winning the toss!`;
+    let tossImpactText = "\u06a9\u067e\u062a\u0627\u0646 \u06a9\u06d2 \u0628\u0631\u06AC \u0627\u0648\u0631 \u0633\u0627\u0639\u062a \u06a9\u06cc \u0645\u0648\u0627\u0641\u0642\u062a \u06c1\u06d2\u0633";
 
     let zodicBoost1 = 5;
     let zodicBoost2 = 5;
@@ -461,27 +293,19 @@ function calculatePrediction() {
     let rangeSpan = (matchFormat === "test") ? 40 : (matchFormat === "odi" ? 25 : 15);
 
     let analysisHTML = `
-        <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: left; direction: ltr;">
-            <strong>🪙 Toss Analysis:</strong> 
-            <br>Ruler Planet: <span style="color: #38bdf8; font-weight: bold;">${activePlanet}</span>. Based on Abjad power, <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> has higher probability to win the toss.
-            <br><br>✨🔮 <strong>Jafri Impact:</strong> ${tossImpactText}
+        <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
+            <strong>\u0633\u06a9\u06c1 \u0627\u0686\u06be\u0627\u0644\u0646\u06bc \u06a9\u0627 \u0641\u06cc\u0635\u0644\u06c1:</strong> 
+            <br>\u062d\u0627\u06a9\u0645 \u0633\u06cc\u0627\u0631\u06c1 <span style="color: #38bdf8; font-weight: bold;">${activePlanet}</span> \u06a9\u06cc \u0631\u0648\u0634\u0646\u06cc \u0645\u06cc\u06ba\u06d4 <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> \u06a9\u06d2 \u062c\u062a\u0646\u06d2 \u06a9\u0627 \u0627\u0645\u06A9\u0627\u0646 \u0632\u06cc\u0627\u062f\u06c1 \u06c1\u06d2\u06d4
         </div>
 
-        <div class="analysis-section" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: left; direction: ltr;">
-            <strong>📊 Score Estimation (${formatLabel}):</strong> 
-            <br>• 1st Innings Expected Score: <span style="color: #a855f7; font-weight: bold;">${estimatedTotal1} to ${estimatedTotal1 + rangeSpan} Runs</span>
-            <br>• 2nd Innings Target / Range: <span style="color: #a855f7; font-weight: bold;">${estimatedTotal2} to ${estimatedTotal2 + rangeSpan} Runs</span>
+        <div class="analysis-section" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
+            <strong>\u0679\u0648\u0679\u0644 \u0633\u06A9\u0648\u0631 \u06a9\u0627 \u062a\u062e\u0645\u06cc\u0646\u06c1 (${formatLabel}):</strong> 
+            <br>\u067e\u06c1\u0644\u06cc \u0627\u0646\u0646\u06AF\u0632: <span style="color: #a855f7; font-weight: bold;">${estimatedTotal1} \u0633\u06d2 ${estimatedTotal1 + rangeSpan} \u0631\u0646\u0632</span>
         </div>
 
-        <div class="analysis-section" style="text-align: left; direction: ltr; margin-bottom: 12px; padding: 8px;">
-            <strong>🏟️ Ground & Elements:</strong> 
-            <br>• Team 1 Element: <span style="color: #38bdf8;">${t1Element}</span> | Team 2 Element: <span style="color: #38bdf8;">${t2Element}</span>
-            <br>• Planet: <span style="color: #38bdf8;">${activePlanet}</span>, Lunar Date: <span style="color: #38bdf8;">${lunarDateVal}</span>, Venue: (${ground})
-        </div>
-
-        <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: left; direction: ltr;">
-            <strong>🔮 Final Prediction:</strong> 
-            <br>According to the deep Jafri and planetary calculations, <strong style="color: #38bdf8;">${winningTeam}</strong> will win the match!
+        <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: right; direction: rtl;">
+            <strong>\u0633\u062a\u0627\u0631\u0648\u06BA \u06a9\u0627 \u062d\u062a\u0645\u06cc \u0646\u062a\u06cc\u062c\u06c1:</strong> 
+            <br>\u0627\u062e\u0631 \u0645\u06cc\u06ba <strong style="color: #38bdf8;">${winningTeam}</strong> \u0641\u062a\u062d \u0627\u067e\u0646\u06d2 \u0646\u0627\u0645 \u06a9\u0631\u06d2 \u06AF\u06cc!
         </div>
     `;
 
