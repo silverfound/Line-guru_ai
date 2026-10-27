@@ -1,3 +1,4 @@
+                                                      }
 // Asli Arabic / Urdu Abjad-e-Kabeer Table (Jumtal-Jummal)
 function getUrduAbjadValue(text) {
     if (!text) return 1;
@@ -219,4 +220,4 @@ function calculatePrediction() {
 
     document.getElementById("outputContent").innerHTML = analysisHTML;
     document.getElementById("resultBox").classList.remove("hidden");
-                                                           }
+        }
