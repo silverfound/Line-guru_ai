@@ -35,7 +35,7 @@ function getUrduAbjadValue(text) {
     return sum;
 }
 
-// Jab yوزر English tareekh select kare toh automatic chand ki tareekh ka andaza lagane ka function
+// Venue ki tareekh se automatic chand ki tareekh ka andaza lagane ka function
 function autoEstimateLunarDate() {
     let matchTimeInput = document.getElementById("matchTime").value;
     if (matchTimeInput) {
@@ -52,7 +52,6 @@ function autoEstimateLunarDate() {
     }
 }
 
-// Tareekh badalne par automatic chand ki tareekh update ho gi
 document.addEventListener("DOMContentLoaded", () => {
     let timeField = document.getElementById("matchTime");
     if (timeField) {
@@ -82,15 +81,15 @@ function calculatePrediction() {
     let c2Val = getUrduAbjadValue(captain2);
     let groundVal = getUrduAbjadValue(ground);
 
-    // 2. Date, Time & Lunar Energy Factor Calculation
+    // 2. Venue Time, Day & Lunar Energy Factor Calculation
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
-    let formattedTimeDisplay = "Live / Not Specified";
+    let formattedTimeDisplay = "Venue Live Time / Not Specified";
 
     if (matchTimeInput) {
         let dateObj = new Date(matchTimeInput);
         if (!isNaN(dateObj.getTime())) {
             let dayOfWeek = dateObj.getDay(); 
-            let hour = dateObj.getHours();    
+            let hour = dateObj.getHours(); // Venue ka exact ghanta (Sa'at)    
             
             if (dayOfWeek % 2 === 0) {
                 dayFactor1 = 2;
@@ -113,7 +112,7 @@ function calculatePrediction() {
         }
     }
 
-    // 3. Final Power Scores (Urdu Abjad + Ground + Toss + Time + Lunar Energy)
+    // 3. Final Power Scores (Urdu Abjad + Ground + Toss + Venue Time + Lunar Energy)
     let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain1" ? 4 : 0) + timeScoreBonus1;
     let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain2" ? 4 : 0) + timeScoreBonus2;
 
@@ -121,19 +120,19 @@ function calculatePrediction() {
 
     let analysisHTML = `
         <div class="analysis-section">
-            <strong>📅 Match Date, Time & Venue:</strong> Waqt (${formattedTimeDisplay}), 🌙 <strong>Chand ki ${lunarDateVal} Tareekh</strong> aur Ground (${ground}, Adad: ${groundVal}) ki energy ke sath, <span class="highlight">${tossWinnerName} (${tossTeam})</span> ne toss jeet kar Position 7 (Control) active kar li hai.
+            <strong>🏟️ Venue Local Time & Ground:</strong> Waqt (${formattedTimeDisplay}), 🌙 <strong>Chand ki ${lunarDateVal} Tareekh</strong> aur Ground (${ground}, Adad: ${groundVal}) ki energy ke sath, <span class="highlight">${tossWinnerName} (${tossTeam})</span> ne toss jeet kar Position 7 (Control) active kar li hai.
         </div>
         <div class="analysis-section">
-            <strong>⚡ Asli Abjad & Lunar Energies:</strong> 
+            <strong>⚡ Asli Abjad & Venue Planetary Energies:</strong> 
             <br>• <strong>${team1} & ${captain1} (Power Score: ${score1}):</strong> Position 1 & 10 (Peak & Winning House).
             <br>• <strong>${team2} & ${captain2} (Power Score: ${score2}):</strong> Position 4 & 7 (Defense & Early Pressure).
         </div>
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 10px; margin-top: 10px;">
             <strong>🔮 Final Sitaron Ka Natija:</strong> 
-            <br>Toss aur shuruati halaat se <strong>${tossTeam}</strong> ko faida milega, lekin asli Abjad-e-Kabeer, قمری تاریخ aur waqt ki position ke mutabiq aakhir mein <strong>${winningTeam}</strong> jeet apne naam karegi!
+            <br>Toss aur shuruati halaat se <strong>${tossTeam}</strong> ko faida milega, lekin asli Abjad-e-Kabeer, قمری تاریخ aur venue ke waqt ki position ke mutabiq aakhir mein <strong>${winningTeam}</strong> jeet apne naam karegi!
         </div>
     `;
 
     document.getElementById("outputContent").innerHTML = analysisHTML;
     document.getElementById("resultBox").classList.remove("hidden");
-    }
+}
