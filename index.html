@@ -3,84 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricket Match Prediction & Position Analysis</title>
+    <title>علم الجفر کرکٹ پریڈکشن سسٹم</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Directory aur Alignment ko 100% Right-to-Left fix karne ke liye */
-        body, .container, input, select, textarea, button, .result-box, .analysis-section {
-            direction: rtl !important;
-            text-align: right !important;
-        }
-        input, select {
-            text-align: right !important;
-            padding: 8px;
-        }
-    </style>
+    <!-- Google Fonts for Professional Nastaliq/Clean look -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h2>Cricket Match Prediction & Position Analysis</h2>
-        
-        <div class="form-group">
-            <label for="team1">Team 1:</label>
-            <input type="text" id="team1" class="form-control" placeholder="Team 1 ka naam likhein">
+
+    <div class="app-container">
+        <!-- Header Section -->
+        <header class="app-header">
+            <h1>🔮 کرکٹ جفری پریڈکشن سسٹم</h1>
+            <p>ابجد-ع-کبیر، سیاروی ساعت اور بروج کی روشنی میں حتمی تجزیہ</p>
+        </header>
+
+        <!-- Main Form Card -->
+        <main class="prediction-card">
+            <div class="input-grid">
+                <!-- Team 1 -->
+                <div class="input-group">
+                    <label for="team1">پہلی ٹیم کا نام</label>
+                    <input type="text" id="team1" placeholder="مثال: پاکستان" value="پاکستان">
+                </div>
+                <div class="input-group">
+                    <label for="captain1">پہلی ٹیم کا کپتان</label>
+                    <input type="text" id="captain1" placeholder="مثال: بابراعظم" value="بابراعظم">
+                </div>
+
+                <!-- Team 2 -->
+                <div class="input-group">
+                    <label for="team2">دوسری ٹیم کا نام</label>
+                    <input type="text" id="team2" placeholder="مثال: انگلینڈ" value="انگلینڈ">
+                </div>
+                <div class="input-group">
+                    <label for="captain2">دوسری ٹیم کا کپتان</label>
+                    <input type="text" id="captain2" placeholder="مثال: بٹلر" value="بٹلر">
+                </div>
+
+                <!-- Match Details -->
+                <div class="input-group">
+                    <label for="ground">گراؤنڈ / شہر</label>
+                    <input type="text" id="ground" placeholder="مثال: راولپنڈی" value="راولپنڈی">
+                </div>
+                <div class="input-group">
+                    <label for="matchFormat">میچ کا فارمیٹ</label>
+                    <select id="matchFormat">
+                        <option value="t20">ٹی ٹوئنٹی میچ (T20)</option>
+                        <option value="odi" selected>یک روزہ میچ (ODI)</option>
+                        <option value="test">ٹیسٹ میچ (Test)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="matchTime">میچ کی تاریخ اور وقت</label>
+                    <input type="datetime-local" id="matchTime">
+                </div>
+                <div class="input-group">
+                    <label for="lunarDate">چاند کی تاریخ (قمری)</label>
+                    <input type="number" id="lunarDate" min="1" max="30" value="15">
+                </div>
+
+                <!-- Toss Choice -->
+                <div class="input-group full-width">
+                    <label for="tossWinner">ٹاس کون سی ٹیم جیتے گی؟ (فرض کریں)</label>
+                    <select id="tossWinner">
+                        <option value="captain1">پہلی ٹیم (کپتان 1)</option>
+                        <option value="captain2">دوسری ٹیم (کپتان 2)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button class="calculate-btn" onclick="startPredictionAnimation()">
+                <span>نتیجہ اور تجزیہ دیکھیں</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+        </main>
+
+        <!-- Loading Spinner (Hidden by default) -->
+        <div id="loaderBox" class="loader-box hidden">
+            <div class="spinner"></div>
+            <p>ستاروں اور جفری اعداد کا حساب لگایا جا رہا ہے...</p>
         </div>
 
-        <div class="form-group">
-            <label for="captain1">Team 1 Captain:</label>
-            <input type="text" id="captain1" class="form-control" placeholder="Captain ka naam likhein">
-        </div>
-
-        <div class="form-group">
-            <label for="team2">Team 2:</label>
-            <input type="text" id="team2" class="form-control" placeholder="Team 2 ka naam likhein">
-        </div>
-
-        <div class="form-group">
-            <label for="captain2">Team 2 Captain:</label>
-            <input type="text" id="captain2" class="form-control" placeholder="Captain ka naam likhein">
-        </div>
-
-        <div class="form-group">
-            <label for="matchFormat">Match Format (میچ کا فارمیٹ):</label>
-            <select id="matchFormat" class="form-control">
-                <option value="t20">T20 Match</option>
-                <option value="odi">ODI (One Day International)</option>
-                <option value="test">Test Match</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="ground">Match Ground / Venue:</label>
-            <input type="text" id="ground" class="form-control" placeholder="Ground ka naam likhein (Jaise Sharjah)">
-        </div>
-
-        <div class="form-group">
-            <label for="matchTime">Venue Ka Local Date & Time ⏰:</label>
-            <input type="datetime-local" id="matchTime" class="form-control">
-            <small style="color: #94a3b8; display: block; text-align: right;">Wahi waqt dalein jo match ke ground (Venue) ka local time hai</small>
-        </div>
-
-        <div class="form-group">
-            <label for="lunarDate">Chand ki Qamri Tareekh 🌙 (Auto/Editable):</label>
-            <input type="number" id="lunarDate" class="form-control" value="15" min="1" max="29">
-            <small style="color: #94a3b8; display: block; text-align: right;">English tareekh se automatic aayegi, zaroorat parne par khud badal sakte hain</small>
-        </div>
-
-        <div class="form-group">
-            <label for="tossWinner">Toss Winner:</label>
-            <select id="tossWinner" class="form-control">
-                <option value="captain1">Team 1 Captain</option>
-                <option value="captain2">Team 2 Captain</option>
-            </select>
-        </div>
-
-        <button onclick="calculatePrediction()" class="btn-calculate">Calculate Sitaron Ka Hisab</button>
-
-        <div id="resultBox" class="result-box hidden">
-            <h3>Natija wa Tajziya (Prediction Analysis)</h3>
+        <!-- Result Section -->
+        <section id="resultBox" class="result-card hidden">
+            <h2>✨ جفری و نجومی تجزیہ رپورٹ</h2>
             <div id="outputContent"></div>
-        </div>
+        </section>
     </div>
 
     <script src="script.js"></script>
