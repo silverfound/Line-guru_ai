@@ -80,7 +80,9 @@ function calculatePrediction() {
     
     let lunarDateVal = parseInt(document.getElementById("lunarDate") ? document.getElementById("lunarDate").value : 15) || 15;
 
+    let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
+    let otherTeam = (tossWinnerChoice === "captain1") ? team2 : team1;
 
     // 1. Asli Urdu/Arabic Abjad Values
     let t1Val = getUrduAbjadValue(team1);
@@ -169,8 +171,24 @@ function calculatePrediction() {
         predictedTossTeam = team1;
     }
 
-    let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain1" ? 5 : 0) + timeScoreBonus1;
-    let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain2" ? 5 : 0) + timeScoreBonus2;
+    // 3. Toss Impact Calculation (Positive / Negative Connection with Winning Power)
+    let tossImpactScore = 0;
+    let tossImpactText = "";
+    
+    // Agar toss jeetne wali team ka captain ya naam ka abjad waqt ki sa'at ke sath match kare toh Positive (+) warna Negative (-)
+    let tossTeamAbjad = (tossWinnerChoice === "captain1") ? c1Val : c2Val;
+    
+    if (tossTeamAbjad % 2 === 0) {
+        tossImpactScore = 8; // Positive Power Bonus
+        tossImpactText = `سکہ (${tossTeam}) کے حق میں गिरने से उनके ستارے پر **مضبوط مثبت (Positive) اثر** پڑا ہے، جس سے ان کی توانائی میں اضافہ ہوا ہے۔`;
+    } else {
+        tossImpactScore = -6; // Negative Pressure Penalty
+        tossImpactText = `سکہ (${tossTeam}) کے جیتنے کے باوجود وقت کی ساعت کے حساب سے ان کے ستارے پر **دباؤ (Negative Impact)** دیکھا گیا ہے، جو ان کے اسکور پر اثر انداز ہوگا۔`;
+    }
+
+    // 4. Final Power Scores Calculation (Connected with Toss Impact)
+    let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + timeScoreBonus1 + (tossWinnerChoice === "captain1" ? tossImpactScore : 0);
+    let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + timeScoreBonus2 + (tossWinnerChoice === "captain2" ? tossImpactScore : 0);
 
     let winningTeam = (score1 >= score2) ? team1 : team2;
 
@@ -183,6 +201,7 @@ function calculatePrediction() {
         <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
             <strong>🪙 سکہ اچھالنے کا فیصلہ (Toss Analysis):</strong> 
             <br>حاکم سیارہ <span style="color: #38bdf8; font-weight: bold;">${activePlanet}</span> کی روشنی میں، کپتانوں (${captain1} بمقابلہ ${captain2}) کی ابجد پاور کے حساب سے سکہ جیتنے کی سب سے زیادہ صلاحیت <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> کی ہے۔
+            <br><br>💡 **ستاروی اثر (Toss Impact):** ${tossImpactText}
         </div>
 
         <div class="analysis-section" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
@@ -198,12 +217,12 @@ function calculatePrediction() {
         <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
             <strong>⚡ میچ کا آغاز اور دباؤ:</strong> 
             <br>• شروعاتی اوورز (ابتدائی دباؤ): ساعت اور سکہ اچھالنے کی ابتدائی توانائی کے تحت <span style="color: #38bdf8;">${earlyPressureTeam}</span> شروعات میں میچ پر حاوی رہ سکتی ہے۔
-            <br>• اسکور کا طاقتی وزن: ٹیم 1 (${score1}) بمقابلہ ٹیم 2 (${score2})۔
+            <br>• اسکور کا طاقتی وزن (تطبیق شدہ اثر کے ساتھ): ٹیم 1 (${score1}) بمقابلہ ٹیم 2 (${score2})۔
         </div>
 
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: right; direction: rtl;">
             <strong>🔮 ستاروں کا حتمی نتیجہ:</strong> 
-            <br>شروعاتی اوورز کے اتار چڑھاؤ اور دباؤ کے بعد، اصلی ابجد-ع-کبیر اور وقت کی پوری توانائی کے حساب سے آخر میں <strong style="color: #38bdf8;">${winningTeam}</strong> فتح اپنے نام کرے گی!
+            <br>ٹاس کے مثبت یا منفی اثرات کو شامل کرنے کے بعد، اصلی ابجد-ع-کبیر اور وقت کی پوری توانائی کے حساب سے آخر میں <strong style="color: #38bdf8;">${winningTeam}</strong> فتح اپنے نام کرے گی!
         </div>
     `;
 
