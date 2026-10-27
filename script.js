@@ -92,8 +92,8 @@ function calculatePrediction() {
 
     // 2. Advanced Planetary Hours & Toss Calculation Logic
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
-    let formattedTimeDisplay = "Venue Live Time / Not Specified";
-    let activePlanet = "Mushtari (Jupiter)";
+    let formattedTimeDisplay = "مقرر وقت";
+    let activePlanet = "مشتری";
     let earlyPressureTeam = tossTeam;
 
     let c1TossPower = c1Val;
@@ -103,16 +103,16 @@ function calculatePrediction() {
 
     let baseScore1 = 165;
     let baseScore2 = 155;
-    let formatLabel = "T20 Match";
+    let formatLabel = "ٹی ٹوئنٹی میچ";
 
     if (matchFormat === "odi") {
         baseScore1 = 285;
         baseScore2 = 270;
-        formatLabel = "ODI Match";
+        formatLabel = "یک روزہ میچ (ODI)";
     } else if (matchFormat === "test") {
         baseScore1 = 350;
         baseScore2 = 320;
-        formatLabel = "Test Match (Per Innings)";
+        formatLabel = "ٹیسٹ میچ (فی اننگز)";
     }
 
     if (matchTimeInput) {
@@ -130,8 +130,8 @@ function calculatePrediction() {
             }
 
             const planets = [
-                "زحل (Saturn)", "مشتری (Jupiter)", "مریخ (Mars)", 
-                "شمس (Sun - Suraj)", "زہرہ (Venus)", "عطارد (Mercury)", "قمر (Moon - Chand)"
+                "زحل", "مشتری", "مریخ", 
+                "شمس (سورج)", "زہرہ", "عطارد", "قمر (چاند)"
             ];
             activePlanet = planets[hour % planets.length];
 
@@ -184,30 +184,30 @@ function calculatePrediction() {
     let rangeSpan = (matchFormat === "test") ? 40 : (matchFormat === "odi" ? 25 : 15);
 
     let analysisHTML = `
-        <div class="analysis-section" style="border-left: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 10px; margin-bottom: 10px; border-radius: 4px;">
-            <strong>🪙 Toss Ki Paheli Prediction (Toss Analysis):</strong> 
-            <br>Waqt (${formattedTimeDisplay}) aur Hakim Sayara <span class="highlight">${activePlanet}</span> ki roshni mein, Captains (${captain1} vs ${captain2}) ki Abjad power ke hisab se **Toss jeetne ki sabse zyada salahiyat <span class="highlight">${predictedTossWinner} (${predictedTossTeam})</span> ki hai.**
+        <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 10px; margin-bottom: 10px; border-radius: 4px; text-align: right;">
+            <strong>🪙 ٹॉस کی پیشگوئی (Toss Analysis):</strong> 
+            <br>مقرر وقت (${formattedTimeDisplay}) اور حاکم سیارہ <span class="highlight">${activePlanet}</span> کی روشنی میں، کپتانوں (${captain1} بمقابلہ ${captain2}) کی ابجد پاور کے حساب سے **ٹॉस جیتنے کی سب سے زیادہ صلاحیت ${predictedTossWinner} (${predictedTossTeam}) کی ہے۔**
         </div>
 
-        <div class="analysis-section" style="border-left: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 10px; margin-bottom: 10px; border-radius: 4px;">
-            <strong>📊 Total Score Prediction (${formatLabel}):</strong> 
-            <br>• <strong>Pehli Innings (1st Innings Projected Score):</strong> <span class="highlight">${estimatedTotal1} - ${estimatedTotal1 + rangeSpan} Runs</span>.
-            <br>• <strong>Doosri Innings (2nd Innings Target Range):</strong> <span class="highlight">${estimatedTotal2} - ${estimatedTotal2 + rangeSpan} Runs</span>.
+        <div class="analysis-section" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 10px; margin-bottom: 10px; border-radius: 4px; text-align: right;">
+            <strong>📊 ٹوٹل سکور کا تخمینہ (${formatLabel}):</strong> 
+            <br>• <strong>پہلی اننگز کا متوقع سکور:</strong> <span class="highlight">${estimatedTotal1} تا ${estimatedTotal1 + rangeSpan} رنز</span>
+            <br>• <strong>دوسری اننگز کا ہدف/رینج:</strong> <span class="highlight">${estimatedTotal2} تا ${estimatedTotal2 + rangeSpan} رنز</span>
         </div>
 
-        <div class="analysis-section">
-            <strong>🏟️ Venue & Planetary Sa'at:</strong> Format: <strong>${formatLabel}</strong>, Waqt (${formattedTimeDisplay}), Hakim Sayara: <span class="highlight">${activePlanet}</span>, 🌙 <strong>Chand ki ${lunarDateVal} Tareekh</strong> aur Ground (${ground}) ki energy ke sath match aage barhega.
+        <div class="analysis-section" style="text-align: right; margin-bottom: 10px;">
+            <strong>🏟️ گراؤنڈ اور سیاروی ساعت:</strong> فارمیٹ: <strong>${formatLabel}</strong>، وقت (${formattedTimeDisplay})، حاکم سیارہ: <span class="highlight">${activePlanet}</span>، 🌙 <strong>چاند کی ${lunarDateVal} تاریخ</strong> اور گراؤنڈ (${ground}) کی توانائی کے ساتھ میچ آگے بڑھے گا۔
         </div>
 
-        <div class="analysis-section">
-            <strong>⚡ Phase-wise Flow (Pehle Ovarz vs Aakhir):</strong> 
-            <br>• <strong>Shuruati Phase (Early Pressure):</strong> Sa'at aur Toss ki initial energy ke tehat <span class="highlight">${earlyPressureTeam}</span> shuru mein match par haavi rah sakti hai.
-            <br>• <strong>Asli Abjad Power:</strong> Team 1 Score (${score1}) vs Team 2 Score (${score2}) ka mathematical wazan.
+        <div class="analysis-section" style="text-align: right; margin-bottom: 10px;">
+            <strong>⚡ میچ کا آغاز اور دباؤ:</strong> 
+            <br>• <strong>شروعاتی اوورز (شروعاتی دباؤ):</strong> ساعت اور ٹॉस کی ابتدائی توانائی کے تحت <span class="highlight">${earlyPressureTeam}</span> شروعات میں میچ پر حاوی رہ سکتی ہے۔
+            <br>• <strong>اسکور کی طاقتی توازن:</strong> ٹیم 1 (${score1}) بمقابلہ ٹیم 2 (${score2}) کا ریاضیاتی وزن۔
         </div>
 
-        <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 10px; margin-top: 10px;">
-            <strong>🔮 Final Sitaron Ka Natija:</strong> 
-            <br>Shuruati overs ke utaar-chadhaw aur pressure ke baad, Asli Abjad-e-Kabeer aur waqt ki poori energy ke hisab se aakhir mein <strong>${winningTeam}</strong> jeet apne naam karegi!
+        <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 10px; margin-top: 10px; text-align: right;">
+            <strong>🔮 ستاروں کا حتمی نتیجہ:</strong> 
+            <br>شروعاتی اوورز کے اتار چڑھاؤ اور دباؤ کے بعد، اصلی ابجد-ع-کبیر اور وقت کی پوری توانائی کے حساب سے آخر میں <strong>${winningTeam}</strong> فتح اپنے نام کرے گی!
         </div>
     `;
 
