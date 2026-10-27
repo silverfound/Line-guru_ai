@@ -1,4 +1,3 @@
-// English to Urdu/Arabic Phonetic Mapping for Real Abjad Calculation
 function getRealAbjadValue(englishText) {
     if (!englishText) return 1;
     let name = englishText.toLowerCase().trim();
@@ -20,7 +19,6 @@ function getRealAbjadValue(englishText) {
 
     if (totalSum === 0) return 1;
 
-    // Single digit (1 to 9) mein reduce karna
     let sum = totalSum;
     while (sum > 9) {
         let tempSum = 0;
@@ -39,34 +37,33 @@ function calculatePrediction() {
     let team2 = document.getElementById("team2").value || "Team 2";
     let captain2 = document.getElementById("captain2").value || "Captain 2";
     let ground = document.getElementById("ground") ? document.getElementById("ground").value : "Sharjah";
+    let matchTime = document.getElementById("matchTime") ? document.getElementById("matchTime").value : "Not Specified";
     let tossWinnerChoice = document.getElementById("tossWinner").value;
 
     let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
 
-    // Sabhi ke Asli Abjad Roots nikalna (Teams + Captains + Ground)
     let t1Val = getRealAbjadValue(team1);
     let c1Val = getRealAbjadValue(captain1);
     let t2Val = getRealAbjadValue(team2);
     let c2Val = getRealAbjadValue(captain2);
     let groundVal = getRealAbjadValue(ground);
 
-    // Combined Power Score
     let score1 = t1Val + c1Val + (tossWinnerChoice === "captain1" ? 3 : 0);
     let score2 = t2Val + c2Val + (tossWinnerChoice === "captain2" ? 3 : 0);
 
     let analysisHTML = `
         <div class="analysis-section">
-            <strong>1. Venue & Toss Effect (${ground}):</strong> Ground ka adad root (${groundVal}) aur <span class="highlight">${tossWinnerName} (${tossTeam})</span> ka toss jeetna mil kar Position 7 (Tactical Control) ko active kar raha hai.
+            <strong>📅 Match Timing & Venue:</strong> Waqt (${matchTime ? matchTime : 'Live'}) aur Ground (${ground}, Adad: ${groundVal}) ki energy ke sath, <span class="highlight">${tossWinnerName} (${tossTeam})</span> ne toss jeet kar Position 7 (Control) active kar li hai.
         </div>
         <div class="analysis-section">
-            <strong>2. Combined Energies (Teams + Captains):</strong> 
-            <br>• <strong>${team1} & ${captain1} (Power Score: ${score1}):</strong> Team aur captain ki joint energy Position 1 & 10 (Peak & Winning House) ki taraf ishara kar rahi hai.
-            <br>• <strong>${team2} & ${captain2} (Power Score: ${score2}):</strong> Team aur captain ki joint energy Position 4 & 7 (Defense & Early Pressure) ko support kar rahi hai.
+            <strong>⚡ Combined Energies (Teams + Captains):</strong> 
+            <br>• <strong>${team1} & ${captain1} (Power Score: ${score1}):</strong> Position 1 & 10 (Peak & Winning House) ki alignment.
+            <br>• <strong>${team2} & ${captain2} (Power Score: ${score2}):</strong> Position 4 & 7 (Defense & Early Pressure) ki alignment.
         </div>
-        <div class="analysis-section">
-            <strong>3. Final Sitaron Ka Natija:</strong> 
-            <br>Toss aur shuruati halaat se <strong>${tossTeam}</strong> ko faida milega, lekin Team 1 aur Captain ki combined Asli Abjad power ke mutabiq <strong>${team1}</strong> is mukable ki aakhri jeet apne naam karegi!
+        <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 10px; margin-top: 10px;">
+            <strong>🔮 Final Sitaron Ka Natija:</strong> 
+            <br>Toss aur shuruati halaat se <strong>${tossTeam}</strong> ko faida milega, lekin asli Abjad aur waqt ki position ke mutabiq <strong>${team1}</strong> aakhri marhalay mein jeet apne naam karegi!
         </div>
     `;
 
