@@ -34,7 +34,7 @@ const teamsData = [
     { name: "جاپان", captains: { test: "کینڈل کادوواکی فلیمنگ", odi: "کینڈل کادوواکی فلیمنگ", t20: "کینڈل کادوواکی فلیمنگ" } },
     { name: "اسپین", captains: { test: "کرسچن مونوز ملز", odi: "کرسچن مونوز ملز", t20: "کرسچن مونوز ملز" } },
 
-    // Leagues Data (Added via push format)
+    // Leagues Data
     { name: "انڈین پریمیئر لیگ - دہلی کیپیٹلز", captains: { test: "اکشر پٹیل", odi: "اکشر پٹیل", t20: "اکشر پٹیل" } },
     { name: "انڈین پریمیئر لیگ - گجرات ٹائٹنز", captains: { test: "شبمن گل", odi: "شبمن گل", t20: "شبمن گل" } },
     { name: "انڈین پریمیئر لیگ - کولکتہ نائٹ رائیڈرز", captains: { test: "اجنکیا رہانے", odi: "اجنکیا رہانے", t20: "اجنکیا رہانے" } },
@@ -270,6 +270,7 @@ function calculatePrediction() {
     
     let lunarDateVal = parseInt(document.getElementById("lunarDate") ? document.getElementById("lunarDate").value : 15) || 15;
 
+    // Correcting Toss Winner Name and Team binding based on user choice
     let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
 
