@@ -1,33 +1,13 @@
 // English to Urdu/Arabic Phonetic Mapping for Real Abjad Calculation
-function getRealAbjadValue(englishName) {
-    let name = englishName.toLowerCase().trim();
+function getRealAbjadValue(englishText) {
+    if (!englishText) return 1;
+    let name = englishText.toLowerCase().trim();
     
-    // English letters/sounds ko Asli Abjad ke table ke mutabiq map karna
     let abjadMap = {
-        'a': 1,   // Alif (1)
-        'b': 2,   // Baa (2)
-        'j': 3,   // Jeem (3)
-        'd': 4,   // Daal (4)
-        'h': 5,   // Haa/Hah (5 or 8) - Standard H = 5
-        'w': 6,   // Waw (6)
-        'z': 7,   // Zain (7)
-        'c': 3,   // Soft C = Jeem (3)
-        'k': 20,  // Kaf (20)
-        'l': 30,  // Lam (30)
-        'm': 40,  // Meem (40)
-        'n': 50,  // Noon (50)
-        's': 60,  // Seen (60)
-        'e': 10,  // Yaa equivalent (10)
-        'i': 10,  // Yaa (10)
-        'o': 6,   // Waw equivalent (6)
-        'u': 6,   // Waw equivalent (6)
-        'p': 2,   // Paa -> Baa equivalent (2)
-        't': 400, // Taa (400)
-        'r': 200, // Raa (200)
-        'f': 80,  // Faa (80)
-        'g': 3,   // Ghaaf/Jeem sound
-        'q': 100, // Qaaf (100)
-        'y': 10   // Yaa (10)
+        'a': 1, 'b': 2, 'j': 3, 'd': 4, 'h': 5, 'w': 6, 'z': 7,
+        'c': 3, 'k': 20, 'l': 30, 'm': 40, 'n': 50, 's': 60,
+        'e': 10, 'i': 10, 'o': 6, 'u': 6, 'p': 2, 't': 400,
+        'r': 200, 'f': 80, 'g': 3, 'q': 100, 'y': 10, 'x': 60
     };
 
     let totalSum = 0;
@@ -38,12 +18,9 @@ function getRealAbjadValue(englishName) {
         }
     }
 
-    // Agar koi naam na mile ya khali ho
-    if (totalSum === 0) {
-        return 1;
-    }
+    if (totalSum === 0) return 1;
 
-    // Single digit (1 to 9) mein reduce karne ka Asli tareeqa
+    // Single digit (1 to 9) mein reduce karna
     let sum = totalSum;
     while (sum > 9) {
         let tempSum = 0;
@@ -61,27 +38,35 @@ function calculatePrediction() {
     let captain1 = document.getElementById("captain1").value || "Captain 1";
     let team2 = document.getElementById("team2").value || "Team 2";
     let captain2 = document.getElementById("captain2").value || "Captain 2";
+    let ground = document.getElementById("ground") ? document.getElementById("ground").value : "Sharjah";
     let tossWinnerChoice = document.getElementById("tossWinner").value;
 
     let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
 
-    // Asli Abjad values calculation from English text
-    let val1 = getRealAbjadValue(captain1);
-    let val2 = getRealAbjadValue(captain2);
+    // Sabhi ke Asli Abjad Roots nikalna (Teams + Captains + Ground)
+    let t1Val = getRealAbjadValue(team1);
+    let c1Val = getRealAbjadValue(captain1);
+    let t2Val = getRealAbjadValue(team2);
+    let c2Val = getRealAbjadValue(captain2);
+    let groundVal = getRealAbjadValue(ground);
+
+    // Combined Power Score
+    let score1 = t1Val + c1Val + (tossWinnerChoice === "captain1" ? 3 : 0);
+    let score2 = t2Val + c2Val + (tossWinnerChoice === "captain2" ? 3 : 0);
 
     let analysisHTML = `
         <div class="analysis-section">
-            <strong>1. Asli Abjad & Toss Effect:</strong> <span class="highlight">${tossWinnerName} (${tossTeam})</span> ne toss jeet kar Position 7 (Control/Pressure) hasil kar li hai. Inka Abjad root is waqt match ke sitaron ke sath align hai.
+            <strong>1. Venue & Toss Effect (${ground}):</strong> Ground ka adad root (${groundVal}) aur <span class="highlight">${tossWinnerName} (${tossTeam})</span> ka toss jeetna mil kar Position 7 (Tactical Control) ko active kar raha hai.
         </div>
         <div class="analysis-section">
-            <strong>2. Captains Energy (Abjad Root Output):</strong> 
-            <br>• <strong>${captain1} (Root: ${val1}):</strong> Position 1 & 10 (Peak & Winning House) ki taraf ishara kar raha hai. Shuruati dabao ke baad strong comeback.
-            <br>• <strong>${captain2} (Root: ${val2}):</strong> Position 4 & 7 (Tactical & Defense) ki taqat. Shuruat mein wickets aur control ka moka.
+            <strong>2. Combined Energies (Teams + Captains):</strong> 
+            <br>• <strong>${team1} & ${captain1} (Power Score: ${score1}):</strong> Team aur captain ki joint energy Position 1 & 10 (Peak & Winning House) ki taraf ishara kar rahi hai.
+            <br>• <strong>${team2} & ${captain2} (Power Score: ${score2}):</strong> Team aur captain ki joint energy Position 4 & 7 (Defense & Early Pressure) ko support kar rahi hai.
         </div>
         <div class="analysis-section">
             <strong>3. Final Sitaron Ka Natija:</strong> 
-            <br>Toss aur shuruati overs mein <strong>${tossTeam}</strong> ka palra bhaari rahega, lekin Asli Abjad aur Positions ke mutabiq <strong>${team1}</strong> ($'${captain1}'$) aakhri marhalay mein jeet apne naam karegi!
+            <br>Toss aur shuruati halaat se <strong>${tossTeam}</strong> ko faida milega, lekin Team 1 aur Captain ki combined Asli Abjad power ke mutabiq <strong>${team1}</strong> is mukable ki aakhri jeet apne naam karegi!
         </div>
     `;
 
