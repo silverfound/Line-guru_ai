@@ -35,14 +35,42 @@ function getUrduAbjadValue(text) {
     return sum;
 }
 
+// Jab yوزر English tareekh select kare toh automatic chand ki tareekh ka andaza lagane ka function
+function autoEstimateLunarDate() {
+    let matchTimeInput = document.getElementById("matchTime").value;
+    if (matchTimeInput) {
+        let dateObj = new Date(matchTimeInput);
+        if (!isNaN(dateObj.getTime())) {
+            let dayOfMonth = dateObj.getDate();
+            let estimatedLunar = (dayOfMonth % 29) + 1; 
+            
+            let lunarInput = document.getElementById("lunarDate");
+            if (lunarInput) {
+                lunarInput.value = estimatedLunar;
+            }
+        }
+    }
+}
+
+// Tareekh badalne par automatic chand ki tareekh update ho gi
+document.addEventListener("DOMContentLoaded", () => {
+    let timeField = document.getElementById("matchTime");
+    if (timeField) {
+        timeField.addEventListener("change", autoEstimateLunarDate);
+    }
+});
+
 function calculatePrediction() {
     let team1 = document.getElementById("team1").value || "Team 1";
     let captain1 = document.getElementById("captain1").value || "Captain 1";
     let team2 = document.getElementById("team2").value || "Team 2";
     let captain2 = document.getElementById("captain2").value || "Captain 2";
-    let ground = document.getElementById("ground") ? document.getElementById("ground").value : "شارجہ";
+    let ground = document.getElementById("ground") ? document.getElementById("ground").value : "شارجه";
     let matchTimeInput = document.getElementById("matchTime") ? document.getElementById("matchTime").value : "";
     let tossWinnerChoice = document.getElementById("tossWinner").value;
+    
+    // User ka dala hua ya auto-fill hone wala chand ka adad (Lunar Date)
+    let lunarDateVal = parseInt(document.getElementById("lunarDate") ? document.getElementById("lunarDate").value : 15) || 15;
 
     let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
@@ -54,7 +82,7 @@ function calculatePrediction() {
     let c2Val = getUrduAbjadValue(captain2);
     let groundVal = getUrduAbjadValue(ground);
 
-    // 2. Date & Time Factor Calculation (Day & Hour)
+    // 2. Date, Time & Lunar Energy Factor Calculation
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
     let formattedTimeDisplay = "Live / Not Specified";
 
@@ -70,19 +98,22 @@ function calculatePrediction() {
                 dayFactor2 = 2;
             }
 
+            // Chand ki tareekh (Lunar Date) ki roshni aur manazil ka asar
+            let lunarEnergyEffect = (lunarDateVal >= 13 && lunarDateVal <= 17) ? 3 : 1; 
+
             if (hour >= 12) {
-                timeScoreBonus1 = (hour % 3);
-                timeScoreBonus2 = (hour % 2);
+                timeScoreBonus1 = (hour % 3) * lunarEnergyEffect;
+                timeScoreBonus2 = (hour % 2) * lunarEnergyEffect;
             } else {
-                timeScoreBonus1 = (hour % 2);
-                timeScoreBonus2 = (hour % 3);
+                timeScoreBonus1 = (hour % 2) * lunarEnergyEffect;
+                timeScoreBonus2 = (hour % 3) * lunarEnergyEffect;
             }
 
             formattedTimeDisplay = dateObj.toLocaleString();
         }
     }
 
-    // 3. Final Power Scores (Urdu Abjad + Ground + Toss + Time)
+    // 3. Final Power Scores (Urdu Abjad + Ground + Toss + Time + Lunar Energy)
     let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain1" ? 4 : 0) + timeScoreBonus1;
     let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain2" ? 4 : 0) + timeScoreBonus2;
 
@@ -90,19 +121,19 @@ function calculatePrediction() {
 
     let analysisHTML = `
         <div class="analysis-section">
-            <strong>📅 Match Date, Time & Venue:</strong> Waqt (${formattedTimeDisplay}) aur Ground (${ground}, Adad: ${groundVal}) ki energy ke sath, <span class="highlight">${tossWinnerName} (${tossTeam})</span> ne toss jeet kar Position 7 (Control) active kar li hai.
+            <strong>📅 Match Date, Time & Venue:</strong> Waqt (${formattedTimeDisplay}), 🌙 <strong>Chand ki ${lunarDateVal} Tareekh</strong> aur Ground (${ground}, Adad: ${groundVal}) ki energy ke sath, <span class="highlight">${tossWinnerName} (${tossTeam})</span> ne toss jeet kar Position 7 (Control) active kar li hai.
         </div>
         <div class="analysis-section">
-            <strong>⚡ Asli Abjad Energies (Urdu/Arabic Base):</strong> 
+            <strong>⚡ Asli Abjad & Lunar Energies:</strong> 
             <br>• <strong>${team1} & ${captain1} (Power Score: ${score1}):</strong> Position 1 & 10 (Peak & Winning House).
             <br>• <strong>${team2} & ${captain2} (Power Score: ${score2}):</strong> Position 4 & 7 (Defense & Early Pressure).
         </div>
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 10px; margin-top: 10px;">
             <strong>🔮 Final Sitaron Ka Natija:</strong> 
-            <br>Toss aur shuruati halaat se <strong>${tossTeam}</strong> ko faida milega, lekin asli Abjad-e-Kabeer aur waqt ki position ke mutabiq aakhir mein <strong>${winningTeam}</strong> jeet apne naam karegi!
+            <br>Toss aur shuruati halaat se <strong>${tossTeam}</strong> ko faida milega, lekin asli Abjad-e-Kabeer, قمری تاریخ aur waqt ki position ke mutabiq aakhir mein <strong>${winningTeam}</strong> jeet apne naam karegi!
         </div>
     `;
 
     document.getElementById("outputContent").innerHTML = analysisHTML;
     document.getElementById("resultBox").classList.remove("hidden");
-}
+    }
