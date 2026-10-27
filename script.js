@@ -127,8 +127,8 @@ function populateTeamDropdowns() {
     
     if (!t1Select || !t2Select) return;
 
-    t1Select.innerHTML = '<option value="">-- ٹیم منتخب کریں --</option>';
-    t2Select.innerHTML = '<option value="">-- ٹیم منتخب کریں --</option>';
+    t1Select.innerHTML = '<option value="">-- ٹیم کا انتخاب کریں --</option>';
+    t2Select.innerHTML = '<option value="">-- ٹیم کا انتخاب کریں --</option>';
 
     teamsData.forEach((team, index) => {
         let opt1 = document.createElement("option");
@@ -270,7 +270,6 @@ function calculatePrediction() {
     
     let lunarDateVal = parseInt(document.getElementById("lunarDate") ? document.getElementById("lunarDate").value : 15) || 15;
 
-    // Correcting Toss Winner Name and Team binding based on user choice
     let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
 
@@ -406,7 +405,7 @@ function calculatePrediction() {
 
         <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
             <strong>🏟️ گراؤنڈ، عنصر اور ساعت:</strong> 
-            <br>• ٹیم 1 عنصر: <span style="color: #38bdf8;">${t1Element}</span> | ٹیم 2 عنصر: <span style="color: #38bdf8;">${t2Element}</span>
+            <br>• ٹیم 1 عنصر: <span style="color: #38bdf8;">${t1Element}</span> | ٹیم 2 عنصر: <span style="color: #38bdf8;">${t1Element}</span>
             <br>• حاکم سیارہ: <span style="color: #38bdf8;">${activePlanet}</span>، چاند کی <span style="color: #38bdf8;">${lunarDateVal}</span> تاریخ اور گراؤنڈ (${ground})۔
         </div>
 
