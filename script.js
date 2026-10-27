@@ -34,16 +34,15 @@ function getUrduAbjadValue(text) {
     return sum;
 }
 
-// Huroof-e-Shamsi wa Qamari Check (Solar / Lunar Letters classification)
+// Huroof-e-Shamsi wa Qamari Check
 function getSolarLunarType(text) {
     if (!text) return "qamari";
     let firstChar = text.trim()[0];
-    // Shamsi Haroof: ت ث د ذ ر ز س ش ص ض ط ظ ل ن
     let shamsiChars = ['ت', 'ث', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ل', 'ن'];
     if (shamsiChars.includes(firstChar)) {
-        return "shamsi"; // Suraj ki khasiyat (Tez, Barri Energy)
+        return "shamsi";
     }
-    return "qamari"; // Chand ki khasiyat (Naram, Control Energy)
+    return "qamari";
 }
 
 // Venue ki tareekh se automatic chand ki tareekh ka andaza lagane ka function
@@ -83,6 +82,8 @@ function calculatePrediction() {
 
     let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
+    let otherCaptain = (tossWinnerChoice === "captain1") ? captain2 : captain1;
+    let otherTeam = (tossWinnerChoice === "captain1") ? team2 : team1;
 
     // 1. Asli Urdu/Arabic Abjad Values
     let t1Val = getUrduAbjadValue(team1);
@@ -91,16 +92,17 @@ function calculatePrediction() {
     let c2Val = getUrduAbjadValue(captain2);
     let groundVal = getUrduAbjadValue(ground);
 
-    // 2. Advanced Planetary Hours (Sa'at) & Solar/Lunar Energy Calculation
+    // 2. Advanced Planetary Hours & Phase Calculations
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
     let formattedTimeDisplay = "Venue Live Time / Not Specified";
     let activePlanet = "Mushtari (Jupiter)";
+    let earlyPressureTeam = tossTeam;
 
     if (matchTimeInput) {
         let dateObj = new Date(matchTimeInput);
         if (!isNaN(dateObj.getTime())) {
             let dayOfWeek = dateObj.getDay(); 
-            let hour = dateObj.getHours(); // Venue ka exact ghanta (Sa'at)    
+            let hour = dateObj.getHours();    
             
             if (dayOfWeek % 2 === 0) {
                 dayFactor1 = 2;
@@ -108,17 +110,14 @@ function calculatePrediction() {
                 dayFactor2 = 2;
             }
 
-            // Sayaron ki Sa'at (Planetary Hours mapping based on hour of the day)
             const planets = [
                 "زحل (Saturn)", "مشتری (Jupiter)", "مریخ (Mars)", 
                 "شمس (Sun - Suraj)", "زہرہ (Venus)", "عطارد (Mercury)", "قمر (Moon - Chand)"
             ];
             activePlanet = planets[hour % planets.length];
 
-            // Chand ki tareekh (Lunar Date) ki roshni aur manazil ka asar
             let lunarEnergyEffect = (lunarDateVal >= 13 && lunarDateVal <= 17) ? 4 : 2; 
 
-            // Huroof type check (Shamsi or Qamari match with planetary hour)
             let t1Type = getSolarLunarType(team1);
             let t2Type = getSolarLunarType(team2);
 
@@ -133,28 +132,36 @@ function calculatePrediction() {
                 timeScoreBonus2 = ((hour % 3) + planetaryBonus2) * lunarEnergyEffect;
             }
 
+            // Mathematical check for early pressure based on toss & sa'at weight
+            if (timeScoreBonus2 > timeScoreBonus1 && tossWinnerChoice === "captain2") {
+                earlyPressureTeam = team2;
+            } else {
+                earlyPressureTeam = team1;
+            }
+
             formattedTimeDisplay = dateObj.toLocaleString();
         }
     }
 
-    // 3. Final Power Scores (Abjad + Ground + Toss + Planetary Sa'at + Lunar Energy)
+    // 3. Final Power Scores Calculation
     let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain1" ? 5 : 0) + timeScoreBonus1;
     let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain2" ? 5 : 0) + timeScoreBonus2;
 
     let winningTeam = (score1 >= score2) ? team1 : team2;
 
+    // 4. Exact Mathematical Breakdown Display
     let analysisHTML = `
         <div class="analysis-section">
-            <strong>🏟️ Venue & Planetary Sa'at:</strong> Waqt (${formattedTimeDisplay}), Hakim Sayara: <span class="highlight">${activePlanet}</span>, 🌙 <strong>Chand ki ${lunarDateVal} Tareekh</strong> aur Ground (${ground}, Adad: ${groundVal}) ki energy ke sath, <span class="highlight">${tossWinnerName} (${tossTeam})</span> ne toss jeet kar control establish kar liya hai.
+            <strong>🏟️ Venue & Planetary Sa'at:</strong> Waqt (${formattedTimeDisplay}), Hakim Sayara: <span class="highlight">${activePlanet}</span>, 🌙 <strong>Chand ki ${lunarDateVal} Tareekh</strong> aur Ground (${ground}, Adad: ${groundVal}) ki energy ke sath, <span class="highlight">${tossWinnerName} (${tossTeam})</span> ne toss jeet kar shuruati control establish kiya hai.
         </div>
         <div class="analysis-section">
-            <strong>⚡ Asli Abjad & Advanced Energies:</strong> 
-            <br>• <strong>${team1} & ${captain1} (Power Score: ${score1}):</strong> Huroof-e-${getSolarLunarType(team1).toUpperCase()} energy active.
-            <br>• <strong>${team2} & ${captain2} (Power Score: ${score2}):</strong> Huroof-e-${getSolarLunarType(team2).toUpperCase()} energy active.
+            <strong>⚡ Phase-wise Flow (Pehle 10 Overs vs Aakhir):</strong> 
+            <br>• <strong>Shuruati 10 Overs (Early Pressure):</strong> Sa'at aur Toss ki initial energy ke tehat <span class="highlight">${earlyPressureTeam}</span> shuru mein match par haavi rah sakti hai aur rate upar-neechay ho sakta hai.
+            <br>• <strong>Asli Abjad Power:</strong> Team 1 Score (${score1}) vs Team 2 Score (${score2}) ka mathematical wazan.
         </div>
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 10px; margin-top: 10px;">
             <strong>🔮 Final Sitaron Ka Natija:</strong> 
-            <br>Toss aur shuruati halaat se <strong>${tossTeam}</strong> ko faida milega, lekin Asli Abjad-e-Kabeer, Chand ki Qamri Tareekh aur waqt ki **Sa'at (Planetary Hour)** ke mutabiq aakhir mein <strong>${winningTeam}</strong> jeet apne naam karegi!
+            <br>Shuruati overs ke utaar-chadhaw aur pressure ke baad, Asli Abjad-e-Kabeer aur waqt ki poori energy ke hisab se aakhir mein <strong>${winningTeam}</strong> jeet apne naam karegi!
         </div>
     `;
 
