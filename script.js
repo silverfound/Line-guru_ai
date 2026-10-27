@@ -76,6 +76,7 @@ function calculatePrediction() {
     let captain2 = document.getElementById("captain2").value || "Captain 2";
     let ground = document.getElementById("ground") ? document.getElementById("ground").value : "شارجه";
     let matchTimeInput = document.getElementById("matchTime") ? document.getElementById("matchTime").value : "";
+    let matchFormat = document.getElementById("matchFormat") ? document.getElementById("matchFormat").value : "t20";
     let tossWinnerChoice = document.getElementById("tossWinner").value;
     
     let lunarDateVal = parseInt(document.getElementById("lunarDate") ? document.getElementById("lunarDate").value : 15) || 15;
@@ -101,9 +102,20 @@ function calculatePrediction() {
     let predictedTossWinner = captain1;
     let predictedTossTeam = team1;
 
-    // Total Score Base Calculation Variables
-    let baseScore1 = 165; // Standard T20 base
+    // Format-based Base Score Ranges
+    let baseScore1 = 165;
     let baseScore2 = 155;
+    let formatLabel = "T20 Match";
+
+    if (matchFormat === "odi") {
+        baseScore1 = 285;
+        baseScore2 = 270;
+        formatLabel = "ODI Match";
+    } else if (matchFormat === "test") {
+        baseScore1 = 350;
+        baseScore2 = 320;
+        formatLabel = "Test Match (Per Innings)";
+    }
 
     if (matchTimeInput) {
         let dateObj = new Date(matchTimeInput);
@@ -164,17 +176,19 @@ function calculatePrediction() {
         predictedTossTeam = team1;
     }
 
-    // 3. Final Power Scores Calculation for Match Winner & Total Score Estimation
+    // 3. Final Power Scores Calculation
     let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain1" ? 5 : 0) + timeScoreBonus1;
     let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain2" ? 5 : 0) + timeScoreBonus2;
 
     let winningTeam = (score1 >= score2) ? team1 : team2;
 
-    // Strict Mathematical Total Score Calculation based on Ground Adad, Planet & Abjad
-    let estimatedTotal1 = baseScore1 + (groundVal * 2) + ((score1 - score2) > 0 ? (score1 - score2) * 3 : 5);
-    let estimatedTotal2 = baseScore2 + (groundVal * 1.5) + (lunarDateVal > 15 ? 10 : -5);
+    // Strict Mathematical Total Score Calculation based on Format and Ground Adad
+    let multiplier = (matchFormat === "odi") ? 1.8 : (matchFormat === "test" ? 2.5 : 1);
+    let estimatedTotal1 = Math.round(baseScore1 + (groundVal * multiplier) + ((score1 - score2) > 0 ? (score1 - score2) * 2 : 5));
+    let estimatedTotal2 = Math.round(baseScore2 + (groundVal * (multiplier * 0.9)) + (lunarDateVal > 15 ? 12 : -5));
+    let rangeSpan = (matchFormat === "test") ? 40 : (matchFormat === "odi" ? 25 : 15);
 
-    // 4. Structured Display with Separate Sections
+    // 4. Structured Display with Format Section
     let analysisHTML = `
         <div class="analysis-section" style="border-left: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 10px; margin-bottom: 10px; border-radius: 4px;">
             <strong>🪙 Toss Ki Paheli Prediction (Toss Analysis):</strong> 
@@ -182,18 +196,18 @@ function calculatePrediction() {
         </div>
 
         <div class="analysis-section" style="border-left: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 10px; margin-bottom: 10px; border-radius: 4px;">
-            <strong>📊 Total Score Prediction (Innings Estimates):</strong> 
-            <br>• <strong>Pehli Innings (1st Innings Projected Score):</strong> <span class="highlight">${estimatedTotal1} - ${estimatedTotal1 + 15} Runs</span> (Ground Adad aur Sa'at ke wazan par).
-            <br>• <strong>Doosri Innings (2nd Innings Target Range):</strong> <span class="highlight">${estimatedTotal2} - ${estimatedTotal2 + 15} Runs</span> (Pitch aur Phase energy ke mutabiq).
+            <strong>📊 Total Score Prediction (${formatLabel}):</strong> 
+            <br>• <strong>Pehli Innings (1st Innings Projected Score):</strong> <span class="highlight">${estimatedTotal1} - ${estimatedTotal1 + rangeSpan} Runs</span>.
+            <br>• <strong>Doosri Innings (2nd Innings Target Range):</strong> <span class="highlight">${estimatedTotal2} - ${estimatedTotal2 + rangeSpan} Runs</span>.
         </div>
 
         <div class="analysis-section">
-            <strong>🏟️ Venue & Planetary Sa'at:</strong> Waqt (${formattedTimeDisplay}), Hakim Sayara: <span class="highlight">${activePlanet}</span>, 🌙 <strong>Chand ki ${lunarDateVal} Tareekh</strong> aur Ground (${ground}, Adad: ${groundVal}) ki energy ke sath match aage barhega.
+            <strong>🏟️ Venue & Planetary Sa'at:</strong> Format: <strong>${formatLabel}</strong>, Waqt (${formattedTimeDisplay}), Hakim Sayara: <span class="highlight">${activePlanet}</span>, 🌙 <strong>Chand ki ${lunarDateVal} Tareekh</strong> aur Ground (${ground}) ki energy ke sath match aage barhega.
         </div>
 
         <div class="analysis-section">
-            <strong>⚡ Phase-wise Flow (Pehle 10 Overs vs Aakhir):</strong> 
-            <br>• <strong>Shuruati 10 Overs (Early Pressure):</strong> Sa'at aur Toss ki initial energy ke tehat <span class="highlight">${earlyPressureTeam}</span> shuru mein match par haavi rah sakti hai.
+            <strong>⚡ Phase-wise Flow (Pehle Ovarz vs Aakhir):</strong> 
+            <br>• <strong>Shuruati Phase (Early Pressure):</strong> Sa'at aur Toss ki initial energy ke tehat <span class="highlight">${earlyPressureTeam}</span> shuru mein match par haavi rah sakti hai.
             <br>• <strong>Asli Abjad Power:</strong> Team 1 Score (${score1}) vs Team 2 Score (${score2}) ka mathematical wazan.
         </div>
 
@@ -205,4 +219,4 @@ function calculatePrediction() {
 
     document.getElementById("outputContent").innerHTML = analysisHTML;
     document.getElementById("resultBox").classList.remove("hidden");
-}
+                                                           }
