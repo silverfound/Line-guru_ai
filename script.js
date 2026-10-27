@@ -228,7 +228,7 @@ function calculatePrediction() {
     let analysisHTML = `
         <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
             <strong>🪙 سکہ اچھالنے کا فیصلہ (Toss Analysis):</strong> 
-            <br>حاکم سیارہ <span style="color: #38bdf8; font-weight: bold;">${activePlanet}</span> کی روشنی میں، کپتانوں (${captain1} بمقابلہ ${captain2}) کی ابجد پاور کے حساب سے سکہ جیتنے کی سب سے زیادہ صلاحیت <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> की है۔
+            <br>حاکم سیارہ <span style="color: #38bdf8; font-weight: bold;">${activePlanet}</span> کی روشنی میں، کپتانوں (${captain1} بمقابلہ ${captain2}) کی ابجد پاور کے حساب سے سکہ جیتنے کی سب سے زیادہ صلاحیت <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> ہے۔
             <br><br>✨🔮 **جفری و برج کا اثر (Jafri Toss Impact):** ${tossImpactText}
         </div>
 
