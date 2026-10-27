@@ -82,8 +82,6 @@ function calculatePrediction() {
 
     let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
-    let otherCaptain = (tossWinnerChoice === "captain1") ? captain2 : captain1;
-    let otherTeam = (tossWinnerChoice === "captain1") ? team2 : team1;
 
     // 1. Asli Urdu/Arabic Abjad Values
     let t1Val = getUrduAbjadValue(team1);
@@ -92,11 +90,17 @@ function calculatePrediction() {
     let c2Val = getUrduAbjadValue(captain2);
     let groundVal = getUrduAbjadValue(ground);
 
-    // 2. Advanced Planetary Hours & Phase Calculations
+    // 2. Advanced Planetary Hours & Toss Calculation Logic
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
     let formattedTimeDisplay = "Venue Live Time / Not Specified";
     let activePlanet = "Mushtari (Jupiter)";
     let earlyPressureTeam = tossTeam;
+
+    // Separate Toss Calculation Power based strictly on Captain Abjad & Sa'at
+    let c1TossPower = c1Val;
+    let c2TossPower = c2Val;
+    let predictedTossWinner = captain1;
+    let predictedTossTeam = team1;
 
     if (matchTimeInput) {
         let dateObj = new Date(matchTimeInput);
@@ -106,8 +110,10 @@ function calculatePrediction() {
             
             if (dayOfWeek % 2 === 0) {
                 dayFactor1 = 2;
+                c1TossPower += 2;
             } else {
                 dayFactor2 = 2;
+                c2TossPower += 2;
             }
 
             const planets = [
@@ -127,13 +133,16 @@ function calculatePrediction() {
             if (hour >= 12) {
                 timeScoreBonus1 = ((hour % 3) + planetaryBonus1) * lunarEnergyEffect;
                 timeScoreBonus2 = ((hour % 2) + planetaryBonus2) * lunarEnergyEffect;
+                c1TossPower += (hour % 3);
+                c2TossPower += (hour % 2);
             } else {
                 timeScoreBonus1 = ((hour % 2) + planetaryBonus1) * lunarEnergyEffect;
                 timeScoreBonus2 = ((hour % 3) + planetaryBonus2) * lunarEnergyEffect;
+                c1TossPower += (hour % 2);
+                c2TossPower += (hour % 3);
             }
 
-            // Mathematical check for early pressure based on toss & sa'at weight
-            if (timeScoreBonus2 > timeScoreBonus1 && tossWinnerChoice === "captain2") {
+            if (timeScoreBonus2 > timeScoreBonus1) {
                 earlyPressureTeam = team2;
             } else {
                 earlyPressureTeam = team1;
@@ -143,20 +152,33 @@ function calculatePrediction() {
         }
     }
 
-    // 3. Final Power Scores Calculation
+    // Mathematical Toss Winner Decision (Before actual toss)
+    if (c2TossPower > c1TossPower) {
+        predictedTossWinner = captain2;
+        predictedTossTeam = team2;
+    } else {
+        predictedTossWinner = captain1;
+        predictedTossTeam = team1;
+    }
+
+    // 3. Final Power Scores Calculation for Match Winner
     let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain1" ? 5 : 0) + timeScoreBonus1;
     let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + (tossWinnerChoice === "captain2" ? 5 : 0) + timeScoreBonus2;
 
     let winningTeam = (score1 >= score2) ? team1 : team2;
 
-    // 4. Exact Mathematical Breakdown Display
+    // 4. Exact Mathematical Breakdown Display including Toss Prediction
     let analysisHTML = `
+        <div class="analysis-section" style="border-left: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 8px; margin-bottom: 10px;">
+            <strong>🪙 Toss Ki Paheli Prediction (Before Toss):</strong> 
+            <br>Waqt (${formattedTimeDisplay}) aur Hakim Sayara <span class="highlight">${activePlanet}</span> ki roshni mein, Captains (${captain1} vs ${captain2}) ki Abjad power ke hisab se **Toss jeetne ki sabse zyada salahiyat <span class="highlight">${predictedTossWinner} (${predictedTossTeam})</span> ki hai.**
+        </div>
         <div class="analysis-section">
-            <strong>🏟️ Venue & Planetary Sa'at:</strong> Waqt (${formattedTimeDisplay}), Hakim Sayara: <span class="highlight">${activePlanet}</span>, 🌙 <strong>Chand ki ${lunarDateVal} Tareekh</strong> aur Ground (${ground}, Adad: ${groundVal}) ki energy ke sath, <span class="highlight">${tossWinnerName} (${tossTeam})</span> ne toss jeet kar shuruati control establish kiya hai.
+            <strong>🏟️ Venue & Planetary Sa'at:</strong> Waqt (${formattedTimeDisplay}), Hakim Sayara: <span class="highlight">${activePlanet}</span>, 🌙 <strong>Chand ki ${lunarDateVal} Tareekh</strong> aur Ground (${ground}, Adad: ${groundVal}) ki energy ke sath match aage barhega.
         </div>
         <div class="analysis-section">
             <strong>⚡ Phase-wise Flow (Pehle 10 Overs vs Aakhir):</strong> 
-            <br>• <strong>Shuruati 10 Overs (Early Pressure):</strong> Sa'at aur Toss ki initial energy ke tehat <span class="highlight">${earlyPressureTeam}</span> shuru mein match par haavi rah sakti hai aur rate upar-neechay ho sakta hai.
+            <br>• <strong>Shuruati 10 Overs (Early Pressure):</strong> Sa'at aur Toss ki initial energy ke tehat <span class="highlight">${earlyPressureTeam}</span> shuru mein match par haavi rah sakti hai.
             <br>• <strong>Asli Abjad Power:</strong> Team 1 Score (${score1}) vs Team 2 Score (${score2}) ka mathematical wazan.
         </div>
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 10px; margin-top: 10px;">
@@ -167,4 +189,4 @@ function calculatePrediction() {
 
     document.getElementById("outputContent").innerHTML = analysisHTML;
     document.getElementById("resultBox").classList.remove("hidden");
-        }
+                    }
