@@ -71,7 +71,7 @@ const teamsData = [
     { name: "میجر لیگ کرکٹ - واشنگٹن فریڈم", captains: { test: "اسٹیو اسمتھ", odi: "اسٹیو اسمتھ", t20: "اسٹیو اسمتھ" } },
     { name: "میجر لیگ کرکٹ - سان فرانسسکو یونی کورنز", captains: { test: "میتھیو شارٹ", odi: "میتھیو شارٹ", t20: "میتھیو شارٹ" } },
     { name: "میجر لیگ کرکٹ - سیئٹل اورکاز", captains: { test: "ہینرک کلاسن", odi: "ہینرک کلاسن", t20: "ہینرک کلاسن" } },
-    { name: "میجر لیگ کرکٹ - لاس اینجلس نائٹ رائیڈرز", captains: { test: "جیسن ہولڈر", odi: "جیسن ہولڈر", t20: "جیسن ہولڈر" } },
+    { name: "میجر لیگ کرکٹ - لاس انجلس نائٹ رائیڈرز", captains: { test: "جیسن ہولڈر", odi: "جیسن ہولڈر", t20: "جیسن ہولڈر" } },
 
     { name: "کیریبین پریمیئر لیگ - جمیکا کنگز مین", captains: { test: "روومین پاول", odi: "روومین پاول", t20: "روومین پاول" } },
     { name: "کیریبین پریمیئر لیگ - اینٹیگوا اینڈ باربوڈا فالکنز", captains: { test: "معین علی", odi: "معین علی", t20: "معین علی" } },
@@ -179,9 +179,11 @@ function updateFormatCaptains() {
     onTeam2Change();
 }
 
-// Asli Arabic / Urdu Abjad-e-Kabeer Table (Jumtal-Jummal)
+// ==========================================
+// ASLI AUTHENTIC ABJAD-E-KABEER (Full Jumtal-Jummal)
+// ==========================================
 function getUrduAbjadValue(text) {
-    if (!text) return 1;
+    if (!text) return 10;
     let cleanText = text.trim();
     
     let abjadMap = {
@@ -201,33 +203,12 @@ function getUrduAbjadValue(text) {
         }
     }
 
-    if (totalSum === 0) return 1;
-
-    let sum = totalSum;
-    while (sum > 9) {
-        let tempSum = 0;
-        let strNum = sum.toString();
-        for (let j = 0; j < strNum.length; j++) {
-            tempSum += parseInt(strNum[j]);
-        }
-        sum = tempSum;
-    }
-    return sum;
+    return totalSum > 0 ? totalSum : 10;
 }
 
 function getZodiacElement(val) {
     const elements = ["آتشي (Fire)", "خاكي (Earth)", "هوائي (Air)", "آبي (Water)"];
     return elements[val % 4];
-}
-
-function getSolarLunarType(text) {
-    if (!text) return "qamari";
-    let firstChar = text.trim()[0];
-    let shamsiChars = ['ت', 'ث', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ل', 'ن'];
-    if (shamsiChars.includes(firstChar)) {
-        return "shamsi";
-    }
-    return "qamari";
 }
 
 function autoEstimateLunarDate() {
@@ -269,9 +250,7 @@ function calculatePrediction() {
     
     let lunarDateVal = parseInt(document.getElementById("lunarDate") ? document.getElementById("lunarDate").value : 15) || 15;
 
-    let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
-    let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
-
+    // Full Authentic Abjad Values
     let t1Val = getUrduAbjadValue(team1);
     let c1Val = getUrduAbjadValue(captain1);
     let t2Val = getUrduAbjadValue(team2);
@@ -279,18 +258,13 @@ function calculatePrediction() {
     let groundVal = getUrduAbjadValue(ground);
 
     let t1Element = getZodiacElement(t1Val);
-    let t2Element = getZodiacElement(t2Val); // Bug Fixed: Corrected to t2Element
+    let t2Element = getZodiacElement(t2Val);
 
-    let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
-    let activePlanet = "مشتری";
-    let earlyPressureTeam = tossTeam;
-    let hour = 12;
+    let matchDayName = "اتوار";
+    let dayRulingPlanet = "شمس (سورج)";
+    let dayIndex = 0;
 
-    let c1TossPower = c1Val;
-    let c2TossPower = c2Val;
-    let predictedTossWinner = captain1;
-    let predictedTossTeam = team1;
-
+    // Base scores per format
     let baseScore1 = 165;
     let baseScore2 = 155;
     let formatLabel = "ٹی ٹوئنٹی میچ";
@@ -308,84 +282,54 @@ function calculatePrediction() {
     if (matchTimeInput) {
         let dateObj = new Date(matchTimeInput);
         if (!isNaN(dateObj.getTime())) {
-            let dayOfWeek = dateObj.getDay(); 
-            hour = dateObj.getHours();    
-            
-            if (dayOfWeek % 2 === 0) {
-                dayFactor1 = 2;
-                c1TossPower += 2;
-            } else {
-                dayFactor2 = 2;
-                c2TossPower += 2;
-            }
-
-            const planets = [
-                "زحل", "مشتری", "مریخ", 
-                "شمس (سورج)", "زہرہ", "عطارد", "قمر (چاند)"
+            dayIndex = dateObj.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            const daysInUrdu = ["اتوار", "پیر", "منگل", "بدھ", "جمعرات", "جمعہ", "ہفتہ"];
+            const dayPlanets = [
+                "شمس (سورج) - اتوار", 
+                "قمر (چاند) - پیر", 
+                "مریخ - منگل", 
+                "عطارد - بدھ", 
+                "مشتری - جمعرات", 
+                "زہرہ - جمعہ", 
+                "زحل - ہفتہ"
             ];
-            activePlanet = planets[hour % planets.length];
-
-            let lunarEnergyEffect = (lunarDateVal >= 13 && lunarDateVal <= 17) ? 4 : 2; 
-
-            let t1Type = getSolarLunarType(team1);
-            let t2Type = getSolarLunarType(team2);
-
-            let isDay = (hour >= 6 && hour < 18);
-            let planetaryBonus1 = (t1Type === "shamsi" && isDay) ? 3 : 2;
-            let planetaryBonus2 = (t2Type === "qamari" && !isDay) ? 3 : 2;
-
-            timeScoreBonus1 = (planetaryBonus1) * lunarEnergyEffect;
-            timeScoreBonus2 = (planetaryBonus2) * lunarEnergyEffect;
-
-            if (timeScoreBonus2 > timeScoreBonus1) {
-                earlyPressureTeam = team2;
-            } else {
-                earlyPressureTeam = team1;
-            }
+            matchDayName = daysInUrdu[dayIndex];
+            dayRulingPlanet = dayPlanets[dayIndex];
         }
     }
 
-    if (c2TossPower > c1TossPower) {
-        predictedTossWinner = captain2;
-        predictedTossTeam = team2;
+    // Authentic Symmetrical calculation incorporating Match Day energy equally for both
+    let dayEnergyFactor = (dayIndex + 3) * 5; 
+
+    let score1 = t1Val + c1Val + Math.floor(groundVal / 10) + dayEnergyFactor;
+    let score2 = t2Val + c2Val + Math.floor(groundVal / 10) + dayEnergyFactor;
+
+    // Toss calculation independent of user choice
+    let predictedTossWinner = (c1Val >= c2Val) ? captain1 : captain2;
+    let predictedTossTeam = (c1Val >= c2Val) ? team1 : team2;
+
+    let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
+    let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
+
+    let tossImpactText = `کپتان (${tossWinnerName}) کے منتخب کردہ ٹاس کی بنیاد پر ٹیم (${tossTeam}) کو میدان میں کنٹرول حاصل ہے۔`;
+    if (tossWinnerChoice === "captain1") {
+        score1 += 15;
     } else {
-        predictedTossWinner = captain1;
-        predictedTossTeam = team1;
+        score2 += 15;
     }
-
-    let tossCaptainChar = tossWinnerName.trim()[0] || 'ا';
-    let isShamsiCaptain = ['ت', 'ث', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ل', 'ن'].includes(tossCaptainChar);
-    
-    let tossImpactScore = 0;
-    let tossImpactText = "";
-    let isDayTime = (hour >= 6 && hour < 18);
-
-    if ((isShamsiCaptain && isDayTime) || (!isShamsiCaptain && !isDayTime)) {
-        tossImpactScore = 10; 
-        tossImpactText = `کپتان (${tossWinnerName}) کے برج اور ساعت کی حروفی موافقت کی وجہ سے سکہ جیتنے پر ان کے ستارے کو **قوی جفری طاقت (Positive Energy)** ملی ہے!`;
-    } else {
-        tossImpactScore = -8; 
-        tossImpactText = `سکہ (${tossTeam}) کے جیتنے کے باوجود وقت کی ساعت اور برج کے اختلاف کی وجہ سے ان کے ستارے پر **دباؤ (Jafri Pressure)** درج کیا گیا ہے۔`;
-    }
-
-    let zodicBoost1 = (t1Element.includes("آتشي") || t1Element.includes("هوائي")) ? 5 : 2;
-    let zodicBoost2 = (t2Element.includes("آتشي") || t2Element.includes("هوائي")) ? 5 : 2;
-
-    let score1 = (t1Val * dayFactor1) + c1Val + Math.floor(groundVal / 2) + timeScoreBonus1 + zodicBoost1 + (tossWinnerChoice === "captain1" ? tossImpactScore : 0);
-    let score2 = (t2Val * dayFactor2) + c2Val + Math.floor(groundVal / 2) + timeScoreBonus2 + zodicBoost2 + (tossWinnerChoice === "captain2" ? tossImpactScore : 0);
 
     let winningTeam = (score1 >= score2) ? team1 : team2;
 
     let multiplier = (matchFormat === "odi") ? 1.8 : (matchFormat === "test" ? 2.5 : 1);
-    let estimatedTotal1 = Math.round(baseScore1 + (groundVal * multiplier) + ((score1 - score2) > 0 ? (score1 - score2) * 2 : 5));
-    let estimatedTotal2 = Math.round(baseScore2 + (groundVal * (multiplier * 0.9)) + (lunarDateVal > 15 ? 12 : -5));
+    let estimatedTotal1 = Math.round(baseScore1 + (groundVal % 30) * multiplier);
+    let estimatedTotal2 = Math.round(baseScore2 + (groundVal % 25) * (multiplier * 0.9));
     let rangeSpan = (matchFormat === "test") ? 40 : (matchFormat === "odi" ? 25 : 15);
 
     let analysisHTML = `
         <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
-            <strong>🪙 سکہ اچھالنے کا فیصلہ:</strong> 
-            <br>حاکم سیارہ <span style="color: #38bdf8; font-weight: bold;">${activePlanet}</span> کی روشنی میں، کپتانوں (${captain1} بمقابلہ ${captain2}) کی ابجد پاور کے حساب سے سکہ جیتنے کی سب سے زیادہ صلاحیت <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> ہے۔
-            <br><br>✨🔮 **جفری و برج کا اثر:** ${tossImpactText}
+            <strong>🪙 ٹاس کی پیشگوئی (Toss Prediction):</strong> 
+            <br>مقررہ میچ دن (<span style="color: #38bdf8; font-weight: bold;">${matchDayName}</span>) اور کپتانوں کی ابجد طاقت کے مطابق ٹاس کی صلاحیت <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> کی ہے۔
+            <br><br>✨ **صارف کا ٹاس انتخاب:** ${tossImpactText}
         </div>
 
         <div class="analysis-section" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
@@ -395,20 +339,15 @@ function calculatePrediction() {
         </div>
 
         <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
-            <strong>🏟️ گراؤنڈ، عنصر اور ساعت:</strong> 
+            <strong>📅 میچ کا دن اور سیارہ:</strong> 
+            <br>• میچ کا دن: <span style="color: #38bdf8;">${matchDayName}</span> | حاکم سیارہ: <span style="color: #38bdf8;">${dayRulingPlanet}</span>
             <br>• ٹیم 1 عنصر: <span style="color: #38bdf8;">${t1Element}</span> | ٹیم 2 عنصر: <span style="color: #38bdf8;">${t2Element}</span>
-            <br>• حاکم سیارہ: <span style="color: #38bdf8;">${activePlanet}</span>، چاند کی <span style="color: #38bdf8;">${lunarDateVal}</span> تاریخ اور گراؤنڈ (${ground})۔
-        </div>
-
-        <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
-            <strong>⚡ میچ کا آغاز اور دباؤ:</strong> 
-            <br>• شروعاتی اوورز (ابتدائی دباؤ): ساعت اور جفری توانائی کے تحت <span style="color: #38bdf8;">${earlyPressureTeam}</span> شروعات میں میچ پر حاوی رہ سکتی ہے۔
-            <br>• جفری طاقتی وزن: ٹیم 1 (${score1}) بمقابلہ ٹیم 2 (${score2})۔
+            <br>• چاند کی <span style="color: #38bdf8;">${lunarDateVal}</span> تاریخ اور گراؤنڈ (${ground})۔
         </div>
 
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: right; direction: rtl;">
             <strong>🔮 ستاروں کا حتمی نتیجہ:</strong> 
-            <br>بروج، عناصر اور ساعت کے گہرے جفری حساب کے بعد، وقت کی پوری توانائی کے مطابق آخر میں <strong style="color: #38bdf8;">${winningTeam}</strong> فتح اپنے نام کرے گی!
+            <br>میچ کے اصل دن کے حاکم سیارے اور اصلی ابجدِ کبیر کے متوازن حساب کے بعد، اس مقابلے میں فاتح ٹیم <strong style="color: #38bdf8;">${winningTeam}</strong> ہوگی!
         </div>
     `;
 
