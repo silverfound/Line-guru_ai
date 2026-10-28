@@ -266,6 +266,85 @@ function getPlanetaryHour(matchTimeValue, sunriseValue, sunsetValue) {
     return { number: Math.min(24, hourNumber + 1), planet: rulers[Math.min(23, hourNumber)], type: hourNumber < 12 ? "دن" : "رات" };
 }
 
+
+const elementRulingPlanets = {
+    1: ["Sun", "Mars"],       // Fire
+    2: ["Mercury", "Saturn"], // Earth
+    3: ["Jupiter", "Venus"],  // Air
+    0: ["Moon", "Jupiter"]    // Water
+};
+const planetAliases = {
+    "Sun": ["Sun", "شمس"], "Moon": ["Moon", "قمر"], "Mars": ["Mars", "مریخ"],
+    "Mercury": ["Mercury", "عطارد"], "Jupiter": ["Jupiter", "مشتری"],
+    "Venus": ["Venus", "زہرہ"], "Saturn": ["Saturn", "زحل"]
+};
+const planetNameFromHour = {
+    "زحل (Saturn)": "Saturn", "مشتری (Jupiter)": "Jupiter", "مریخ (Mars)": "Mars",
+    "شمس (Sun)": "Sun", "زہرہ (Venus)": "Venus", "عطارد (Mercury)": "Mercury", "قمر (Moon)": "Moon"
+};
+const planetFriends = {
+    Sun: ["Mars", "Jupiter", "Moon"],
+    Moon: ["Sun", "Mercury"],
+    Mars: ["Sun", "Jupiter", "Moon"],
+    Mercury: ["Sun", "Venus", "Saturn"],
+    Jupiter: ["Sun", "Moon", "Mars"],
+    Venus: ["Mercury", "Saturn"],
+    Saturn: ["Mercury", "Venus"]
+};
+const planetEnemies = {
+    Sun: ["Saturn", "Venus"],
+    Moon: ["Mars", "Saturn"],
+    Mars: ["Mercury", "Moon"],
+    Mercury: ["Mars", "Moon"],
+    Jupiter: ["Mercury", "Venus"],
+    Venus: ["Sun", "Mars"],
+    Saturn: ["Sun", "Moon", "Mars"]
+};
+function mutualPlanetRelationship(a, b) {
+    const aFriend = planetFriends[a]?.includes(b) || false;
+    const bFriend = planetFriends[b]?.includes(a) || false;
+    const aEnemy = planetEnemies[a]?.includes(b) || false;
+    const bEnemy = planetEnemies[b]?.includes(a) || false;
+    if (aFriend && bFriend && !(aEnemy || bEnemy)) return "Power";
+    if (aEnemy && bEnemy && !(aFriend || bFriend)) return "Weakness";
+    return "Neutral";
+}
+function getCaptainElementPlanets(captainAbjadValue) {
+    return elementRulingPlanets[((captainAbjadValue % 4) + 4) % 4];
+}
+function calculateTossPlanetaryPower(captainAbjadValue, tossHourPlanet) {
+    const tossPlanet = planetNameFromHour[tossHourPlanet] || null;
+    if (!tossPlanet) return { adjustment: 0, relationships: [], reason: "Toss planetary hour unavailable" };
+    const captainPlanets = getCaptainElementPlanets(captainAbjadValue);
+    const relationships = captainPlanets.map(planet => ({
+        captainPlanet: planet,
+        tossPlanet,
+        relationship: mutualPlanetRelationship(planet, tossPlanet)
+    }));
+    const bothPower = relationships.every(item => item.relationship === "Power");
+    const bothWeakness = relationships.every(item => item.relationship === "Weakness");
+    return {
+        adjustment: bothPower ? 10 : (bothWeakness ? -10 : 0),
+        captainPlanets,
+        tossPlanet,
+        relationships,
+        reason: bothPower ? "Both captain planets are mutual friends of the toss-hour planet"
+            : bothWeakness ? "Both captain planets are mutual enemies of the toss-hour planet"
+            : "Mixed or neutral relationships"
+    };
+}
+function makeDateTimeLocal(date) {
+    const pad = value => String(value).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+function getDefaultTossTime(matchTimeValue) {
+    if (!matchTimeValue) return "";
+    const matchDate = new Date(matchTimeValue);
+    if (Number.isNaN(matchDate.getTime())) return "";
+    matchDate.setMinutes(matchDate.getMinutes() - 30);
+    return makeDateTimeLocal(matchDate);
+}
+
 function startPredictionAnimation() {
     let loader = document.getElementById("loaderBox");
     let resultBox = document.getElementById("resultBox");
@@ -288,6 +367,7 @@ function calculatePrediction() {
     let matchTimeInput = document.getElementById("matchTime") ? document.getElementById("matchTime").value : "";
     let matchFormat = document.getElementById("matchFormat") ? document.getElementById("matchFormat").value : "t20";
     let tossWinnerChoice = document.getElementById("tossWinner").value;
+    let tossTimeInput = document.getElementById("tossTime") ? document.getElementById("tossTime").value : "";
     let sunriseInput = document.getElementById("sunriseTime") ? document.getElementById("sunriseTime").value : "";
     let sunsetInput = document.getElementById("sunsetTime") ? document.getElementById("sunsetTime").value : "";
 
@@ -355,6 +435,8 @@ function calculatePrediction() {
     }
 
     const planetaryHour = getPlanetaryHour(matchTimeInput, sunriseInput, sunsetInput);
+    const effectiveTossTime = tossTimeInput || getDefaultTossTime(matchTimeInput);
+    const tossPlanetaryHour = getPlanetaryHour(effectiveTossTime, sunriseInput, sunsetInput);
 
     // Combined weighted model: Abjad remains primary; other factors act as smaller modifiers.
     // This is a transparent numerology heuristic, not a scientifically validated predictor.
@@ -387,19 +469,29 @@ function calculatePrediction() {
     const activeWeightTotal = weights.teamAbjad + weights.captainAbjad + weights.ground +
         weights.weekday + (hourFactorIndex === null ? 0 : weights.planetaryHour) + weights.lunarDate;
 
-    // Toss calculation independent of user choice
-    let predictedTossWinner = (c1Val >= c2Val) ? captain1 : captain2;
-    let predictedTossTeam = (c1Val >= c2Val) ? team1 : team2;
-
-    let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
-    let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
-
-    let tossImpactText = `آپ نے ٹاس کی معلومات کے لیے (${tossTeam}) منتخب کی ہے۔ یہ انتخاب میچ کے فاتح کے حساب پر اثر انداز نہیں ہوتا۔`;
+    // Toss winner is entered by the user; the model does not predict who wins the toss.
+    const tossIsTeam1 = tossWinnerChoice === "captain1";
+    const tossTeam = tossIsTeam1 ? team1 : team2;
+    const tossCaptain = tossIsTeam1 ? captain1 : captain2;
+    const tossCaptainValue = tossIsTeam1 ? c1Val : c2Val;
+    const tossPower = calculateTossPlanetaryPower(tossCaptainValue, tossPlanetaryHour?.planet);
+    const finalScore1 = score1 + (tossIsTeam1 ? tossPower.adjustment : 0);
+    const finalScore2 = score2 + (!tossIsTeam1 ? tossPower.adjustment : 0);
+    const tossPowerLabel = tossPower.adjustment > 0 ? "+10 (مثبت طاقت)" : (tossPower.adjustment < 0 ? "-10 (منفی کمزوری)" : "0 (غیر جانبدار)");
+    const tossHourText = tossPlanetaryHour
+        ? `${tossPlanetaryHour.type} کا ${tossPlanetaryHour.number} واں سیارہ وار وقت — ${tossPlanetaryHour.planet}`
+        : "ٹاس کی سیاروی ساعت دستیاب نہیں؛ تاریخ، مقامی طلوع و غروب اور ٹاس کا درست وقت چیک کریں۔";
+    const captainPlanetNames = (tossPower.captainPlanets || []).join(" اور ");
+    const relationshipText = tossPower.relationships?.length
+        ? tossPower.relationships.map(item => `${item.captainPlanet} ↔ ${item.tossPlanet}: ${item.relationship === "Power" ? "باہمی دوستی" : item.relationship === "Weakness" ? "باہمی دشمنی" : "غیر جانبدار"}`).join("؛ ")
+        : "سیاروی تعلق معلوم کرنے کے لیے درست ٹاس وقت اور طلوع و غروب درکار ہیں۔";
+    const tossTimeText = effectiveTossTime ? effectiveTossTime.replace("T", " ") : "درج نہیں";
+    const tossImpactText = `ٹاس جیتنے والی منتخب ٹیم: ${tossTeam}؛ کپتان: ${tossCaptain}۔ ٹاس وقت: ${tossTimeText}۔ حاکم ساعت: ${tossHourText}۔ کپتان کے عناصر کے سیارے: ${captainPlanetNames || "دستیاب نہیں"}۔ تعلق: ${relationshipText}۔ ٹاس ایڈجسٹمنٹ: ${tossPowerLabel}۔`;
     const planetaryHourText = planetaryHour
         ? `${planetaryHour.type} کا ${planetaryHour.number} واں سیارہ وار وقت — ${planetaryHour.planet}`
         : "سیاروی ساعت نہیں نکالی گئی؛ درست میچ تاریخ، مقامی طلوعِ آفتاب اور غروبِ آفتاب درج کریں۔";
 
-    let winningTeam = (Math.abs(score1 - score2) < 0.01) ? "برابر / واضح برتری نہیں" : ((score1 > score2) ? team1 : team2);
+    let winningTeam = (Math.abs(finalScore1 - finalScore2) < 0.01) ? "برابر / واضح برتری نہیں" : ((finalScore1 > finalScore2) ? team1 : team2);
 
     let multiplier = (matchFormat === "odi") ? 1.8 : (matchFormat === "test" ? 2.5 : 1);
     // Use the same estimation formula for both teams.
@@ -410,8 +502,8 @@ function calculatePrediction() {
     let analysisHTML = `
         <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
             <strong>🪙 ٹاس کی پیشگوئی (Toss Prediction):</strong> 
-            <br>میچ کے دن (<span style="color: #38bdf8; font-weight: bold;">${matchDayName}</span>) اور کپتانوں کے ابجدی مجموعے کی بنیاد پر ٹاس کا اندازہ <span style="color: #38bdf8; font-weight: bold;">${escapeHTML(predictedTossWinner)} (${escapeHTML(predictedTossTeam)})</span> کی ہے۔
-            <br><br>✨ **صارف کا ٹاس انتخاب:** ${escapeHTML(tossImpactText)}
+            <br>ٹاس جیتنے والی ٹیم صارف کے انتخاب کے مطابق ہے؛ نظام ٹاس جیتنے والے کی پیش گوئی نہیں کرتا۔
+            <br><br>✨ ${escapeHTML(tossImpactText)}
         </div>
 
         <div class="analysis-section" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
@@ -432,8 +524,11 @@ function calculatePrediction() {
             <strong>🔮 مشترکہ وزنی ماڈل کا حتمی تخمینہ:</strong>
             <br>اس عددی تخمینی ماڈل کے مطابق ممکنہ نتیجہ: <strong style="color: #38bdf8;">${escapeHTML(winningTeam)}</strong>
             <br><br><strong>دونوں ٹیموں کے مجموعی اسکور:</strong>
-            <br>• ${escapeHTML(team1)}: <strong>${score1.toFixed(2)}</strong> (بنیادی ابجدی حصہ ${teamBase1.toFixed(2)} + معاون عوامل ${factors1.total.toFixed(2)})
-            <br>• ${escapeHTML(team2)}: <strong>${score2.toFixed(2)}</strong> (بنیادی ابجدی حصہ ${teamBase2.toFixed(2)} + معاون عوامل ${factors2.total.toFixed(2)})
+            <br>• ${escapeHTML(team1)}: <strong>${finalScore1.toFixed(2)}</strong> (بنیادی ابجدی حصہ ${teamBase1.toFixed(2)} + معاون عوامل ${factors1.total.toFixed(2)})
+            <br>• ${escapeHTML(team2)}: <strong>${finalScore2.toFixed(2)}</strong> (بنیادی ابجدی حصہ ${teamBase2.toFixed(2)} + معاون عوامل ${factors2.total.toFixed(2)})
+            <br><br><strong>🪐 ٹاس کی سیاروی طاقت:</strong>
+            <br>• ${escapeHTML(tossImpactText)}
+            <br>• ٹاس کا ایڈجسٹمنٹ صرف ٹاس جیتنے والی منتخب ٹیم کے اسکور میں شامل کیا گیا ہے۔
             <br><br><strong>وزن:</strong> ٹیم ابجد 50، کپتان ابجد 25، گراؤنڈ 10، دن کا حاکم 7، سیاروی ساعت ${hourFactorIndex === null ? "0 (دستیاب نہیں)" : "5"}، قمری تاریخ 3 پوائنٹس۔
             <br><strong>فعال مجموعی وزن:</strong> ${activeWeightTotal}/100 پوائنٹس۔
             <br><small>نوٹ: یہ ایک روایتی عددی مفروضاتی ماڈل ہے؛ اس کی پیش گوئی کی درستگی ثابت کرنے کے لیے تاریخی میچوں پر بیک ٹیسٹ ضروری ہے۔</small>
