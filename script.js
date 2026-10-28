@@ -242,7 +242,9 @@ function getPlanetaryHour(matchTimeValue, sunriseValue, sunsetValue) {
     const yesterday = new Date(date);
     yesterday.setDate(yesterday.getDate() - 1);
     const previousSunset = makeAt(yesterday, sunsetValue);
-    const weekday = date.getDay();
+    let weekday = date.getDay();
+    // Before sunrise, the current hour belongs to the previous night and weekday.
+    if (match < sunrise) weekday = (weekday + 6) % 7;
     // Chaldean order, beginning each weekday with that day's traditional ruler.
     const sequence = ["زحل (Saturn)", "مشتری (Jupiter)", "مریخ (Mars)", "شمس (Sun)", "زہرہ (Venus)", "عطارد (Mercury)", "قمر (Moon)"];
     const dayRulerIndex = [3, 6, 2, 5, 1, 4, 0][weekday];
