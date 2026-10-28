@@ -100,39 +100,39 @@ const teamsData = [
     { name: "انٹرنیشنل لیگ ٹی ۲۰ - ایم آئی ایمریٹس", captain: "نکولس پورن" },
     { name: "انٹرنیشنل لیگ ٹی ۲۰ - شارجہ واریئرز", captain: "ٹام کوہلر کیڈمور" },
 
-    // Sri Lanka Premier League (LPL) — Teams
+    // Sri Lanka Premier League (LPL) — 5 Teams
     { name: "لنکا پریمیئر لیگ - کولمبو", captain: "" },
     { name: "لنکا پریمیئر لیگ - دمبولا", captain: "" },
     { name: "لنکا پریمیئر لیگ - گال", captain: "" },
     { name: "لنکا پریمیئر لیگ - جافنا", captain: "" },
     { name: "لنکا پریمیئر لیگ - کینڈی", captain: "" },
 
-    // Bangladesh Premier League (BPL) — Teams
-    { name: "Dhaka Capitals", captain: "" },
-    { name: "Chattogram Royals", captain: "" },
-    { name: "Noakhali Express", captain: "" },
-    { name: "Rajshahi Warriors", captain: "" },
-    { name: "Rangpur Riders", captain: "" },
-    { name: "Sylhet Titans", captain: "" },
+    // Bangladesh Premier League (BPL) — 6 Teams
+    { name: "بی پی ایل - ڈھاکہ کیپیٹلز", captain: "" },
+    { name: "بی پی ایل - چٹوگرام رائلز", captain: "" },
+    { name: "بی پی ایل - نوآکھالی ایکسپریس", captain: "" },
+    { name: "بی پی ایل - راجشاہی واریئرز", captain: "" },
+    { name: "بی پی ایل - رنگپور رائیڈرز", captain: "" },
+    { name: "بی پی ایل - سلہٹ ٹائٹنز", captain: "" },
 
-    // The Hundred Men's Competition — Teams
-   { name: "Birmingham Phoenix", captain: "" },
-   { name: "London Spirit", captain: "" },
-   { name: "Manchester Super Giants", captain: "" },
-   { name: "MI London", captain: "" },
-   { name: "Southern Brave", captain: "" },
-   { name: "Sunrisers Leeds", captain: "" },
-   { name: "Trent Rockets", captain: "" },
-   { name: "Welsh Fire", captain: "" },
+    // The Hundred Men's Competition — 8 Teams
+    { name: "دی ہنڈرڈ - برمنگھم فینکس", captain: "" },
+    { name: "دی ہنڈرڈ - لندن اسپرٹ", captain: "" },
+    { name: "دی ہنڈرڈ - مانچسٹر سپر جائنٹس", captain: "" },
+    { name: "دی ہنڈرڈ - ایم آئی لندن", captain: "" },
+    { name: "دی ہنڈرڈ - سدرن بریو", captain: "" },
+    { name: "دی ہنڈرڈ - سن رائزرز لیڈز", captain: "" },
+    { name: "دی ہنڈرڈ - ٹرینٹ راکٹس", captain: "" },
+    { name: "دی ہنڈرڈ - ویلش فائر", captain: "" },
     
-    // Women's Premier League (WPL)
+    // Women's Premier League (WPL) 5 Teams
     { name: "ویمنز پریمیئر لیگ - دہلی کیپیٹلز", captain: "میگ لیننگ" },
     { name: "ویمنز پریمیئر لیگ - گجرات جائنٹس", captain: "ایشلے گارڈنر" },
     { name: "ویمنز پریمیئر لیگ - ممبئی انڈینز", captain: "ہرمن پریت کور" },
     { name: "ویمنز پریمیئر لیگ - رائل چیلنجرز بنگلورو", captain: "اسمرتی مندھانا" },
     { name: "ویمنز پریمیئر لیگ - یو پی واریئرز", captain: "دیپتی شرما" },
 
-    // Women's Big Bash League (WBBL)
+    // Women's Big Bash League (WBBL) 8 Teams
     { name: "ویمنز بگ بیش لیگ - ایڈیلیڈ اسٹرائیکرز", captain: "" },
     { name: "ویمنز بگ بیش لیگ - برسبین ہیٹ", captain: "" },
     { name: "ویمنز بگ بیش لیگ - ہوبارٹ ہریکینز", captain: "" },
@@ -142,7 +142,7 @@ const teamsData = [
     { name: "ویمنز بگ بیش لیگ - سڈنی سکسرز", captain: "" },
     { name: "ویمنز بگ بیش لیگ - سڈنی تھنڈر", captain: "" },
 
-    // Nepal Premier League
+    // Nepal Premier League 8 Teams 
     { name: "نیپال پریمیئر لیگ - بیرات نگر کنگز", captain: "" },
     { name: "نیپال پریمیئر لیگ - جنک پور بولٹس", captain: "" },
     { name: "نیپال پریمیئر لیگ - کرنالی یاکس", captain: "" },
@@ -152,7 +152,7 @@ const teamsData = [
     { name: "نیپال پریمیئر لیگ - سدورپشچم رائلز", captain: "" },
     { name: "نیپال پریمیئر لیگ - چتوان رائنو", captain: "" },
 
-    // Global T20 Canada
+    // Global T20 Canada 6 Teams
     { name: "گلوبل ٹی ۲۰ کینیڈا - برامپٹن وولوز", captain: "" },
     { name: "گلوبل ٹی ۲۰ کینیڈا - مونٹریال ٹائیگرز", captain: "" },
     { name: "گلوبل ٹی ۲۰ کینیڈا - ٹورنٹو نیشنلز", captain: "" },
