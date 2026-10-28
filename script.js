@@ -345,6 +345,92 @@ function getDefaultTossTime(matchTimeValue) {
     return makeDateTimeLocal(matchDate);
 }
 
+function getDayRulerPlanet(dateValue) {
+    if (!dateValue) return null;
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return null;
+    return ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"][date.getDay()];
+}
+
+function classifyCaptainCompatibility(captainAbjadValue, comparisonPlanet) {
+    if (!comparisonPlanet) return "Unavailable";
+    const captainPlanets = getCaptainElementPlanets(captainAbjadValue);
+    const relationships = captainPlanets.map(planet => mutualPlanetRelationship(planet, comparisonPlanet));
+    if (relationships.every(value => value === "Power")) return "Friend";
+    if (relationships.every(value => value === "Weakness")) return "Enemy";
+    return "Mixed";
+}
+
+function calculateSuggestedTossWinner() {
+    const team1 = document.getElementById("team1").value || document.getElementById("team1Select").options[document.getElementById("team1Select").selectedIndex].text;
+    const captain1 = document.getElementById("captain1").value || "";
+    const team2 = document.getElementById("team2").value || document.getElementById("team2Select").options[document.getElementById("team2Select").selectedIndex].text;
+    const captain2 = document.getElementById("captain2").value || "";
+    const matchTimeInput = document.getElementById("matchTime")?.value || "";
+    const tossTimeInput = document.getElementById("tossTime")?.value || "";
+    const sunriseInput = document.getElementById("sunriseTime")?.value || "";
+    const sunsetInput = document.getElementById("sunsetTime")?.value || "";
+    const effectiveTossTime = tossTimeInput || getDefaultTossTime(matchTimeInput);
+    const output = document.getElementById("tossSuggestionContent");
+    const box = document.getElementById("tossSuggestionBox");
+
+    if (!team1.trim() || !team2.trim() || !captain1.trim() || !captain2.trim() || team1.trim() === team2.trim()) {
+        alert("براہِ کرم دو مختلف ٹیمیں اور دونوں کپتان درست درج/منتخب کریں۔");
+        return;
+    }
+    const tossHour = getPlanetaryHour(effectiveTossTime, sunriseInput, sunsetInput);
+    const dayRuler = getDayRulerPlanet(effectiveTossTime);
+    if (!tossHour || !dayRuler) {
+        output.innerHTML = "<p>خودکار ٹاس پیشگوئی کے لیے میچ/ٹاس کی تاریخ، مقامی طلوعِ آفتاب اور غروبِ آفتاب درج کریں۔ ٹاس کا وقت خالی ہو تو میچ سے 30 منٹ پہلے لیا جائے گا۔</p>";
+        box.classList.remove("hidden");
+        return;
+    }
+
+    const abjad1 = getUrduAbjadValue(captain1);
+    const abjad2 = getUrduAbjadValue(captain2);
+    const totalAbjad = abjad1 + abjad2;
+    const abjadScore1 = totalAbjad > 0 ? (abjad1 / totalAbjad) * 40 : 20;
+    const abjadScore2 = totalAbjad > 0 ? (abjad2 / totalAbjad) * 40 : 20;
+    const hourPlanet = planetNameFromHour[tossHour.planet] || null;
+    const hourCompat1 = classifyCaptainCompatibility(abjad1, hourPlanet);
+    const hourCompat2 = classifyCaptainCompatibility(abjad2, hourPlanet);
+    const compatibilityPoints = status => status === "Friend" ? 40 : status === "Enemy" ? 0 : 20;
+    const hourScore1 = compatibilityPoints(hourCompat1);
+    const hourScore2 = compatibilityPoints(hourCompat2);
+
+    const dayCompat1 = classifyCaptainCompatibility(abjad1, dayRuler);
+    const dayCompat2 = classifyCaptainCompatibility(abjad2, dayRuler);
+    const dayPoints = status => status === "Friend" ? 20 : status === "Enemy" ? 0 : 10;
+    const dayScore1 = dayPoints(dayCompat1);
+    const dayScore2 = dayPoints(dayCompat2);
+
+    const score1 = abjadScore1 + hourScore1 + dayScore1;
+    const score2 = abjadScore2 + hourScore2 + dayScore2;
+    const totalScore = score1 + score2;
+    const indicator1 = totalScore > 0 ? Math.max(40, Math.min(60, 50 + ((score1 - score2) / totalScore) * 10)) : 50;
+    const indicator2 = 100 - indicator1;
+    const isTie = Math.abs(score1 - score2) < 0.000001;
+    const suggestedWinner = isTie ? "برابر / واضح برتری نہیں" : (score1 > score2 ? team1 : team2);
+    const format = n => Number(n).toFixed(2);
+    const compatLabel = status => status === "Friend" ? "باہمی دوستی" : status === "Enemy" ? "باہمی دشمنی" : "مخلوط / غیر جانبدار";
+    const tossTimeText = effectiveTossTime ? effectiveTossTime.replace("T", " ") : "درج نہیں";
+    const dayRulerUrdu = {Sun:"شمس",Moon:"قمر",Mars:"مریخ",Mercury:"عطارد",Jupiter:"مشتری",Venus:"زہرہ",Saturn:"زحل"}[dayRuler] || dayRuler;
+
+    output.innerHTML = `
+        <div class="analysis-section" style="text-align:right;direction:rtl;padding:12px;">
+            <strong>تجویز کردہ ٹاس ونر:</strong> ${escapeHTML(suggestedWinner)}
+            <br><strong>اشاری اسکور:</strong> ${format(score1)} بمقابلہ ${format(score2)}
+            <br><strong>محدود اشارتی تناسب (40–60):</strong> ${format(indicator1)}% بمقابلہ ${format(indicator2)}%
+            <br><br><strong>${escapeHTML(team1)} — ${escapeHTML(captain1)}</strong>
+            <br>ابجد حصہ (40): ${format(abjadScore1)}؛ سیاروی ساعت (40): ${hourScore1} (${compatLabel(hourCompat1)}؛ ${escapeHTML(hourPlanet || "غیر دستیاب")})؛ دن کا حاکم (20): ${dayScore1} (${compatLabel(dayCompat1)}؛ ${escapeHTML(dayRulerUrdu)})
+            <br><br><strong>${escapeHTML(team2)} — ${escapeHTML(captain2)}</strong>
+            <br>ابجد حصہ (40): ${format(abjadScore2)}؛ سیاروی ساعت (40): ${hourScore2} (${compatLabel(hourCompat2)}؛ ${escapeHTML(hourPlanet || "غیر دستیاب")})؛ دن کا حاکم (20): ${dayScore2} (${compatLabel(dayCompat2)}؛ ${escapeHTML(dayRulerUrdu)})
+            <br><br><strong>ٹاس وقت:</strong> ${escapeHTML(tossTimeText)}؛ <strong>سیاروی ساعت:</strong> ${escapeHTML(tossHour.planet)}
+            <br><small>یہ روایتی/تجرباتی اسکور ہے، ثابت شدہ حقیقی احتمال نہیں۔ 40–60% صرف display cap ہے، تاریخی accuracy کی ضمانت نہیں۔ یہ تجویز مین میچ کے ٹاس انتخاب کو خودکار طور پر تبدیل نہیں کرتی۔</small>
+        </div>`;
+    box.classList.remove("hidden");
+}
+
 function startPredictionAnimation() {
     let loader = document.getElementById("loaderBox");
     let resultBox = document.getElementById("resultBox");
@@ -377,6 +463,10 @@ function calculatePrediction() {
     }
     if (team1.trim() === team2.trim()) {
         alert("براہِ کرم دو مختلف ٹیمیں منتخب کریں۔");
+        return;
+    }
+    if (tossWinnerChoice !== "captain1" && tossWinnerChoice !== "captain2") {
+        alert("مین میچ پریڈکشن کے لیے اصل ٹاس جیتنے والی ٹیم منتخب کریں۔ خودکار ٹاس پیشگوئی اس انتخاب کو خودکار طور پر نہیں بدلے گی۔");
         return;
     }
     
@@ -501,8 +591,8 @@ function calculatePrediction() {
 
     let analysisHTML = `
         <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
-            <strong>🪙 ٹاس کی پیشگوئی (Toss Prediction):</strong> 
-            <br>ٹاس جیتنے والی ٹیم صارف کے انتخاب کے مطابق ہے؛ نظام ٹاس جیتنے والے کی پیش گوئی نہیں کرتا۔
+            <strong>🪙 اصل ٹاس کا نتیجہ (صارف کا انتخاب):</strong> 
+            <br>مین میچ پریڈکشن میں صرف صارف کا منتخب کردہ اصل ٹاس ونر استعمال ہوتا ہے؛ الگ خودکار ٹاس تجویز اس انتخاب کو تبدیل نہیں کرتی۔
             <br><br>✨ ${escapeHTML(tossImpactText)}
         </div>
 
