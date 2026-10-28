@@ -370,12 +370,17 @@ function calculateSuggestedTossWinner() {
     const tossTimeInput = document.getElementById("tossTime")?.value || "";
     const sunriseInput = document.getElementById("sunriseTime")?.value || "";
     const sunsetInput = document.getElementById("sunsetTime")?.value || "";
+    const tossLunarDate = Number.parseInt(document.getElementById("tossLunarDate")?.value || "15", 10);
     const effectiveTossTime = tossTimeInput || getDefaultTossTime(matchTimeInput);
     const output = document.getElementById("tossSuggestionContent");
     const box = document.getElementById("tossSuggestionBox");
 
     if (!team1.trim() || !team2.trim() || !captain1.trim() || !captain2.trim() || team1.trim() === team2.trim()) {
         alert("براہِ کرم دو مختلف ٹیمیں اور دونوں کپتان درست درج/منتخب کریں۔");
+        return;
+    }
+    if (!Number.isInteger(tossLunarDate) || tossLunarDate < 1 || tossLunarDate > 30) {
+        alert("ٹاس سیکشن میں قمری تاریخ 1 سے 30 کے درمیان درج کریں۔");
         return;
     }
     const tossHour = getPlanetaryHour(effectiveTossTime, sunriseInput, sunsetInput);
@@ -421,12 +426,13 @@ function calculateSuggestedTossWinner() {
             <strong>تجویز کردہ ٹاس ونر:</strong> ${escapeHTML(suggestedWinner)}
             <br><strong>اشاری اسکور:</strong> ${format(score1)} بمقابلہ ${format(score2)}
             <br><strong>محدود اشارتی تناسب (40–60):</strong> ${format(indicator1)}% بمقابلہ ${format(indicator2)}%
+            <br><strong>چاند کی تاریخ (قمری):</strong> ${tossLunarDate}
             <br><br><strong>${escapeHTML(team1)} — ${escapeHTML(captain1)}</strong>
             <br>ابجد حصہ (40): ${format(abjadScore1)}؛ سیاروی ساعت (40): ${hourScore1} (${compatLabel(hourCompat1)}؛ ${escapeHTML(hourPlanet || "غیر دستیاب")})؛ دن کا حاکم (20): ${dayScore1} (${compatLabel(dayCompat1)}؛ ${escapeHTML(dayRulerUrdu)})
             <br><br><strong>${escapeHTML(team2)} — ${escapeHTML(captain2)}</strong>
             <br>ابجد حصہ (40): ${format(abjadScore2)}؛ سیاروی ساعت (40): ${hourScore2} (${compatLabel(hourCompat2)}؛ ${escapeHTML(hourPlanet || "غیر دستیاب")})؛ دن کا حاکم (20): ${dayScore2} (${compatLabel(dayCompat2)}؛ ${escapeHTML(dayRulerUrdu)})
             <br><br><strong>ٹاس وقت:</strong> ${escapeHTML(tossTimeText)}؛ <strong>سیاروی ساعت:</strong> ${escapeHTML(tossHour.planet)}
-            <br><small>یہ روایتی/تجرباتی اسکور ہے، ثابت شدہ حقیقی احتمال نہیں۔ 40–60% صرف display cap ہے، تاریخی accuracy کی ضمانت نہیں۔ یہ تجویز مین میچ کے ٹاس انتخاب کو خودکار طور پر تبدیل نہیں کرتی۔</small>
+            <br><small>یہ روایتی/تجرباتی اسکور ہے، ثابت شدہ حقیقی احتمال نہیں۔ 40–60% صرف display cap ہے، تاریخی accuracy کی ضمانت نہیں۔ قمری تاریخ یہاں معلومات کے لیے دکھائی گئی ہے؛ موجودہ 40/40/20 ٹاس اسکور میں اس کا وزن شامل نہیں۔ یہ تجویز مین میچ کے ٹاس انتخاب کو خودکار طور پر تبدیل نہیں کرتی۔</small>
         </div>`;
     box.classList.remove("hidden");
 }
