@@ -354,9 +354,32 @@ function calculatePrediction() {
         }
     }
 
-    // Symmetric Abjad score: toss choice must never affect the predicted match winner.
-    const score1 = t1Val + c1Val + Math.floor(groundVal / 10);
-    const score2 = t2Val + c2Val + Math.floor(groundVal / 10);
+    // Combined weighted model: Abjad remains primary; other factors act as smaller modifiers.
+    // This is a transparent numerology heuristic, not a scientifically validated predictor.
+    const weights = { teamAbjad: 50, captainAbjad: 25, ground: 10, weekday: 7, planetaryHour: 5, lunarDate: 3 };
+    const circularResonance = (value, factor, cycle = 7) => {
+        const a = ((value % cycle) + cycle) % cycle;
+        const b = ((factor % cycle) + cycle) % cycle;
+        const distance = Math.min(Math.abs(a - b), cycle - Math.abs(a - b));
+        return 1 - distance / Math.floor(cycle / 2);
+    };
+    const dayFactorIndex = dayIndex;
+    const hourPlanetOrder = ["زحل (Saturn)", "مشتری (Jupiter)", "مریخ (Mars)", "شمس (Sun)", "زہرہ (Venus)", "عطارد (Mercury)", "قمر (Moon)"];
+    const hourFactorIndex = planetaryHour ? Math.max(0, hourPlanetOrder.indexOf(planetaryHour.planet)) : null;
+    const teamBase1 = ((t1Val % 100) * weights.teamAbjad / 100) + ((c1Val % 100) * weights.captainAbjad / 100);
+    const teamBase2 = ((t2Val % 100) * weights.teamAbjad / 100) + ((c2Val % 100) * weights.captainAbjad / 100);
+    const supportingScore = (teamVal, captainVal) => {
+        const signature = teamVal + captainVal;
+        const groundPart = circularResonance(signature, groundVal) * weights.ground;
+        const weekdayPart = circularResonance(signature, dayFactorIndex) * weights.weekday;
+        const hourPart = hourFactorIndex === null ? 0 : circularResonance(signature, hourFactorIndex) * weights.planetaryHour;
+        const lunarPart = circularResonance(signature, lunarDateVal) * weights.lunarDate;
+        return { groundPart, weekdayPart, hourPart, lunarPart, total: groundPart + weekdayPart + hourPart + lunarPart };
+    };
+    const factors1 = supportingScore(t1Val, c1Val);
+    const factors2 = supportingScore(t2Val, c2Val);
+    const score1 = teamBase1 + factors1.total;
+    const score2 = teamBase2 + factors2.total;
 
     // Toss calculation independent of user choice
     let predictedTossWinner = (c1Val >= c2Val) ? captain1 : captain2;
@@ -371,7 +394,7 @@ function calculatePrediction() {
         ? `${planetaryHour.type} کا ${planetaryHour.number} واں سیارہ وار وقت — ${planetaryHour.planet}`
         : "سیاروی ساعت نہیں نکالی گئی؛ درست میچ تاریخ، مقامی طلوعِ آفتاب اور غروبِ آفتاب درج کریں۔";
 
-    let winningTeam = (score1 >= score2) ? team1 : team2;
+    let winningTeam = (Math.abs(score1 - score2) < 0.01) ? "برابر / واضح برتری نہیں" : ((score1 > score2) ? team1 : team2);
 
     let multiplier = (matchFormat === "odi") ? 1.8 : (matchFormat === "test" ? 2.5 : 1);
     // Use the same estimation formula for both teams.
@@ -401,8 +424,13 @@ function calculatePrediction() {
         </div>
 
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: right; direction: rtl;">
-            <strong>🔮 ابجدی ماڈل کا حتمی تخمینہ:</strong> 
-            <br>ابجدی اسکور کے اس تخمینی ماڈل کے مطابق، اس مقابلے میں ممکنہ فاتح ٹیم <strong style="color: #38bdf8;">${escapeHTML(winningTeam)}</strong> ہوگی!
+            <strong>🔮 مشترکہ وزنی ماڈل کا حتمی تخمینہ:</strong>
+            <br>اس عددی تخمینی ماڈل کے مطابق ممکنہ نتیجہ: <strong style="color: #38bdf8;">${escapeHTML(winningTeam)}</strong>
+            <br><br><strong>دونوں ٹیموں کے مجموعی اسکور:</strong>
+            <br>• ${escapeHTML(team1)}: <strong>${score1.toFixed(2)}</strong> (بنیادی ابجدی حصہ ${teamBase1.toFixed(2)} + معاون عوامل ${factors1.total.toFixed(2)})
+            <br>• ${escapeHTML(team2)}: <strong>${score2.toFixed(2)}</strong> (بنیادی ابجدی حصہ ${teamBase2.toFixed(2)} + معاون عوامل ${factors2.total.toFixed(2)})
+            <br><br><strong>وزن:</strong> ٹیم ابجد 50%، کپتان ابجد 25%، گراؤنڈ 10%، دن کا حاکم 7%، سیاروی ساعت 5%، قمری تاریخ 3%.
+            <br><small>نوٹ: یہ ایک روایتی عددی مفروضاتی ماڈل ہے؛ اس کی پیش گوئی کی درستگی ثابت کرنے کے لیے تاریخی میچوں پر بیک ٹیسٹ ضروری ہے۔</small>
         </div>
     `;
 
