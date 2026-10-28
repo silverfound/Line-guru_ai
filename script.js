@@ -1,30 +1,30 @@
 // Complete Teams & Captains Database in Pure Urdu
 const teamsData = [
     // International & Associate Teams
-    { name: "افغانستان", captains: { test: "رحمت شاہ", odi: "رحمت شاہ", t20: "ابراہیم زدران" } },
+    { name: "افغانستان", captains: { test: "رحمت شاہ", odi: "رحمت شاہ", t20: "راشد خان" } },
     { name: "آسٹریلیا", captains: { test: "پیٹ کمنز", odi: "مچل مارش", t20: "مچل مارش" } },
-    { name: "بنگلہ دیش", captains: { test: "نجم الحسن شانتو", odi: "لٹن داس", t20: "لٹن داس" } },
+    { name: "بنگلہ دیش", captains: { test: "نجم الحسن شانتو", odi: "مہدی حسن میراز", t20: "لٹن داس" } },
     { name: "انگلینڈ", captains: { test: "بین اسٹوکس", odi: "ہیری بروک", t20: "ہیری بروک" } },
-    { name: "انڈیا", captains: { test: "شبمن گل", odi: "شبمن گل", t20: "سوریہ کمار یادو" } },
+    { name: "بھارت", captains: { test: "شبمن گل", odi: "شبمن گل", t20: "سوریہ کمار یادو" } },
     { name: "آئرلینڈ", captains: { test: "اینڈی بالبرنی", odi: "پال اسٹرلنگ", t20: "لورکن ٹکر" } },
     { name: "نیوزی لینڈ", captains: { test: "ٹام لیتھم", odi: "مچل سینٹنر", t20: "مچل سینٹنر" } },
-    { name: "پاکستان", captains: { test: "شان مسعود", odi: "شاہین شاہ آفریدی", t20: "صاحبزادہ فرحان" } },
-    { name: "جنوبی افریقہ", captains: { test: "ٹیمبا باووما", odi: "ٹیمبا باووما", t20: "ایڈن مارکرم" } },
-    { name: "سری لنکا", captains: { test: "دھننجایا ڈی سلوا", odi: "چریتھ اسالنکا", t20: "داسن شناکا" } },
-    { name: "ویسٹ انڈیز", captains: { test: "کریگ بریتھویٹ", odi: "شائی ہوپ", t20: "شائی ہوپ" } },
+    { name: "پاکستان", captains: { test: "شان مسعود", odi: "شاہین شاہ آفریدی", t20: "سلمان علی آغا" } },
+    { name: "جنوبی افریقہ", captains: { test: "ٹেম্বا باووما", odi: "ٹেম্বا باووما", t20: "ایڈن مارکرم" } },
+    { name: "سری لنکا", captains: { test: "دھننجایا ڈی سلوا", odi: "چارتھ اسالنکا", t20: "داسن شناکا" } },
+    { name: "ویسٹ انڈیز", captains: { test: "روسٹن چیز", odi: "شائی ہوپ", t20: "شائی ہوپ" } },
     { name: "زمبابوے", captains: { test: "رچرڈ نگاراوا", odi: "رچرڈ نگاراوا", t20: "سکندر رضا" } },
-    { name: "نمیبیا", captains: { test: "گیرہارڈ ایراسمس", odi: "گیرہارڈ ایراسمس", t20: "گیرہارڈ ایراسمس" } },
+    { name: "نمیبیا", captains: { test: "گیہارڈ ایراسمس", odi: "گیہارڈ ایراسمس", t20: "گیہارڈ ایراسمس" } },
     { name: "نیدرلینڈز", captains: { test: "اسکاٹ ایڈورڈز", odi: "اسکاٹ ایڈورڈز", t20: "اسکاٹ ایڈورڈز" } },
-    { name: "امریکہ", captains: { test: "مونانک پٹیل", odi: "مونانک پٹیل", t20: "مونانک پٹیل" } },
-    { name: "عمان", captains: { test: "جتیندر سنگھ", odi: "جتیندر سنگھ", t20: "جتیندر سنگھ" } },
+    { name: "امریکہ", captains: { test: "موننک پٹیل", odi: "موننک پٹیل", t20: "موننک پٹیل" } },
+    { name: "عمان", captains: { test: "جتندر سنگھ", odi: "جتندر سنگھ", t20: "جتندر سنگھ" } },
     { name: "اسکاٹ لینڈ", captains: { test: "رچی بیرنگٹن", odi: "رچی بیرنگٹن", t20: "رچی بیرنگٹن" } },
-    { name: "نیپال", captains: { test: "روہت پوڈیل", odi: "روہت پوڈیل", t20: "روہت پوڈیل" } },
+    { name: "نیپال", captains: { test: "روہت پاوڈیل", odi: "روہت پاوڈیل", t20: "روہت پاوڈیل" } },
     { name: "اٹلی", captains: { test: "وین میڈسن", odi: "وین میڈسن", t20: "وین میڈسن" } },
     { name: "کینیڈا", captains: { test: "دلپریت باجوہ", odi: "دلپریت باجوہ", t20: "دلپریت باجوہ" } },
     { name: "متحدہ عرب امارات", captains: { test: "محمد وسیم", odi: "محمد وسیم", t20: "محمد وسیم" } },
     { name: "ہانگ کانگ", captains: { test: "نزاکت خان", odi: "نزاکت خان", t20: "نزاکت خان" } },
     { name: "پاپوا نیو گنی", captains: { test: "اسد والا", odi: "اسد والا", t20: "اسد والا" } },
-    { name: "جرسی", captains: { test: "چارلس پرچرڈ", odi: "چارلس پرچرڈ", t20: "چارلس پرچرڈ" } },
+    { name: "جرسی", captains: { test: "چارلس پرچارڈ", odi: "چارلس پرچارڈ", t20: "چارلس پرچارڈ" } },
     { name: "یوگنڈا", captains: { test: "برائن ماسابا", odi: "برائن ماسابا", t20: "برائن ماسابا" } },
     { name: "ملائیشیا", captains: { test: "احمد فیض", odi: "احمد فیض", t20: "احمد فیض" } },
     { name: "سنگاپور", captains: { test: "منپریت سنگھ", odi: "منپریت سنگھ", t20: "منپریت سنگھ" } },
@@ -98,7 +98,7 @@ const teamsData = [
     { name: "بنگلہ دیش پریمیئر لیگ - ڈھاکہ کیپیٹلز", captains: { test: "محمد متھن", odi: "محمد متھن", t20: "محمد متھن" } },
     { name: "بنگلہ دیش پریمیئر لیگ - نوکھالی ایکسپریس", captains: { test: "شائکت علی", odi: "شائکت علی", t20: "شائکت علی" } },
     { name: "بنگلہ دیش پریمیئر لیگ - راجشاہی واریئرز", captains: { test: "نجم الحسن شانتو", odi: "نجم الحسن شانتو", t20: "نجم الحسن شانتو" } },
-    { name: "بنگلہ دیش پریمیئر لیگ - رنگپور رائیڈرز", captains: { test: "نور الحسن", odi: "نور الحسن", t20: "نور الحسن" } },
+    { name: "بنگلہ دیش پریمیئر لیگ - رنگپور رائیڈرز", captains: { test: "نورالحسن", odi: "نورالحسن", t20: "نورالحسن" } },
     { name: "بنگلہ دیش پریمیئر لیگ - سلہٹ ٹائٹنز", captains: { test: "مہدی حسن میراز", odi: "مہدی حسن میراز", t20: "مہدی حسن میراز" } },
 
     { name: "دی ہنڈرڈ - برمنگھم فینکس", captains: { test: "جیکب بیتھل", odi: "جیکب بیتھل", t20: "جیکب بیتھل" } },
@@ -108,50 +108,9 @@ const teamsData = [
     { name: "دی ہنڈرڈ - سدرن بریو", captains: { test: "جیمز ونس", odi: "جیمز ونس", t20: "جیمز ونس" } },
     { name: "دی ہنڈرڈ - سن رائزرز لیڈز", captains: { test: "ہیری بروک", odi: "ہیری بروک", t20: "ہیری بروک" } },
     { name: "دی ہنڈرڈ - ٹرینٹ راکٹس", captains: { test: "سیم بلنگز", odi: "سیم بلنگز", t20: "سیم بلنگز" } },
-    { name: "دی ہنڈرڈ - ویلش فائر", captains: { test: "فل سالٹ", odi: "فل سالٹ", t20: "فل سالٹ" } },
-    { name: "چنئی سپر کنگز", captains: { test: "رتوراج گائیکواڑ", odi: "رتوراج گائیکواڑ", t20: "رتوراج گائیکواڑ" } },
-    { name: "ممبئی انڈینز", captains: { test: "ہارڈک پانڈیا", odi: "ہارڈک پانڈیا", t20: "ہارڈک پانڈیا" } },
-    { name: "رائل چیلنجرز بنگلورو", captains: { test: "رجت پاٹیدار", odi: "رجت پاٹیدار", t20: "رجت پاٹیدار" } },
-    { name: "کراچی کنگز", captains: { test: "ڈیوڈ وارنر", odi: "ڈیوڈ وارنر", t20: "ڈیوڈ وارنر" } },
-    { name: "حیدرآباد کنگز مین", captains: { test: "مارنس لبوشین", odi: "مارنس لبوشین", t20: "مارنس لبوشین" } },
-    { name: "راولپنڈیز", captains: { test: "محمد رضوان", odi: "محمد رضوان", t20: "محمد رضوان" } },
-    { name: "ایم آئی لندن (مرد)", captains: { test: "سیم کرن", odi: "سیم کرن", t20: "سیم کرن" } },
-    { name: "برمنگھم فینکس خواتین", captains: { test: "ایلیس پیری", odi: "ایلیس پیری", t20: "ایلیس پیری" } },
-    { name: "لندن اسپرٹ خواتین", captains: { test: "چارلی ڈین", odi: "چارلی ڈین", t20: "چارلی ڈین" } },
-    { name: "مانچسٹر سپر جائنٹس خواتین", captains: { test: "میگ لیننگ", odi: "میگ لیننگ", t20: "میگ لیننگ" } },
-    { name: "سن رائزرز لیڈز خواتین", captains: { test: "ڈینی گبسن", odi: "ڈینی گبسن", t20: "ڈینی گبسن" } },
-    { name: "ایم آئی لندن خواتین", captains: { test: "ہولی آرمیٹیج", odi: "ہولی آرمیٹیج", t20: "ہولی آرمیٹیج" } },
-    { name: "سدرن بریو خواتین", captains: { test: "سوفی مولینکس", odi: "سوفی مولینکس", t20: "سوفی مولینکس" } },
-    { name: "ٹرینٹ راکٹس خواتین", captains: { test: "ایش گارڈنر", odi: "ایش گارڈنر", t20: "ایش گارڈنر" } },
-    { name: "ویلش فائر خواتین", captains: { test: "سوفی ڈیوائن", odi: "سوفی ڈیوائن", t20: "سوفی ڈیوائن" } },
-    { name: "چٹاگانگ چیلنجرز", captains: { test: "شائی ہوپ", odi: "شائی ہوپ", t20: "شائی ہوپ" } },
-    { name: "کومیلا وکٹورینز", captains: { test: "لٹن داس", odi: "لٹن داس", t20: "لٹن داس" } },
-    { name: "ڈھاکہ ڈومینیٹرز", captains: { test: "ناصر حسین", odi: "ناصر حسین", t20: "ناصر حسین" } },
-    { name: "فارچیون باریشال", captains: { test: "تمیم اقبال", odi: "تمیم اقبال", t20: "تمیم اقبال" } },
-    { name: "کھلنا ٹائیگرز", captains: { test: "انعام الحق", odi: "انعام الحق", t20: "انعام الحق" } },
-    { name: "سلہٹ اسٹرائیکرز", captains: { test: "مشفق الرحیم", odi: "مشفق الرحیم", t20: "مشفق الرحیم" } },
-    { name: "یو پی واریئرز", captains: { test: "میگ لیننگ", odi: "میگ لیننگ", t20: "میگ لیننگ" } },
-    { name: "ممبئی انڈینز خواتین", captains: { test: "ہرمن پریت کور", odi: "ہرمن پریت کور", t20: "ہرمن پریت کور" } },
-    { name: "دہلی کیپیٹلز خواتین", captains: { test: "جمیما روڈریگز", odi: "جمیما روڈریگز", t20: "جمیما روڈریگز" } },
-    { name: "گجرات جائنٹس خواتین", captains: { test: "ایشلے گارڈنر", odi: "ایشلے گارڈنر", t20: "ایشلے گارڈنر" } },
-    { name: "رائل چیلنجرز بنگلورو خواتین", captains: { test: "اسمرتی مندھانا", odi: "اسمرتی مندھانا", t20: "اسمرتی مندھانا" } },
-    { name: "ایڈیلیڈ اسٹرائیکرز خواتین", captains: { test: "طاہلیا میک گرا", odi: "طاہلیا میک گرا", t20: "طاہلیا میک گرا" } },
-    { name: "برسبین ہیٹ خواتین", captains: { test: "جیس جوناسن", odi: "جیس جوناسن", t20: "جیس جوناسن" } },
-    { name: "ہوبارٹ ہریکینز خواتین", captains: { test: "ایلیس ویلز", odi: "ایلیس ویلز", t20: "ایلیس ویلز" } },
-    { name: "میلبورن رینیگیڈز خواتین", captains: { test: "سوفی مولینکس", odi: "سوفی مولینکس", t20: "سوفی مولینکس" } },
-    { name: "میلبورن اسٹارز خواتین", captains: { test: "میگ لیننگ", odi: "میگ لیننگ", t20: "میگ لیننگ" } },
-    { name: "پرتھ اسکارچرز خواتین", captains: { test: "سوفی ڈیوائن", odi: "سوفی ڈیوائن", t20: "سوفی ڈیوائن" } },
-    { name: "سڈنی سکسرز خواتین", captains: { test: "ایلیس پیری", odi: "ایلیس پیری", t20: "ایلیس پیری" } },
-    { name: "سڈنی تھنڈر خواتین", captains: { test: "ہیدر نائٹ", odi: "ہیدر نائٹ", t20: "ہیدر نائٹ" } },
-    { name: "بارباڈوس ٹرائیڈنٹس", captains: { test: "جیسن ہولڈر", odi: "جیسن ہولڈر", t20: "جیسن ہولڈر" } },
-    { name: "گال گیلنٹس", captains: { test: "داسن شناکا", odi: "داسن شناکا", t20: "داسن شناکا" } },
-    { name: "کینڈی رائلز", captains: { test: "اینجلو میتھیوز", odi: "اینجلو میتھیوز", t20: "اینجلو میتھیوز" } },
-    { name: "دمبولا سکسز", captains: { test: "دنیش چندیمل", odi: "دنیش چندیمل", t20: "دنیش چندیمل" } },
-    { name: "کولمبو کیپس", captains: { test: "کوسل مینڈس", odi: "کوسل مینڈس", t20: "کوسل مینڈس" } },
-    { name: "جافنا کنگز", captains: { test: "بھانوکا راجاپکسا", odi: "بھانوکا راجاپکسا", t20: "بھانوکا راجاپکسا" } }
+    { name: "دی ہنڈرڈ - ویلش فائر", captains: { test: "فل سالٹ", odi: "فل سالٹ", t20: "فل سالٹ" } }
 ];
 
-// Populate Team Dropdowns on Page Load
 document.addEventListener("DOMContentLoaded", () => {
     populateTeamDropdowns();
     let timeField = document.getElementById("matchTime");
@@ -320,7 +279,7 @@ function calculatePrediction() {
     let groundVal = getUrduAbjadValue(ground);
 
     let t1Element = getZodiacElement(t1Val);
-    let t2Element = getZodiacElement(t2Val);
+    let t2Element = getZodiacElement(t2Val); // Bug Fixed: Corrected to t2Element
 
     let dayFactor1 = 1, dayFactor2 = 1, timeScoreBonus1 = 0, timeScoreBonus2 = 0;
     let activePlanet = "مشتری";
@@ -371,20 +330,12 @@ function calculatePrediction() {
             let t1Type = getSolarLunarType(team1);
             let t2Type = getSolarLunarType(team2);
 
-            let planetaryBonus1 = (t1Type === "shamsi" && (hour >= 6 && hour <= 18)) ? 3 : 2;
-            let planetaryBonus2 = (t2Type === "qamari" && (hour < 6 || hour > 18)) ? 3 : 2;
+            let isDay = (hour >= 6 && hour < 18);
+            let planetaryBonus1 = (t1Type === "shamsi" && isDay) ? 3 : 2;
+            let planetaryBonus2 = (t2Type === "qamari" && !isDay) ? 3 : 2;
 
-            if (hour >= 12) {
-                timeScoreBonus1 = ((hour % 3) + planetaryBonus1) * lunarEnergyEffect;
-                timeScoreBonus2 = ((hour % 2) + planetaryBonus2) * lunarEnergyEffect;
-                c1TossPower += (hour % 3);
-                c2TossPower += (hour % 2);
-            } else {
-                timeScoreBonus1 = ((hour % 2) + planetaryBonus1) * lunarEnergyEffect;
-                timeScoreBonus2 = ((hour % 3) + planetaryBonus2) * lunarEnergyEffect;
-                c1TossPower += (hour % 2);
-                c2TossPower += (hour % 3);
-            }
+            timeScoreBonus1 = (planetaryBonus1) * lunarEnergyEffect;
+            timeScoreBonus2 = (planetaryBonus2) * lunarEnergyEffect;
 
             if (timeScoreBonus2 > timeScoreBonus1) {
                 earlyPressureTeam = team2;
@@ -445,7 +396,7 @@ function calculatePrediction() {
 
         <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
             <strong>🏟️ گراؤنڈ، عنصر اور ساعت:</strong> 
-            <br>• ٹیم 1 عنصر: <span style="color: #38bdf8;">${t1Element}</span> | ٹیم 2 عنصر: <span style="color: #38bdf8;">${t1Element}</span>
+            <br>• ٹیم 1 عنصر: <span style="color: #38bdf8;">${t1Element}</span> | ٹیم 2 عنصر: <span style="color: #38bdf8;">${t2Element}</span>
             <br>• حاکم سیارہ: <span style="color: #38bdf8;">${activePlanet}</span>، چاند کی <span style="color: #38bdf8;">${lunarDateVal}</span> تاریخ اور گراؤنڈ (${ground})۔
         </div>
 
