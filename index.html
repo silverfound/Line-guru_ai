@@ -74,6 +74,17 @@
                     <input type="datetime-local" id="matchTime">
                 </div>
 
+                <!-- Local sunrise and sunset are needed for traditional planetary-hour calculation -->
+                <div class="input-group">
+                    <label for="sunriseTime">مقامی طلوعِ آفتاب</label>
+                    <input type="time" id="sunriseTime" aria-describedby="solarTimeHelp">
+                </div>
+                <div class="input-group">
+                    <label for="sunsetTime">مقامی غروبِ آفتاب</label>
+                    <input type="time" id="sunsetTime" aria-describedby="solarTimeHelp">
+                </div>
+                <p id="solarTimeHelp" class="full-width">سیاروی ساعت کے لیے میچ کے مقام کے مطابق اسی تاریخ کا درست طلوع و غروب درج کریں۔</p>
+
                 <!-- Toss Choice -->
                 <div class="input-group full-width">
                     <label for="tossWinner">ٹاس جیتنے والی ٹیم منتخب کریں</label>
@@ -94,12 +105,12 @@
         <!-- Loading Spinner (Hidden by default) -->
         <div id="loaderBox" class="loader-box hidden">
             <div class="spinner"></div>
-            <p>ستاروں اور جفری اعداد کا حساب لگایا جا رہا ہے...</p>
+            <p>ابجدی حساب اور روایتی سیاروی ساعت کا حساب لگایا جا رہا ہے...</p>
         </div>
 
         <!-- Result Section -->
         <section id="resultBox" class="result-card hidden">
-            <h2>✨ جفری و نجومی تجزیہ رپورٹ</h2>
+            <h2>✨ ابجدی اور روایتی سیاروی تجزیہ رپورٹ</h2>
             <div id="outputContent"></div>
         </section>
     </div>
