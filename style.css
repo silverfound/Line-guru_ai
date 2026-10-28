@@ -413,3 +413,49 @@ select {
         overflow: visible;
     }
 }
+
+
+/* Center Urdu labels and field values for a balanced, spacious form */
+.input-group {
+    align-items: stretch;
+    text-align: center;
+}
+
+.input-group label {
+    width: 100%;
+    text-align: center;
+    padding-inline: 12px;
+    margin-inline: auto;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    text-align: center;
+    text-align-last: center;
+    padding-inline: 18px;
+    direction: rtl;
+}
+
+/* Keep date/time controls usable while centering ordinary Urdu fields */
+.input-group input[type="datetime-local"],
+.input-group input[type="number"] {
+    text-align: center;
+    direction: ltr;
+}
+
+.input-group input::placeholder {
+    text-align: center;
+    direction: rtl;
+}
+
+@media (max-width: 600px) {
+    .input-group label {
+        padding-inline: 14px;
+    }
+
+    .input-group input,
+    .input-group select {
+        padding-inline: 16px;
+    }
+}
