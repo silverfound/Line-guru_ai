@@ -90,17 +90,28 @@
                     <input type="datetime-local" id="tossTime">
                 </div>
 
-                <!-- Toss Choice -->
+                <!-- Manual actual toss result for the main match prediction -->
                 <div class="input-group full-width">
-                    <label for="tossWinner">ٹاس جیتنے والی ٹیم منتخب کریں</label>
+                    <label for="tossWinner">اصل ٹاس جیتنے والی ٹیم (مین میچ پریڈکشن کے لیے)</label>
                     <select id="tossWinner">
+                        <option value="">-- اصل ٹاس کا نتیجہ منتخب کریں --</option>
                         <option value="captain1">پہلی ٹیم کا کپتان</option>
                         <option value="captain2">دوسری ٹیم کا کپتان</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Action Button -->
+            <!-- Separate automatic toss suggestion; never feeds the main prediction automatically -->
+            <button class="calculate-btn" type="button" onclick="calculateSuggestedTossWinner()">
+                <span>خودکار ٹاس پیشگوئی دیکھیں</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <section id="tossSuggestionBox" class="result-card hidden" aria-live="polite" style="margin-top: 16px;">
+                <h2>🪙 خودکار ٹاس پیشگوئی — Suggested Winner</h2>
+                <div id="tossSuggestionContent"></div>
+            </section>
+
+            <!-- Main match prediction button -->
             <button class="calculate-btn" onclick="startPredictionAnimation()">
                 <span>نتیجہ اور تجزیہ دیکھیں</span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
