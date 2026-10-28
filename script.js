@@ -222,6 +222,48 @@ function autoEstimateLunarDate() {
     // Intentionally no-op.
 }
 
+function getPlanetaryHour(matchTimeValue, sunriseValue, sunsetValue) {
+    if (!matchTimeValue || !sunriseValue || !sunsetValue) return null;
+    const match = new Date(matchTimeValue);
+    if (Number.isNaN(match.getTime())) return null;
+    const date = new Date(match.getFullYear(), match.getMonth(), match.getDate());
+    const makeAt = (base, time) => {
+        const parts = time.split(":").map(Number);
+        const d = new Date(base);
+        d.setHours(parts[0], parts[1], 0, 0);
+        return d;
+    };
+    const sunrise = makeAt(date, sunriseValue);
+    const sunset = makeAt(date, sunsetValue);
+    if (sunset <= sunrise) return null;
+    const tomorrow = new Date(date);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const nextSunrise = makeAt(tomorrow, sunriseValue);
+    const yesterday = new Date(date);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const previousSunset = makeAt(yesterday, sunsetValue);
+    const weekday = date.getDay();
+    // Chaldean order, beginning each weekday with that day's traditional ruler.
+    const sequence = ["زحل (Saturn)", "مشتری (Jupiter)", "مریخ (Mars)", "شمس (Sun)", "زہرہ (Venus)", "عطارد (Mercury)", "قمر (Moon)"];
+    const dayRulerIndex = [3, 6, 2, 5, 1, 4, 0][weekday];
+    let elapsed, segmentLength, hourNumber;
+    if (match >= sunrise && match < sunset) {
+        elapsed = match - sunrise;
+        segmentLength = (sunset - sunrise) / 12;
+        hourNumber = Math.floor(elapsed / segmentLength);
+    } else {
+        const nightStart = match >= sunset ? sunset : previousSunset;
+        const nightEnd = match >= sunset ? nextSunrise : sunrise;
+        if (match < nightStart || match >= nightEnd) return null;
+        elapsed = match - nightStart;
+        segmentLength = (nightEnd - nightStart) / 12;
+        hourNumber = 12 + Math.floor(elapsed / segmentLength);
+    }
+    const rulers = [];
+    for (let i = 0; i < 24; i++) rulers.push(sequence[(dayRulerIndex + i) % 7]);
+    return { number: Math.min(24, hourNumber + 1), planet: rulers[Math.min(23, hourNumber)], type: hourNumber < 12 ? "دن" : "رات" };
+}
+
 function startPredictionAnimation() {
     let loader = document.getElementById("loaderBox");
     let resultBox = document.getElementById("resultBox");
@@ -244,6 +286,8 @@ function calculatePrediction() {
     let matchTimeInput = document.getElementById("matchTime") ? document.getElementById("matchTime").value : "";
     let matchFormat = document.getElementById("matchFormat") ? document.getElementById("matchFormat").value : "t20";
     let tossWinnerChoice = document.getElementById("tossWinner").value;
+    let sunriseInput = document.getElementById("sunriseTime") ? document.getElementById("sunriseTime").value : "";
+    let sunsetInput = document.getElementById("sunsetTime") ? document.getElementById("sunsetTime").value : "";
 
     if (!team1.trim() || !team2.trim() || !captain1.trim() || !captain2.trim()) {
         alert("براہِ کرم دونوں ٹیمیں اور دونوں کپتان درج/منتخب کریں۔");
@@ -308,11 +352,9 @@ function calculatePrediction() {
         }
     }
 
-    // Authentic Symmetrical calculation incorporating Match Day energy equally for both
-    let dayEnergyFactor = (dayIndex + 3) * 5; 
-
-    let score1 = t1Val + c1Val + Math.floor(groundVal / 10) + dayEnergyFactor;
-    let score2 = t2Val + c2Val + Math.floor(groundVal / 10) + dayEnergyFactor;
+    // Symmetric Abjad score: toss choice must never affect the predicted match winner.
+    const score1 = t1Val + c1Val + Math.floor(groundVal / 10);
+    const score2 = t2Val + c2Val + Math.floor(groundVal / 10);
 
     // Toss calculation independent of user choice
     let predictedTossWinner = (c1Val >= c2Val) ? captain1 : captain2;
@@ -321,12 +363,11 @@ function calculatePrediction() {
     let tossWinnerName = (tossWinnerChoice === "captain1") ? captain1 : captain2;
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
 
-    let tossImpactText = `کپتان (${tossWinnerName}) کے منتخب کردہ ٹاس کی بنیاد پر ٹیم (${tossTeam}) کو میدان میں کنٹرول حاصل ہے۔`;
-    if (tossWinnerChoice === "captain1") {
-        score1 += 15;
-    } else {
-        score2 += 15;
-    }
+    let tossImpactText = `آپ نے ٹاس کی معلومات کے لیے (${tossTeam}) منتخب کی ہے۔ یہ انتخاب میچ کے فاتح کے حساب پر اثر انداز نہیں ہوتا۔`;
+    const planetaryHour = getPlanetaryHour(matchTimeInput, sunriseInput, sunsetInput);
+    const planetaryHourText = planetaryHour
+        ? `${planetaryHour.type} کا ${planetaryHour.number} واں سیارہ وار وقت — ${planetaryHour.planet}`
+        : "سیاروی ساعت نہیں نکالی گئی؛ درست میچ تاریخ، مقامی طلوعِ آفتاب اور غروبِ آفتاب درج کریں۔";
 
     let winningTeam = (score1 >= score2) ? team1 : team2;
 
@@ -354,6 +395,7 @@ function calculatePrediction() {
             <br>• میچ کا دن: <span style="color: #38bdf8;">${matchDayName}</span> | حاکم سیارہ: <span style="color: #38bdf8;">${dayRulingPlanet}</span>
             <br>• ٹیم 1 ابجدی عنصر: <span style="color: #38bdf8;">${t1Element}</span> | ٹیم 2 ابجدی عنصر: <span style="color: #38bdf8;">${t2Element}</span>
             <br>• چاند کی <span style="color: #38bdf8;">${lunarDateVal}</span> تاریخ اور گراؤنڈ (${escapeHTML(ground)})۔
+            <br>• روایتی سیاروی ساعت: <span style="color: #38bdf8;">${escapeHTML(planetaryHourText)}</span>
         </div>
 
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: right; direction: rtl;">
