@@ -354,6 +354,8 @@ function calculatePrediction() {
         }
     }
 
+    const planetaryHour = getPlanetaryHour(matchTimeInput, sunriseInput, sunsetInput);
+
     // Combined weighted model: Abjad remains primary; other factors act as smaller modifiers.
     // This is a transparent numerology heuristic, not a scientifically validated predictor.
     const weights = { teamAbjad: 50, captainAbjad: 25, ground: 10, weekday: 7, planetaryHour: 5, lunarDate: 3 };
@@ -389,7 +391,6 @@ function calculatePrediction() {
     let tossTeam = (tossWinnerChoice === "captain1") ? team1 : team2;
 
     let tossImpactText = `آپ نے ٹاس کی معلومات کے لیے (${tossTeam}) منتخب کی ہے۔ یہ انتخاب میچ کے فاتح کے حساب پر اثر انداز نہیں ہوتا۔`;
-    const planetaryHour = getPlanetaryHour(matchTimeInput, sunriseInput, sunsetInput);
     const planetaryHourText = planetaryHour
         ? `${planetaryHour.type} کا ${planetaryHour.number} واں سیارہ وار وقت — ${planetaryHour.planet}`
         : "سیاروی ساعت نہیں نکالی گئی؛ درست میچ تاریخ، مقامی طلوعِ آفتاب اور غروبِ آفتاب درج کریں۔";
