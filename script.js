@@ -5,11 +5,11 @@ const teamsData = [
     { name: "آسٹریلیا", captains: { test: "پیٹ کمنز", odi: "مچل مارش", t20: "مچل مارش" } },
     { name: "بنگلہ دیش", captains: { test: "نجم الحسن شانتو", odi: "مہدی حسن میراز", t20: "لٹن داس" } },
     { name: "انگلینڈ", captains: { test: "بین اسٹوکس", odi: "ہیری بروک", t20: "ہیری بروک" } },
-    { name: "بھارت", captains: { test: "شبمن گل", odi: "شبمن گل", t20: "سوریہ کمار یادو" } },
+    { name: "انڈیا", captains: { test: "شبمن گل", odi: "شبمن گل", t20: "سوریہ کمار یادو" } },
     { name: "آئرلینڈ", captains: { test: "اینڈی بالبرنی", odi: "پال اسٹرلنگ", t20: "لورکن ٹکر" } },
     { name: "نیوزی لینڈ", captains: { test: "ٹام لیتھم", odi: "مچل سینٹنر", t20: "مچل سینٹنر" } },
     { name: "پاکستان", captains: { test: "شان مسعود", odi: "شاہین شاہ آفریدی", t20: "سلمان علی آغا" } },
-    { name: "جنوبی افریقہ", captains: { test: "ٹেম্বا باووما", odi: "ٹেম্বا باووما", t20: "ایڈن مارکرم" } },
+    { name: "جنوبی افریقہ", captains: { test: "ٹیمبا باووما", odi: "ٹیمبا باووما", t20: "ایڈن مارکرم" } },
     { name: "سری لنکا", captains: { test: "دھننجایا ڈی سلوا", odi: "چارتھ اسالنکا", t20: "داسن شناکا" } },
     { name: "ویسٹ انڈیز", captains: { test: "روسٹن چیز", odi: "شائی ہوپ", t20: "شائی ہوپ" } },
     { name: "زمبابوے", captains: { test: "رچرڈ نگاراوا", odi: "رچرڈ نگاراوا", t20: "سکندر رضا" } },
@@ -206,23 +206,20 @@ function getUrduAbjadValue(text) {
     return totalSum > 0 ? totalSum : 10;
 }
 
-function getZodiacElement(val) {
-    const elements = ["آتشي (Fire)", "خاكي (Earth)", "هوائي (Air)", "آبي (Water)"];
-    return elements[val % 4];
+function getAbjadElement(val) {
+    const elements = ["آتشی (Fire)", "خاکی (Earth)", "ہوائی (Air)", "آبی (Water)"];
+    return elements[((val % 4) + 4) % 4];
 }
 
+function escapeHTML(value) {
+    const entities = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+    return String(value).replace(/[&<>"']/g, char => entities[char]);
+}
+
+// Gregorian day-of-month is not a reliable Hijri-date conversion.
+// Keep the lunar date as a manual input unless a verified Hijri calendar/API is integrated.
 function autoEstimateLunarDate() {
-    let matchTimeInput = document.getElementById("matchTime").value;
-    let lunarInput = document.getElementById("lunarDate");
-    
-    if (matchTimeInput && lunarInput) {
-        let dateObj = new Date(matchTimeInput);
-        if (!isNaN(dateObj.getTime())) {
-            let dayOfMonth = dateObj.getDate();
-            let estimatedLunar = (dayOfMonth % 29) + 1; 
-            lunarInput.value = estimatedLunar;
-        }
-    }
+    // Intentionally no-op.
 }
 
 function startPredictionAnimation() {
@@ -247,8 +244,21 @@ function calculatePrediction() {
     let matchTimeInput = document.getElementById("matchTime") ? document.getElementById("matchTime").value : "";
     let matchFormat = document.getElementById("matchFormat") ? document.getElementById("matchFormat").value : "t20";
     let tossWinnerChoice = document.getElementById("tossWinner").value;
+
+    if (!team1.trim() || !team2.trim() || !captain1.trim() || !captain2.trim()) {
+        alert("براہِ کرم دونوں ٹیمیں اور دونوں کپتان درج/منتخب کریں۔");
+        return;
+    }
+    if (team1.trim() === team2.trim()) {
+        alert("براہِ کرم دو مختلف ٹیمیں منتخب کریں۔");
+        return;
+    }
     
-    let lunarDateVal = parseInt(document.getElementById("lunarDate") ? document.getElementById("lunarDate").value : 15) || 15;
+    let lunarDateVal = parseInt(document.getElementById("lunarDate") ? document.getElementById("lunarDate").value : 15, 10);
+    if (!Number.isInteger(lunarDateVal) || lunarDateVal < 1 || lunarDateVal > 30) {
+        alert("قمری تاریخ 1 سے 30 کے درمیان درج کریں۔");
+        return;
+    }
 
     // Full Authentic Abjad Values
     let t1Val = getUrduAbjadValue(team1);
@@ -257,8 +267,8 @@ function calculatePrediction() {
     let c2Val = getUrduAbjadValue(captain2);
     let groundVal = getUrduAbjadValue(ground);
 
-    let t1Element = getZodiacElement(t1Val);
-    let t2Element = getZodiacElement(t2Val);
+    let t1Element = getAbjadElement(t1Val);
+    let t2Element = getAbjadElement(t2Val);
 
     let matchDayName = "اتوار";
     let dayRulingPlanet = "شمس (سورج)";
@@ -266,16 +276,16 @@ function calculatePrediction() {
 
     // Base scores per format
     let baseScore1 = 165;
-    let baseScore2 = 155;
+    let baseScore2 = 165;
     let formatLabel = "ٹی ٹوئنٹی میچ";
 
     if (matchFormat === "odi") {
         baseScore1 = 285;
-        baseScore2 = 270;
+        baseScore2 = 285;
         formatLabel = "یک روزہ میچ (ODI)";
     } else if (matchFormat === "test") {
         baseScore1 = 350;
-        baseScore2 = 320;
+        baseScore2 = 350;
         formatLabel = "ٹیسٹ میچ (فی اننگز)";
     }
 
@@ -321,15 +331,16 @@ function calculatePrediction() {
     let winningTeam = (score1 >= score2) ? team1 : team2;
 
     let multiplier = (matchFormat === "odi") ? 1.8 : (matchFormat === "test" ? 2.5 : 1);
-    let estimatedTotal1 = Math.round(baseScore1 + (groundVal % 30) * multiplier);
-    let estimatedTotal2 = Math.round(baseScore2 + (groundVal % 25) * (multiplier * 0.9));
+    // Use the same estimation formula for both teams.
+    let estimatedTotal1 = Math.round(baseScore1 + ((t1Val + c1Val + groundVal) % 30) * multiplier);
+    let estimatedTotal2 = Math.round(baseScore2 + ((t2Val + c2Val + groundVal) % 30) * multiplier);
     let rangeSpan = (matchFormat === "test") ? 40 : (matchFormat === "odi" ? 25 : 15);
 
     let analysisHTML = `
         <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
             <strong>🪙 ٹاس کی پیشگوئی (Toss Prediction):</strong> 
-            <br>مقررہ میچ دن (<span style="color: #38bdf8; font-weight: bold;">${matchDayName}</span>) اور کپتانوں کی ابجد طاقت کے مطابق ٹاس کی صلاحیت <span style="color: #38bdf8; font-weight: bold;">${predictedTossWinner} (${predictedTossTeam})</span> کی ہے۔
-            <br><br>✨ **صارف کا ٹاس انتخاب:** ${tossImpactText}
+            <br>مقررہ میچ دن (<span style="color: #38bdf8; font-weight: bold;">${matchDayName}</span>) اور کپتانوں کی ابجد طاقت کے مطابق ٹاس کی صلاحیت <span style="color: #38bdf8; font-weight: bold;">${escapeHTML(predictedTossWinner)} (${escapeHTML(predictedTossTeam)})</span> کی ہے۔
+            <br><br>✨ **صارف کا ٹاس انتخاب:** ${escapeHTML(tossImpactText)}
         </div>
 
         <div class="analysis-section" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
@@ -341,13 +352,13 @@ function calculatePrediction() {
         <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
             <strong>📅 میچ کا دن اور سیارہ:</strong> 
             <br>• میچ کا دن: <span style="color: #38bdf8;">${matchDayName}</span> | حاکم سیارہ: <span style="color: #38bdf8;">${dayRulingPlanet}</span>
-            <br>• ٹیم 1 عنصر: <span style="color: #38bdf8;">${t1Element}</span> | ٹیم 2 عنصر: <span style="color: #38bdf8;">${t2Element}</span>
-            <br>• چاند کی <span style="color: #38bdf8;">${lunarDateVal}</span> تاریخ اور گراؤنڈ (${ground})۔
+            <br>• ٹیم 1 ابجدی عنصر: <span style="color: #38bdf8;">${t1Element}</span> | ٹیم 2 ابجدی عنصر: <span style="color: #38bdf8;">${t2Element}</span>
+            <br>• چاند کی <span style="color: #38bdf8;">${lunarDateVal}</span> تاریخ اور گراؤنڈ (${escapeHTML(ground)})۔
         </div>
 
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: right; direction: rtl;">
             <strong>🔮 ستاروں کا حتمی نتیجہ:</strong> 
-            <br>میچ کے اصل دن کے حاکم سیارے اور اصلی ابجدِ کبیر کے متوازن حساب کے بعد، اس مقابلے میں فاتح ٹیم <strong style="color: #38bdf8;">${winningTeam}</strong> ہوگی!
+            <br>ابجدی اسکور کے اس تخمینی ماڈل کے مطابق، اس مقابلے میں ممکنہ فاتح ٹیم <strong style="color: #38bdf8;">${escapeHTML(winningTeam)}</strong> ہوگی!
         </div>
     `;
 
