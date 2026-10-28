@@ -339,7 +339,7 @@ function calculatePrediction() {
     let analysisHTML = `
         <div class="analysis-section" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: right; direction: rtl;">
             <strong>🪙 ٹاس کی پیشگوئی (Toss Prediction):</strong> 
-            <br>مقررہ میچ دن (<span style="color: #38bdf8; font-weight: bold;">${matchDayName}</span>) اور کپتانوں کی ابجد طاقت کے مطابق ٹاس کی صلاحیت <span style="color: #38bdf8; font-weight: bold;">${escapeHTML(predictedTossWinner)} (${escapeHTML(predictedTossTeam)})</span> کی ہے۔
+            <br>میچ کے دن (<span style="color: #38bdf8; font-weight: bold;">${matchDayName}</span>) اور کپتانوں کے ابجدی مجموعے کی بنیاد پر ٹاس کا اندازہ <span style="color: #38bdf8; font-weight: bold;">${escapeHTML(predictedTossWinner)} (${escapeHTML(predictedTossTeam)})</span> کی ہے۔
             <br><br>✨ **صارف کا ٹاس انتخاب:** ${escapeHTML(tossImpactText)}
         </div>
 
@@ -350,14 +350,14 @@ function calculatePrediction() {
         </div>
 
         <div class="analysis-section" style="text-align: right; direction: rtl; margin-bottom: 12px; padding: 8px;">
-            <strong>📅 میچ کا دن اور سیارہ:</strong> 
+            <strong>📅 میچ کا دن اور روایتی حاکم سیارہ:</strong> 
             <br>• میچ کا دن: <span style="color: #38bdf8;">${matchDayName}</span> | حاکم سیارہ: <span style="color: #38bdf8;">${dayRulingPlanet}</span>
             <br>• ٹیم 1 ابجدی عنصر: <span style="color: #38bdf8;">${t1Element}</span> | ٹیم 2 ابجدی عنصر: <span style="color: #38bdf8;">${t2Element}</span>
             <br>• چاند کی <span style="color: #38bdf8;">${lunarDateVal}</span> تاریخ اور گراؤنڈ (${escapeHTML(ground)})۔
         </div>
 
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: right; direction: rtl;">
-            <strong>🔮 ستاروں کا حتمی نتیجہ:</strong> 
+            <strong>🔮 ابجدی ماڈل کا حتمی تخمینہ:</strong> 
             <br>ابجدی اسکور کے اس تخمینی ماڈل کے مطابق، اس مقابلے میں ممکنہ فاتح ٹیم <strong style="color: #38bdf8;">${escapeHTML(winningTeam)}</strong> ہوگی!
         </div>
     `;
