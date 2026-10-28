@@ -504,7 +504,7 @@ function calculatePrediction() {
     if (matchFormat === "odi") {
         baseScore1 = 285;
         baseScore2 = 285;
-        formatLabel = "یک روزہ میچ (ODI)";
+        formatLabel = "ایک روزہ میچ (ODI)";
     } else if (matchFormat === "test") {
         baseScore1 = 350;
         baseScore2 = 350;
