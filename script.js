@@ -617,9 +617,7 @@ function calculatePrediction() {
         </div>
 
         <div class="analysis-section" style="border-top: 1px dashed #334155; padding-top: 12px; margin-top: 10px; text-align: right; direction: rtl;">
-            <strong>🔮 مشترکہ وزنی ماڈل کا حتمی تخمینہ:</strong>
-            <br>اس عددی تخمینی ماڈل کے مطابق ممکنہ نتیجہ: <strong style="color: #38bdf8;">${escapeHTML(winningTeam)}</strong>
-            <br><br><strong>دونوں ٹیموں کے مجموعی اسکور:</strong>
+            <strong>دونوں ٹیموں کے مجموعی اسکور:</strong>
             <br>• ${escapeHTML(team1)}: <strong>${finalScore1.toFixed(2)}</strong> (بنیادی ابجدی حصہ ${teamBase1.toFixed(2)} + معاون عوامل ${factors1.total.toFixed(2)})
             <br>• ${escapeHTML(team2)}: <strong>${finalScore2.toFixed(2)}</strong> (بنیادی ابجدی حصہ ${teamBase2.toFixed(2)} + معاون عوامل ${factors2.total.toFixed(2)})
             <br><br><strong>🪐 ٹاس کی سیاروی طاقت:</strong>
@@ -628,6 +626,11 @@ function calculatePrediction() {
             <br><br><strong>وزن:</strong> ٹیم ابجد 50، کپتان ابجد 25، گراؤنڈ 10، دن کا حاکم 7، سیاروی ساعت ${hourFactorIndex === null ? "0 (دستیاب نہیں)" : "5"}، قمری تاریخ 3 پوائنٹس۔
             <br><strong>فعال مجموعی وزن:</strong> ${activeWeightTotal}/100 پوائنٹس۔
             <br><small>نوٹ: یہ ایک روایتی عددی مفروضاتی ماڈل ہے؛ اس کی پیش گوئی کی درستگی ثابت کرنے کے لیے تاریخی میچوں پر بیک ٹیسٹ ضروری ہے۔</small>
+            <br><br><div style="border-top: 2px solid #38bdf8; margin-top: 16px; padding-top: 14px; text-align: center;">
+                <strong>🔮 مشترکہ وزنی ماڈل کا حتمی تخمینہ</strong>
+                <br><br>اس عددی تخمینی ماڈل کے مطابق ممکنہ نتیجہ:
+                <br><strong style="color: #38bdf8; font-size: 1.25em;">${escapeHTML(winningTeam)}</strong>
+            </div>
         </div>
     `;
 
