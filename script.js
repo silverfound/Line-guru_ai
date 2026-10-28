@@ -382,6 +382,10 @@ function calculatePrediction() {
     const factors2 = supportingScore(t2Val, c2Val);
     const score1 = teamBase1 + factors1.total;
     const score2 = teamBase2 + factors2.total;
+    // If planetary-hour data is unavailable, its 5 points are omitted safely.
+    // The remaining active factors total 95 points; no crash and no invented hour.
+    const activeWeightTotal = weights.teamAbjad + weights.captainAbjad + weights.ground +
+        weights.weekday + (hourFactorIndex === null ? 0 : weights.planetaryHour) + weights.lunarDate;
 
     // Toss calculation independent of user choice
     let predictedTossWinner = (c1Val >= c2Val) ? captain1 : captain2;
@@ -430,7 +434,8 @@ function calculatePrediction() {
             <br><br><strong>دونوں ٹیموں کے مجموعی اسکور:</strong>
             <br>• ${escapeHTML(team1)}: <strong>${score1.toFixed(2)}</strong> (بنیادی ابجدی حصہ ${teamBase1.toFixed(2)} + معاون عوامل ${factors1.total.toFixed(2)})
             <br>• ${escapeHTML(team2)}: <strong>${score2.toFixed(2)}</strong> (بنیادی ابجدی حصہ ${teamBase2.toFixed(2)} + معاون عوامل ${factors2.total.toFixed(2)})
-            <br><br><strong>وزن:</strong> ٹیم ابجد 50%، کپتان ابجد 25%، گراؤنڈ 10%، دن کا حاکم 7%، سیاروی ساعت 5%، قمری تاریخ 3%.
+            <br><br><strong>وزن:</strong> ٹیم ابجد 50، کپتان ابجد 25، گراؤنڈ 10، دن کا حاکم 7، سیاروی ساعت ${hourFactorIndex === null ? "0 (دستیاب نہیں)" : "5"}، قمری تاریخ 3 پوائنٹس۔
+            <br><strong>فعال مجموعی وزن:</strong> ${activeWeightTotal}/100 پوائنٹس۔
             <br><small>نوٹ: یہ ایک روایتی عددی مفروضاتی ماڈل ہے؛ اس کی پیش گوئی کی درستگی ثابت کرنے کے لیے تاریخی میچوں پر بیک ٹیسٹ ضروری ہے۔</small>
         </div>
     `;
