@@ -58,64 +58,73 @@
                     <input type="hidden" id="team2">
                 </div>
 
-                <!-- Match Details -->
-                <div class="input-group">
-                    <label for="ground">گراؤنڈ / شہر</label>
-                    <input type="text" id="ground" placeholder="مثال: راولپنڈی">
-                </div>
 
-                <div class="input-group">
-                    <label for="lunarDate">چاند کی تاریخ (قمری)</label>
-                    <input type="number" id="lunarDate" min="1" max="30" value="15">
-                </div>
-
-                <div class="input-group full-width">
-                    <label for="matchTime">میچ کی تاریخ اور وقت</label>
-                    <input type="datetime-local" id="matchTime">
-                </div>
-
-                <!-- Local sunrise and sunset are needed for traditional planetary-hour calculation -->
-                <div class="input-group">
-                    <label for="sunriseTime">مقامی طلوعِ آفتاب</label>
-                    <input type="time" id="sunriseTime" aria-describedby="solarTimeHelp">
-                </div>
-                <div class="input-group">
-                    <label for="sunsetTime">مقامی غروبِ آفتاب</label>
-                    <input type="time" id="sunsetTime" aria-describedby="solarTimeHelp">
-                </div>
-                <p id="solarTimeHelp" class="full-width">سیاروی ساعت کے لیے میچ کے مقام کے مطابق اسی تاریخ کا درست طلوع و غروب درج کریں۔</p>
-
-                <div class="input-group full-width">
-                    <label for="tossTime">ٹاس کا وقت (اختیاری؛ خالی ہو تو میچ سے 30 منٹ پہلے)</label>
-                    <input type="datetime-local" id="tossTime">
-                </div>
-
-                <!-- Manual actual toss result for the main match prediction -->
-                <div class="input-group full-width">
-                    <label for="tossWinner">اصل ٹاس جیتنے والی ٹیم (مین میچ پریڈکشن کے لیے)</label>
-                    <select id="tossWinner">
-                        <option value="">-- اصل ٹاس کا نتیجہ منتخب کریں --</option>
-                        <option value="captain1">پہلی ٹیم کا کپتان</option>
-                        <option value="captain2">دوسری ٹیم کا کپتان</option>
-                    </select>
-                </div>
             </div>
 
-            <!-- Separate automatic toss suggestion; never feeds the main prediction automatically -->
-            <button class="calculate-btn" type="button" onclick="calculateSuggestedTossWinner()">
+            <section class="workflow-section" aria-labelledby="tossWorkflowHeading" style="margin-top:24px;padding:18px;border:1px solid #64748b;border-radius:12px;">
+                <h2 id="tossWorkflowHeading">🪙 الگ ٹاس پیشگوئی</h2>
+                <p>یہ حصہ صرف Suggested Toss Winner دکھاتا ہے۔ اس کا مین میچ اسکور یا اصل ٹاس کے انتخاب پر کوئی اثر نہیں ہوگا۔</p>
+                <div class="input-grid">
+                    <div class="input-group full-width">
+                        <label for="matchTime">میچ کی تاریخ اور وقت (ٹاس وقت اخذ کرنے کے لیے)</label>
+                        <input type="datetime-local" id="matchTime">
+                    </div>
+                    <div class="input-group">
+                        <label for="sunriseTime">مقامی طلوعِ آفتاب</label>
+                        <input type="time" id="sunriseTime" aria-describedby="solarTimeHelp">
+                    </div>
+                    <div class="input-group">
+                        <label for="sunsetTime">مقامی غروبِ آفتاب</label>
+                        <input type="time" id="sunsetTime" aria-describedby="solarTimeHelp">
+                    </div>
+                    <p id="solarTimeHelp" class="full-width">سیاروی ساعت کے لیے میچ کے مقام کے مطابق اسی تاریخ کا درست طلوع و غروب درج کریں۔</p>
+                    <div class="input-group full-width">
+                        <label for="tossTime">ٹاس کا وقت (اختیاری؛ خالی ہو تو میچ سے 30 منٹ پہلے)</label>
+                        <input type="datetime-local" id="tossTime">
+                    </div>
+                </div>
+                <!-- This button runs only the automatic toss model. -->
+                <button class="calculate-btn" type="button" onclick="calculateSuggestedTossWinner()">
+                    <span>صرف ٹاس پیشگوئی دیکھیں</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+                <section id="tossSuggestionBox" class="result-card hidden" aria-live="polite" style="margin-top:16px;">
+                    <h2>خودکار ٹاس پیشگوئی — Suggested Winner</h2>
+                    <div id="tossSuggestionContent"></div>
+                </section>
+            </section>
+
+            <section class="workflow-section" aria-labelledby="matchWorkflowHeading" style="margin-top:24px;padding:18px;border:1px solid #64748b;border-radius:12px;">
+                <h2 id="matchWorkflowHeading">🏏 مین میچ پریڈکشن</h2>
+                <p>یہ پریڈکشن اصل ٹاس کے بعد چلائیں۔ اصل ٹاس جیتنے والی ٹیم خود منتخب کرنا لازمی ہے۔</p>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="ground">گراؤنڈ / شہر</label>
+                        <input type="text" id="ground" placeholder="مثال: راولپنڈی">
+                    </div>
+                    <div class="input-group">
+                        <label for="lunarDate">چاند کی تاریخ (قمری)</label>
+                        <input type="number" id="lunarDate" min="1" max="30" value="15">
+                    </div>
+                    <div class="input-group full-width">
+                        <label for="tossWinner">اصل ٹاس جیتنے والی ٹیم (لازمی)</label>
+                        <select id="tossWinner">
+                            <option value="">-- اصل ٹاس کا نتیجہ منتخب کریں --</option>
+                            <option value="captain1">پہلی ٹیم کا کپتان</option>
+                            <option value="captain2">دوسری ٹیم کا کپتان</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Main prediction is independent and requires the actual toss selection. -->
+                <button class="calculate-btn" type="button" onclick="startPredictionAnimation()">
+                    <span>مین میچ پریڈکشن چلائیں</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </section>
                 <span>خودکار ٹاس پیشگوئی دیکھیں</span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </button>
-            <section id="tossSuggestionBox" class="result-card hidden" aria-live="polite" style="margin-top: 16px;">
-                <h2>🪙 خودکار ٹاس پیشگوئی — Suggested Winner</h2>
-                <div id="tossSuggestionContent"></div>
-            </section>
 
-            <!-- Main match prediction button -->
-            <button class="calculate-btn" onclick="startPredictionAnimation()">
-                <span>نتیجہ اور تجزیہ دیکھیں</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
         </main>
 
         <!-- Loading Spinner (Hidden by default) -->
