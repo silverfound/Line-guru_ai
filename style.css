@@ -351,3 +351,65 @@ select:focus-visible,
         transition-duration: 0.01ms !important;
     }
 }
+
+
+/* Keep Urdu text comfortably inside columns and form controls */
+.app-header,
+.app-header h1,
+.app-header p,
+.input-group,
+.input-group label,
+.result-card,
+.result-card h2,
+.analysis-section {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.app-header h1,
+.app-header p,
+.input-group label,
+.result-card h2 {
+    text-align: center;
+    padding-inline: 8px;
+}
+
+.input-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.input-group.full-width {
+    grid-column: 1 / -1;
+}
+
+input,
+select {
+    max-width: 100%;
+    min-width: 0;
+    padding-inline: 14px;
+    text-overflow: clip;
+}
+
+@media (max-width: 600px) {
+    .input-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .input-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .app-header h1,
+    .app-header p,
+    .input-group label {
+        text-align: center;
+        padding-inline: 10px;
+    }
+
+    .prediction-card,
+    .result-card {
+        overflow: visible;
+    }
+}
