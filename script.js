@@ -569,7 +569,7 @@ async function refreshPublishedCricketFeed() {
             const hasScore = score => /\d/.test(score);
             const inningsComplete = (score, maxOvers) => {
                 if (!hasScore(score)) return false;
-                return /\/\s*10\b/.test(score) || new RegExp("(?:^|\\s)(?:" + maxOvers + ")(?:\\.0)?\\s*ov\\b", "i").test(score);
+                return /\/\s*10\b/.test(score) || new RegExp("(?:^|[\\s(])(?:" + maxOvers + ")(?:\\.0)?\\s*ov\\b", "i").test(score);
             };
             const resultText = /won by|match drawn|tied|abandoned|no result|cancelled|conceded|result:|match finished|completed|finished|innings complete/i.test(value);
             if (resultText) return "completed";
