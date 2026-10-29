@@ -13,7 +13,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Plus Jakarta Sans', 'Noto Nastaliq Urdu', sans-serif;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
 }
 
 body {
@@ -22,7 +22,7 @@ body {
     color: var(--text-color);
     min-height: 100vh;
     padding: 20px;
-    direction: rtl;
+    direction: ltr;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -44,7 +44,7 @@ body {
     font-size: 1.8rem;
     color: var(--primary-color);
     margin-bottom: 6px;
-    font-family: 'Noto Nastaliq Urdu', serif;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
     line-height: 2.2;
     padding-top: 6px;
     padding-bottom: 6px;
@@ -54,7 +54,7 @@ body {
 .app-header p {
     font-size: 0.9rem;
     color: var(--text-muted);
-    font-family: 'Noto Nastaliq Urdu', serif;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
     line-height: 2.2;
     padding: 4px 2px 8px;
     overflow-wrap: anywhere;
@@ -90,7 +90,7 @@ body {
     color: var(--text-muted);
     margin-bottom: 6px;
     font-weight: 500;
-    font-family: 'Noto Nastaliq Urdu', serif;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
     line-height: 2;
     padding-top: 2px;
 }
@@ -102,7 +102,7 @@ input, select {
     padding: 10px 14px;
     color: var(--text-color);
     font-size: 0.95rem;
-    font-family: 'Noto Nastaliq Urdu', serif;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
     line-height: 2;
     min-height: 48px;
     outline: none;
@@ -123,7 +123,7 @@ input:focus, select:focus {
     padding: 14px;
     font-size: 1rem;
     font-weight: 600;
-    font-family: 'Noto Nastaliq Urdu', serif;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
     line-height: 2;
     min-height: 54px;
     cursor: pointer;
@@ -166,7 +166,7 @@ input:focus, select:focus {
     margin-bottom: 16px;
     border-bottom: 1px solid #334155;
     padding-bottom: 8px;
-    font-family: 'Noto Nastaliq Urdu', serif;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
     line-height: 2.2;
     padding-top: 4px;
 }
@@ -191,7 +191,7 @@ input:focus, select:focus {
 }
 
 
-/* Urdu Nastaliq text: prevent clipping inside form controls */
+/* English text: prevent clipping inside form controls */
 select,
 input[type="text"],
 input[type="datetime-local"],
@@ -415,7 +415,7 @@ select {
 }
 
 
-/* Center Urdu labels and field values for a balanced, spacious form */
+/* Center English labels and field values for a balanced, spacious form */
 .input-group {
     align-items: stretch;
     text-align: center;
@@ -434,10 +434,10 @@ select {
     text-align: center;
     text-align-last: center;
     padding-inline: 18px;
-    direction: rtl;
+    direction: ltr;
 }
 
-/* Keep date/time controls usable while centering ordinary Urdu fields */
+/* Keep date/time controls usable while centering ordinary English fields */
 .input-group input[type="datetime-local"],
 .input-group input[type="number"] {
     text-align: center;
@@ -446,7 +446,7 @@ select {
 
 .input-group input::placeholder {
     text-align: center;
-    direction: rtl;
+    direction: ltr;
 }
 
 @media (max-width: 600px) {
