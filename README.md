@@ -7,7 +7,7 @@ The interface and built-in team/captain data are English-only. The existing pred
 GitHub Actions workflow: `.github/workflows/cricket-data-refresh.yml`
 
 - Automatic scheduling is intentionally disabled. The workflow runs only when manually started from GitHub Actions.
-- Each run makes at most one Big Balls request, two OpenCricket requests, and one CricketData.org request.
+- Each run makes at most one Big Balls request, two OpenCricket requests, and two CricketData.org requests (current matches + scheduled matches).
 - A local guard skips healthy repeat runs that occur less than 5 hours 45 minutes after the last feed write. If the previous feed contains provider errors or invalid/undated records, one diagnostic refresh is allowed inside that interval.
 - Provider errors include the HTTP status and safe error details where available; request URLs and API keys are never logged.
 - The feed filters placeholder team names and matches without ISO-formatted dates before publishing, so undated fixtures do not appear as upcoming matches.
@@ -29,7 +29,7 @@ When ready to spend API quota, open **Actions → Refresh free cricket data → 
 
 ## Quota planning
 
-There are no automatic runs while the app is being finalized. Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests, and 1 CricketData request. A 5h45m minimum interval guard limits repeat runs. Provider-side limits always take precedence.
+There are no automatic runs while the app is being finalized. Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests, and 2 CricketData requests (currentMatches + matches). A 5h45m minimum interval guard limits repeat runs. Provider-side limits always take precedence.
 
 ## Current limitations
 
