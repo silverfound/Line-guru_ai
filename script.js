@@ -391,12 +391,15 @@ function calculatePrediction() {
     const legalBalls = parseCricketOvers(document.getElementById("overs").value);
     if (legalBalls === null) return showError("Enter overs correctly, e.g. 15.2 (15 overs and 2 balls).");
 
+    // Test innings have no fixed over limit; a Test chase also needs the
+    // match time/overs remaining, which this form does not currently collect.
+    if (format === "test" && inningsType === "chase") {
+        return showError("Test-match chase probability needs the remaining match time or overs. This calculator currently supports T20 and ODI chase estimates only.");
+    }
+
     const standardOvers = format === "t20" ? 20 : format === "odi" ? 50 : 90;
     const maxBalls = standardOvers * 6;
     if (format !== "test" && legalBalls > maxBalls) {
-        return showError("The entered overs exceed the limit for the selected format.");
-    }
-    if (inningsType === "chase" && legalBalls > maxBalls) {
         return showError("The entered overs exceed the limit for the selected format.");
     }
 
@@ -407,7 +410,9 @@ function calculatePrediction() {
     if (format === "test") {
         const remaining = Math.max(0, 90 - oversDone);
         const wicketFactor = wickets >= 8 ? 0.55 : wickets >= 6 ? 0.75 : 1;
-        scoreProjection = oversDone <= 0 ? 300 : Math.round(currentRuns + currentRate * remaining * wicketFactor);
+        scoreProjection = wickets >= 10 ? currentRuns
+            : oversDone <= 0 ? 300
+            : Math.round(currentRuns + currentRate * remaining * wicketFactor);
         scoreLabel = "Estimated score at 90 overs";
     } else {
         const remaining = Math.max(0, standardOvers - oversDone);
@@ -419,7 +424,7 @@ function calculatePrediction() {
         } else {
             scoreProjection = Math.round(currentRuns + currentRate * remaining * wicketFactor * pitchFactor);
         }
-        scoreProjection = Math.max(currentRuns, scoreProjection);
+        scoreProjection = wickets >= 10 ? currentRuns : Math.max(currentRuns, scoreProjection);
         scoreLabel = "Projected innings score";
     }
 
@@ -430,11 +435,22 @@ function calculatePrediction() {
         const target = Math.max(1, Math.floor(safeNumber("target", 1)));
         if (target <= currentRuns) {
             const battingTeam = document.getElementById("battingTeam").value;
-            win1 = battingTeam === "1" ? 98 : 2;
+            win1 = battingTeam === "1" ? 100 : 0;
             win2 = 100 - win1;
-            winReason = "The entered score has reached the target; verify the actual match situation.";
+            winReason = "The batting team has reached the target.";
+        } else if (wickets >= 10) {
+            const battingTeam = document.getElementById("battingTeam").value;
+            win1 = battingTeam === "1" ? 0 : 100;
+            win2 = 100 - win1;
+            winReason = "The batting team is all out before reaching the target.";
         } else {
             const ballsLeft = Math.max(0, maxBalls - legalBalls);
+            if (ballsLeft === 0) {
+                const battingTeam = document.getElementById("battingTeam").value;
+                win1 = battingTeam === "1" ? 0 : 100;
+                win2 = 100 - win1;
+                winReason = "No legal balls remain and the target has not been reached.";
+            } else {
             const runsNeeded = target - currentRuns;
             const requiredRate = ballsLeft > 0 ? runsNeeded / (ballsLeft / 6) : runsNeeded;
             const wicketsLeft = 10 - wickets;
@@ -449,6 +465,7 @@ function calculatePrediction() {
             win1 = battingTeam === "1" ? chaseChance : 100 - chaseChance;
             win2 = 100 - win1;
             winReason = "Chase estimate based on current and required run rates, wickets remaining, form, and pitch inputs.";
+            }
         }
     } else {
         const tossAdjustment = toss === "1" ? 3 : toss === "2" ? -3 : 0;
