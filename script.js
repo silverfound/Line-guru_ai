@@ -274,7 +274,9 @@ function clamp(value, min, max) {
 }
 
 function safeNumber(id, fallback = 0) {
-    const value = Number(document.getElementById(id).value);
+    const raw = document.getElementById(id).value;
+    if (raw === "" || raw === null || raw === undefined) return fallback;
+    const value = Number(raw);
     return Number.isFinite(value) ? value : fallback;
 }
 
@@ -330,7 +332,7 @@ function calculatePrediction() {
     if (format === "test") {
         const remaining = Math.max(0, 90 - oversDone);
         const wicketFactor = wickets >= 8 ? 0.55 : wickets >= 6 ? 0.75 : 1;
-        scoreProjection = Math.round(currentRuns + currentRate * remaining * wicketFactor);
+        scoreProjection = oversDone <= 0 ? 300 : Math.round(currentRuns + currentRate * remaining * wicketFactor);
         scoreLabel = "90 اوور تک تخمینی اسکور";
     } else {
         const remaining = Math.max(0, standardOvers - oversDone);
