@@ -107,6 +107,20 @@ const teamsData = [
  {name:"Women's Caribbean Premier League - Barbados Royals",captain:""},
  {name:"Women's Caribbean Premier League - Guyana Amazon Warriors",captain:""},
  ,
+ // Caribbean Premier League (CPL) — men's franchises
+ {name:"Caribbean Premier League - Antigua & Barbuda Falcons",captain:""},
+ {name:"Caribbean Premier League - Barbados Royals",captain:""},
+ {name:"Caribbean Premier League - Guyana Amazon Warriors",captain:""},
+ {name:"Caribbean Premier League - Saint Lucia Kings",captain:""},
+ {name:"Caribbean Premier League - St Kitts & Nevis Patriots",captain:""},
+ {name:"Caribbean Premier League - Trinbago Knight Riders",captain:""},
+ // Major League Cricket (MLC)
+ {name:"Major League Cricket - MI New York",captain:""},
+ {name:"Major League Cricket - Los Angeles Knight Riders",captain:""},
+ {name:"Major League Cricket - Seattle Orcas",captain:""},
+ {name:"Major League Cricket - Texas Super Kings",captain:""},
+ {name:"Major League Cricket - Washington Freedom",captain:""},
+ {name:"Major League Cricket - San Francisco Unicorns",captain:""},
  // Lanka Premier League (LPL) — 2026 franchises
  {name:"Lanka Premier League - Jaffna Kings",captain:""},
  {name:"Lanka Premier League - Galle Gallants",captain:""},
