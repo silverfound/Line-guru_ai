@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": null,
+  "refreshPolicy": {
+    "scheduledRunsPerDay": 0,
+    "minimumHoursBetweenRuns": 5.75,
+    "requestBudget": "Manual runs only. Each run makes at most 1 Big Balls request, 2 OpenCricket requests and 1 CricketData request."
+  },
+  "providers": {
+    "bigBalls": {
+      "status": "not_configured",
+      "matchCount": 0,
+      "matches": []
+    },
+    "openCricket": {
+      "status": "not_configured",
+      "matchCount": 0,
+      "matches": []
+    },
+    "cricketData": {
+      "status": "not_configured",
+      "matchCount": 0,
+      "matches": []
+    }
+  },
+  "matches": [],
+  "derived": {
+    "teamForm": "Not computed until verified historical results are available.",
+    "groundAverages": "Not computed until verified scorecards are available.",
+    "pitchReport": {
+      "status": "unavailable",
+      "note": "No verified pitch report is available."
+    }
+  }
+}

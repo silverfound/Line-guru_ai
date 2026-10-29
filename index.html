@@ -10,7 +10,7 @@
     <style>
         .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}
         .brand h1{font-size:1.8rem;color:#a5f3fc;margin:0}.brand p{color:#94a3b8;margin:4px 0}
-        .status-pill{padding:8px 12px;border:1px solid #475569;border-radius:999px;font-size:.75rem;color:#fbbf24}
+        .status-pill{padding:8px 12px;border:1px solid #475569;border-radius:999px;font-size:.75rem;color:#fbbf24}.status-pill.connected{color:#86efac;border-color:#166534}.status-pill.error{color:#fca5a5;border-color:#7f1d1d}.live-feed{margin:0 0 20px;padding:16px;border:1px solid #334155;border-radius:14px;background:#0b1626}.live-feed-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.live-feed h2{margin:0;color:#a5f3fc;font-size:1.05rem}.feed-meta,.feed-empty{color:#94a3b8;font-size:.82rem;line-height:1.7}.feed-refresh{padding:8px 12px;border:1px solid #155e75;border-radius:9px;background:#083344;color:#cffafe;font:inherit;cursor:pointer}.match-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:12px}.match-item{padding:12px;border:1px solid #334155;border-radius:10px;background:#08111f}.match-item strong{color:#f8fafc}.match-item p{margin:6px 0;color:#cbd5e1;font-size:.83rem;line-height:1.6}.match-item .match-status{color:#67e8f9;font-size:.78rem}
         .section-title{margin:22px 0 12px;font-size:1.1rem;color:#a5f3fc}
         .hint{font-size:.8rem;line-height:1.8;color:#94a3b8;margin-top:6px}
         .hidden{display:none!important}
@@ -32,8 +32,17 @@
 <div class="app-container">
     <header class="topbar">
         <div class="brand"><h1>🏏 Line Guru AI</h1><p>Cricket Statistics Prediction</p></div>
-        <span class="status-pill">LIVE API: NOT CONNECTED</span>
+        <span class="status-pill" id="liveApiStatus" aria-live="polite">LIVE DATA: CHECKING FEED…</span>
     </header>
+
+    <section class="live-feed" aria-live="polite">
+        <div class="live-feed-head">
+            <h2>Live & Upcoming Matches</h2>
+            <button class="feed-refresh" id="refreshFeedButton" type="button">Refresh Match Feed</button>
+        </div>
+        <p id="feedMeta" class="feed-meta">Checking the latest published cricket feed…</p>
+        <div id="liveMatchList" class="match-list"><p class="feed-empty">Loading match data…</p></div>
+    </section>
 
     <main class="prediction-card">
         <h2 class="section-title" style="margin-top:0">Match Information</h2>
@@ -70,7 +79,7 @@
         </div>
         <button class="calculate-btn" type="button" onclick="calculatePrediction()"><span>Generate Cricket Prediction</span></button>
 
-        <div class="api-note"><strong>Live data status:</strong> This version uses manual inputs for current score and team form. It does not claim to provide live scores or trained AI. A backend and API key are required to connect a live-score provider and historical match data.</div>
+        <div class="api-note"><strong>Prediction inputs:</strong> The prediction calculation still uses the values entered in this form. Match feed data is shown separately and does not automatically overwrite your inputs. Team form and historical statistics are not yet connected.</div>
     </main>
 
     <section id="resultBox" class="result-card hidden" aria-live="polite">
@@ -78,6 +87,6 @@
         <div id="outputContent"></div>
     </section>
 </div>
-<script src="script.js?v=20261029-toss-dropdown-fix"></script>
+<script src="script.js?v=20261029-live-feed-v1"></script>
 </body>
 </html>
