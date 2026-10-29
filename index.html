@@ -52,7 +52,7 @@
             <div class="input-group"><label for="captain2">Team 2 Captain</label><input id="captain2" type="text" placeholder=""></div>
             <div class="input-group"><label for="form1">Team 1 Recent Form (%)</label><input id="form1" type="number" min="0" max="100" value="50"></div>
             <div class="input-group"><label for="form2">Team 2 Recent Form (%)</label><input id="form2" type="number" min="0" max="100" value="50"></div>
-            <div class="input-group"><label for="tossWinner">Toss Winner</label><select id="tossWinner"><option value="">Not known yet</option><option value="1"></option><option value="2"></option></select></div>
+            <div class="input-group"><label for="tossWinner">Toss Winner</label><select id="tossWinner"><option value="">Not known yet</option><option value="1">Team 1</option><option value="2">Team 2</option></select></div>
             <div class="input-group"><label for="pitchType">Pitch Type</label><select id="pitchType"><option value="neutral">Neutral</option><option value="batting">Batting-friendly</option><option value="bowling">Bowling-friendly</option></select></div>
             <div class="input-group full-width"><label for="venueAverage">Venue Average Score (optional)</label><input id="venueAverage" type="number" min="0" placeholder="T20 example: 165; ODI example: 270"><p class="hint">Used to estimate the score at the start of the first innings. Leave blank to use a default.</p></div>
         </div>
@@ -78,6 +78,6 @@
         <div id="outputContent"></div>
     </section>
 </div>
-<script src="script.js?v=20261029-teamdb-audit"></script>
+<script src="script.js?v=20261029-toss-dropdown-fix"></script>
 </body>
 </html>
