@@ -543,21 +543,69 @@ async function refreshPublishedCricketFeed() {
             list.innerHTML = '<p class="feed-empty">No matches are available in the published feed yet. Run the manual GitHub Actions refresh and merge its feed-update pull request to publish data.</p>';
             return;
         }
-        const sorted = matches.slice().sort((a, b) => {
-            const aLive = /live|in progress|innings/i.test(String(a.status || "")) ? 0 : 1;
-            const bLive = /live|in progress|innings/i.test(String(b.status || "")) ? 0 : 1;
-            return aLive - bLive;
+        const isPlaceholderTeam = value => /\\b(?:AB|A|B)\\d+\\s*\\(/i.test(String(value || ""));
+        const usableMatches = matches.filter(match => {
+            if (!match || !match.team1 || !match.team2) return false;
+            if (isPlaceholderTeam(match.team1) || isPlaceholderTeam(match.team2)) return false;
+            const statusText = String(match.status || "");
+            const scheduled = /scheduled|upcoming|not started|fixture/i.test(statusText);
+            // Do not show undated scheduled fixtures: they are often provider placeholders.
+            if (scheduled && !/^\\d{4}-\\d{2}-\\d{2}/.test(String(match.date || ""))) return false;
+            return true;
         });
-        list.innerHTML = sorted.slice(0, 30).map(match => {
-            const title = [match.team1 || "Team 1", match.team2 || "Team 2"].join(" vs ");
-            const score = [match.score1, match.score2].filter(Boolean).join(" · ");
+        const statusGroup = match => {
+            const value = String(match.status || "").toLowerCase();
+            if (/won by|match drawn|tied|abandoned|no result|cancelled|conceded|result:/i.test(value)) return "completed";
+            if (/live|in progress|stumps|day\\s*[1-5]\\s*:/i.test(value)) return "live";
+            return "upcoming";
+        };
+        const dateValue = match => {
+            const time = Date.parse(String(match.date || ""));
+            return Number.isFinite(time) ? time : 0;
+        };
+        const unique = [];
+        const seen = new Set();
+        usableMatches.forEach(match => {
+            const key = [match.date || "", match.team1, match.team2, match.competition || "", match.status || ""]
+                .join("|").toLowerCase().replace(/\\s+/g, " ").trim();
+            if (!seen.has(key)) { seen.add(key); unique.push(match); }
+        });
+        const groups = {
+            live: unique.filter(m => statusGroup(m) === "live").sort((a,b) => dateValue(b)-dateValue(a)),
+            upcoming: unique.filter(m => statusGroup(m) === "upcoming").sort((a,b) => dateValue(a)-dateValue(b)),
+            completed: unique.filter(m => statusGroup(m) === "completed").sort((a,b) => dateValue(b)-dateValue(a))
+        };
+        const cleanScore = (score, opposingScore) => {
+            const opposing = new Set(String(opposingScore || "").split(/\\s*&\\s*/).map(x => x.trim()).filter(Boolean));
+            const seenParts = new Set();
+            return String(score || "").split(/\\s*&\\s*/).map(x => x.trim()).filter(part => {
+                if (!part || opposing.has(part) || seenParts.has(part)) return false;
+                seenParts.add(part);
+                return true;
+            }).join(" & ");
+        };
+        const renderMatch = match => {
+            const title = [match.team1, match.team2].join(" vs ");
+            const score1 = cleanScore(match.score1, match.score2);
+            const score2 = cleanScore(match.score2, match.score1);
+            const score = [score1, score2].filter(Boolean).join(" · ");
             const details = [match.competition, match.format, match.date, match.venue].filter(Boolean).join(" · ");
             return '<article class="match-item"><strong>' + escapeHTML(title) + '</strong>'
                 + (score ? '<p>' + escapeHTML(score) + '</p>' : '')
                 + '<p class="match-status">' + escapeHTML(match.status || "Status unavailable") + '</p>'
                 + (details ? '<p>' + escapeHTML(details) + '</p>' : '')
                 + '</article>';
-        }).join("");
+        };
+        const renderSection = (title, items) => items.length
+            ? '<section class="feed-section"><h3>' + title + ' <span>(' + items.length + ')</span></h3><div class="match-list">' + items.slice(0, 30).map(renderMatch).join("") + '</div></section>'
+            : "";
+        if (!unique.length) {
+            list.innerHTML = '<p class="feed-empty">No clean, dated matches are available right now. Refresh the feed later for updated fixtures.</p>';
+            return;
+        }
+        list.innerHTML = renderSection("Live / In Progress", groups.live)
+            + renderSection("Upcoming Matches", groups.upcoming)
+            + renderSection("Completed Matches", groups.completed);
     } catch (error) {
         status.textContent = "LIVE DATA: FEED NOT AVAILABLE";
         status.classList.add("error");
