@@ -221,7 +221,7 @@ const teamsData = [
  {name:"Women's IPL - Gujarat Giants",captain:""},
  {name:"Women's IPL - Mumbai Indians",captain:""},
  {name:"Women's IPL - Royal Challengers Bengaluru",captain:""},
- {name:"Women's IPL - UP Warriorz",captain:""},{name:"Women's Caribbean Premier League - Trinbago Knight Riders",captain:""}];/* Cricket-statistics prototype.
+ {name:"Women's IPL - UP Warriorz",captain:""}];/* Cricket-statistics prototype.
    The team/captain database above is preserved from the previous project.
    No astrology, Abjad, lunar-date, or planetary-hour calculations are used. */
 
