@@ -63,7 +63,6 @@ async function lookupVenue(){
    const rows=await fetchJson('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=10&q='+encodeURIComponent(q));
    const list=Array.isArray(rows)?rows:[];
    best=list.find(x=>/stadium|cricket|ground|sports/i.test((x.type||'')+' '+(x.class||'')+' '+(x.display_name||'')))||null;
-   if(!best&&list.length===1)best=list[0];
    if(!best&&list.length>1){
     const ql=q.toLowerCase();
     best=list.find(x=>(x.display_name||'').toLowerCase().startsWith(ql))||null;
@@ -73,7 +72,13 @@ async function lookupVenue(){
   if(!best){
    try{
     const parts=q.split(',').map(x=>x.trim()).filter(Boolean);
-    const city=parts[0]||q, countryHint=parts.length>1?parts.slice(1).join(',').toLowerCase():'';
+    let city=parts[0]||q;
+    if(/stadium|cricket|ground|sports/i.test(city)){
+     const after=city.match(/(?:stadium|ground|sports(?:\\s+complex)?|cricket)\\s+(.+)$/i);
+     const before=city.match(/^(.+?)\\s+(?:cricket\\s+)?(?:stadium|ground|sports(?:\\s+complex)?)$/i);
+     city=(after&&after[1].trim())||(before&&before[1].trim().split(/\\s+/)[0])||city.split(/\\s+/)[0];
+    }
+    const countryHint=parts.length>1?parts.slice(1).join(',').toLowerCase():'';
     const data=await fetchJson('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(city)+'&count=10&language=en&format=json');
     const rows=data.results||[];
     best=rows.find(x=>countryHint&&((x.country||'').toLowerCase().includes(countryHint)||(x.admin1||'').toLowerCase().includes(countryHint)))||rows.find(x=>(x.name||'').toLowerCase()===city.toLowerCase())||rows[0]||null;
