@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#08111f">
     <title>Line Guru AI — Cricket Prediction</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}
         .brand h1{font-size:1.8rem;color:#a5f3fc;margin:0}.brand p{color:#94a3b8;margin:4px 0}
@@ -36,41 +36,41 @@
     </header>
 
     <main class="prediction-card">
-        <h2 class="section-title" style="margin-top:0">میچ کی معلومات</h2>
+        <h2 class="section-title" style="margin-top:0">Match Information</h2>
         <div class="input-grid">
             <div class="input-group full-width">
-                <label for="matchFormat">میچ فارمیٹ</label>
+                <label for="matchFormat">Match Format</label>
                 <select id="matchFormat">
-                    <option value="t20">T20 / لیگ</option>
+                    <option value="t20">T20 / League</option>
                     <option value="odi">ODI</option>
                     <option value="test">Test</option>
                 </select>
             </div>
-            <div class="input-group"><label for="team1Select">پہلی ٹیم</label><select id="team1Select"><option value="">ٹیم منتخب کریں</option></select></div>
-            <div class="input-group"><label for="captain1">پہلی ٹیم کا کپتان</label><input id="captain1" type="text" placeholder="کپتان کا نام"></div>
-            <div class="input-group"><label for="team2Select">دوسری ٹیم</label><select id="team2Select"><option value="">ٹیم منتخب کریں</option></select></div>
-            <div class="input-group"><label for="captain2">دوسری ٹیم کا کپتان</label><input id="captain2" type="text" placeholder="کپتان کا نام"></div>
-            <div class="input-group"><label for="form1">پہلی ٹیم کی حالیہ فارم (%)</label><input id="form1" type="number" min="0" max="100" value="50"></div>
-            <div class="input-group"><label for="form2">دوسری ٹیم کی حالیہ فارم (%)</label><input id="form2" type="number" min="0" max="100" value="50"></div>
-            <div class="input-group"><label for="tossWinner">اصل ٹاس ونر</label><select id="tossWinner"><option value="">ابھی معلوم نہیں</option><option value="1">پہلی ٹیم</option><option value="2">دوسری ٹیم</option></select></div>
-            <div class="input-group"><label for="pitchType">پچ کی نوعیت</label><select id="pitchType"><option value="neutral">عام / غیر جانبدار</option><option value="batting">بیٹنگ کے لیے بہتر</option><option value="bowling">بولنگ کے لیے بہتر</option></select></div>
-            <div class="input-group full-width"><label for="venueAverage">اس گراؤنڈ کا اوسط اسکور (اختیاری)</label><input id="venueAverage" type="number" min="0" placeholder="T20 مثال: 165؛ ODI مثال: 270"><p class="hint">یہ صرف پہلی اننگز کے آغاز پر اسکور estimate کرنے کے لیے ہے۔ خالی چھوڑنے پر عام default استعمال ہوگا۔</p></div>
+            <div class="input-group"><label for="team1Select">Team 1</label><select id="team1Select"><option value="">Select a team</option></select></div>
+            <div class="input-group"><label for="captain1">Team 1 Captain</label><input id="captain1" type="text" placeholder="Captain name"></div>
+            <div class="input-group"><label for="team2Select">Team 2</label><select id="team2Select"><option value=""></option></select></div>
+            <div class="input-group"><label for="captain2">Team 2 Captain</label><input id="captain2" type="text" placeholder=""></div>
+            <div class="input-group"><label for="form1">Team 1 Recent Form (%)</label><input id="form1" type="number" min="0" max="100" value="50"></div>
+            <div class="input-group"><label for="form2">Team 2 Recent Form (%)</label><input id="form2" type="number" min="0" max="100" value="50"></div>
+            <div class="input-group"><label for="tossWinner">Toss Winner</label><select id="tossWinner"><option value="">Not known yet</option><option value="1"></option><option value="2"></option></select></div>
+            <div class="input-group"><label for="pitchType">Pitch Type</label><select id="pitchType"><option value="neutral">Neutral</option><option value="batting">Batting-friendly</option><option value="bowling">Bowling-friendly</option></select></div>
+            <div class="input-group full-width"><label for="venueAverage">Venue Average Score (optional)</label><input id="venueAverage" type="number" min="0" placeholder="T20 example: 165; ODI example: 270"><p class="hint">Used to estimate the score at the start of the first innings. Leave blank to use a default.</p></div>
         </div>
 
-        <h2 class="section-title">اسکور اور اننگز</h2>
+        <h2 class="section-title">Score & Innings</h2>
         <div class="input-grid">
-            <div class="input-group full-width"><label for="inningsType">اننگز کی صورتحال</label><select id="inningsType"><option value="first">پہلی اننگز / پری میچ</option><option value="chase">دوسری اننگز / ہدف کا تعاقب</option></select></div>
-            <div class="input-group full-width hidden" id="battingTeamGroup"><label for="battingTeam">اس وقت بیٹنگ کون کر رہا ہے؟</label><select id="battingTeam"><option value="1">پہلی ٹیم</option><option value="2">دوسری ٹیم</option></select></div>
-            <div class="input-group"><label for="currentRuns">موجودہ رنز</label><input id="currentRuns" type="number" min="0" value="0"></div>
-            <div class="input-group"><label for="wickets">گرنے والی وکٹیں</label><input id="wickets" type="number" min="0" max="10" value="0"></div>
-            <div class="input-group"><label for="overs">اوورز (مثلاً 15.2)</label><input id="overs" type="number" min="0" step="0.1" value="0"></div>
-            <div class="input-group hidden" id="targetGroup"><label id="targetLabel" for="target">ہدف (Target)</label><input id="target" type="number" min="1" value="180"></div>
-            <p id="inningsHelp" class="hint full-width">پہلی اننگز کے موجودہ اسکور، اوورز اور وکٹ درج کریں۔</p>
+            <div class="input-group full-width"><label for="inningsType">Innings Status</label><select id="inningsType"><option value="first">First Innings / Pre-match</option><option value="chase">Second Innings / Chase</option></select></div>
+            <div class="input-group full-width hidden" id="battingTeamGroup"><label for="battingTeam">Current Batting Team</label><select id="battingTeam"><option value="1"></option><option value="2"></option></select></div>
+            <div class="input-group"><label for="currentRuns">Current Runs</label><input id="currentRuns" type="number" min="0" value="0"></div>
+            <div class="input-group"><label for="wickets">Wickets Lost</label><input id="wickets" type="number" min="0" max="10" value="0"></div>
+            <div class="input-group"><label for="overs">Overs (e.g. 15.2)</label><input id="overs" type="number" min="0" step="0.1" value="0"></div>
+            <div class="input-group hidden" id="targetGroup"><label id="targetLabel" for="target">Target</label><input id="target" type="number" min="1" value="180"></div>
+            <p id="inningsHelp" class="hint full-width">Enter first-innings runs, overs, and wickets.</p>
             <p id="oversHint" class="hint full-width"></p>
         </div>
-        <button class="calculate-btn" type="button" onclick="calculatePrediction()"><span>کرکٹ پریڈکشن بنائیں</span></button>
+        <button class="calculate-btn" type="button" onclick="calculatePrediction()"><span>Generate Cricket Prediction</span></button>
 
-        <div class="api-note"><strong>Live data status:</strong> یہ ورژن موجودہ score اور ٹیم فارم کے لیے دستی ان پٹ استعمال کرتا ہے۔ Live scores یا حقیقی trained AI کا دعویٰ نہیں کرتا۔ اگلے مرحلے میں live-score provider اور historical match data کے لیے backend/API key configure کرنا ہوگی۔</div>
+        <div class="api-note"><strong>Live data status:</strong> This version uses manual inputs for current score and team form. It does not claim to provide live scores or trained AI. A backend and API key are required to connect a live-score provider and historical match data.</div>
     </main>
 
     <section id="resultBox" class="result-card hidden" aria-live="polite">
@@ -78,6 +78,6 @@
         <div id="outputContent"></div>
     </section>
 </div>
-<script src="script.js?v=20261029-cricket-stats"></script>
+<script src="script.js?v=20261029-english-only"></script>
 </body>
 </html>

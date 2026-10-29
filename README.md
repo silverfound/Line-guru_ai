@@ -1,21 +1,21 @@
 # Line Guru AI — Cricket Statistics Prediction
 
-This branch removes the astrology/Abjad/planetary prediction flow and preserves the existing team and captain database from `script.js`.
+The interface and built-in team/captain data are English-only. The previous Urdu-language labels and Urdu-script team records have been replaced with English labels and Latin-script names.
 
 ## Included
-- Urdu team and league team dropdown database preserved from the previous version.
-- Captain autofill based on the selected team and format where records exist.
-- Cricket-format selection (T20, ODI, Test).
-- Match-winner estimate using explicitly entered recent-form percentages and toss/pitch inputs.
-- Score projection from current runs, overs, wickets, pitch type, and optional venue average.
+- International teams and selected league teams with English names.
+- Captain autofill where a captain entry is available.
+- T20, ODI, and Test format selection.
+- Rule-based match-winner estimate using manually entered recent-form percentages, toss, and pitch inputs.
+- Score projection using runs, overs, wickets, pitch, and optional venue average.
 - Chase estimate using current run rate, required run rate, remaining balls, wickets, and entered form.
-- Responsive UI based on the existing stylesheet.
+- Responsive mobile interface.
 
-## Important limitations
-- This is a transparent rule-based prototype, **not a trained machine-learning model**.
-- Live scores and historical match statistics are **not connected yet**. The UI clearly labels this.
-- Team/captain records were preserved as they were; they may be outdated and should be checked against current official squads.
+## Limitations
+- This is a transparent rule-based prototype, not a trained machine-learning model.
+- Live scores and historical match statistics are not connected yet.
+- Captain information can become outdated; verify current squads and captains.
 - Predictions are estimates, not guarantees.
 
-## Next implementation step
-Connect a licensed cricket-data provider through a backend service, then build and evaluate a model using historical match data. Keep provider API keys on the backend, never in browser JavaScript or an APK.
+## Next step
+Connect a licensed cricket-data provider through a backend service and evaluate a model with historical match data. Keep provider API keys on the backend, never in browser JavaScript or an APK.
