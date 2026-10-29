@@ -543,20 +543,20 @@ async function refreshPublishedCricketFeed() {
             list.innerHTML = '<p class="feed-empty">No matches are available in the published feed yet. Run the manual GitHub Actions refresh and merge its feed-update pull request to publish data.</p>';
             return;
         }
-        const isPlaceholderTeam = value => /\\b(?:AB|A|B)\\d+\\s*\\(/i.test(String(value || ""));
+        const isPlaceholderTeam = value => /\b(?:AB|A|B)\d+\s*\\(/i.test(String(value || ""));
         const usableMatches = matches.filter(match => {
             if (!match || !match.team1 || !match.team2) return false;
             if (isPlaceholderTeam(match.team1) || isPlaceholderTeam(match.team2)) return false;
             const statusText = String(match.status || "");
             const scheduled = /scheduled|upcoming|not started|fixture/i.test(statusText);
             // Do not show undated scheduled fixtures: they are often provider placeholders.
-            if (scheduled && !/^\\d{4}-\\d{2}-\\d{2}/.test(String(match.date || ""))) return false;
+            if (scheduled && !/^\d{4}-\d{2}-\d{2}/.test(String(match.date || ""))) return false;
             return true;
         });
         const statusGroup = match => {
             const value = String(match.status || "").toLowerCase();
             if (/won by|match drawn|tied|abandoned|no result|cancelled|conceded|result:/i.test(value)) return "completed";
-            if (/live|in progress|stumps|day\\s*[1-5]\\s*:/i.test(value)) return "live";
+            if (/live|in progress|stumps|day\s*[1-5]\s*:/i.test(value)) return "live";
             return "upcoming";
         };
         const dateValue = match => {
@@ -567,7 +567,7 @@ async function refreshPublishedCricketFeed() {
         const seen = new Set();
         usableMatches.forEach(match => {
             const key = [match.date || "", match.team1, match.team2, match.competition || "", match.status || ""]
-                .join("|").toLowerCase().replace(/\\s+/g, " ").trim();
+                .join("|").toLowerCase().replace(/\s+/g, " ").trim();
             if (!seen.has(key)) { seen.add(key); unique.push(match); }
         });
         const groups = {
@@ -576,9 +576,9 @@ async function refreshPublishedCricketFeed() {
             completed: unique.filter(m => statusGroup(m) === "completed").sort((a,b) => dateValue(b)-dateValue(a))
         };
         const cleanScore = (score, opposingScore) => {
-            const opposing = new Set(String(opposingScore || "").split(/\\s*&\\s*/).map(x => x.trim()).filter(Boolean));
+            const opposing = new Set(String(opposingScore || "").split(/\s*&\s*/).map(x => x.trim()).filter(Boolean));
             const seenParts = new Set();
-            return String(score || "").split(/\\s*&\\s*/).map(x => x.trim()).filter(part => {
+            return String(score || "").split(/\s*&\s*/).map(x => x.trim()).filter(part => {
                 if (!part || opposing.has(part) || seenParts.has(part)) return false;
                 seenParts.add(part);
                 return true;
