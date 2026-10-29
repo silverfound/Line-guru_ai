@@ -560,7 +560,8 @@ function calculatePrediction() {
     function getTeamBaseAverage(teamName) {
         const englishName = teamNameAliases[teamName];
         if (!englishName || !window.teamFormatAverages) return null;
-        const record = window.teamFormatAverages[englishName + "|" + formatKey];
+        const record = window.teamFormatAverages[englishName + "|" + formatKey] ||
+            (matchFormat === "t20" ? window.teamFormatAverages[englishName + "|t20"] : null);
         return record ? record.average : null;
     }
     let baseScore1 = 165;
