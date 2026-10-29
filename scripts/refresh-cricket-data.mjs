@@ -32,21 +32,39 @@ function first(...values) {
   return "";
 }
 
+function scoreForTeam(teamName, scores) {
+  if (!Array.isArray(scores)) return "";
+  const relevant = scores.filter(item => {
+    const inning = String(item?.inning || item?.team || "").toLowerCase();
+    return !inning || !teamName || inning.includes(teamName.toLowerCase());
+  });
+  return relevant.map(item => {
+    const runs = item?.r ?? item?.runs ?? item?.score ?? "";
+    const wickets = item?.w ?? item?.wickets ?? "";
+    const overs = item?.o ?? item?.overs ?? "";
+    if (runs === "") return "";
+    return String(runs) + (wickets === "" ? "" : "/" + wickets) + (overs === "" ? "" : " (" + overs + " ov)");
+  }).filter(Boolean).join(" & ");
+}
+
 function normalizeMatch(m, source) {
   const teams = Array.isArray(m?.teams) ? m.teams : [];
   const home = m?.home ?? m?.team1 ?? teams[0];
   const away = m?.away ?? m?.team2 ?? teams[1];
   const score = m?.score ?? m?.scores ?? {};
+  const team1 = first(home?.name, home?.team, home, m?.home_team, m?.team1Name, teams[0]?.name, teams[0]);
+  const team2 = first(away?.name, away?.team, away, m?.away_team, m?.team2Name, teams[1]?.name, teams[1]);
+  const scoreList = Array.isArray(score) ? score : (Array.isArray(m?.scores) ? m.scores : []);
   return {
     id: first(m?.id, m?.match_id, m?.matchId),
     source,
     date: first(m?.date, m?.start_time, m?.startTime, m?.dateTimeGMT, m?.match_date),
     status: first(m?.status, m?.state, m?.match_status, m?.matchStatus),
     competition: first(m?.league, m?.competition, m?.series, m?.seriesName, m?.event_name),
-    team1: first(home?.name, home?.team, m?.home_team, m?.team1Name, teams[0]?.name),
-    team2: first(away?.name, away?.team, m?.away_team, m?.team2Name, teams[1]?.name),
-    score1: first(score?.home, score?.team1, m?.home_score, m?.team1Score, m?.score1),
-    score2: first(score?.away, score?.team2, m?.away_score, m?.team2Score, m?.score2),
+    team1,
+    team2,
+    score1: first(score?.home, score?.team1, m?.home_score, m?.team1Score, m?.score1, scoreForTeam(team1, scoreList)),
+    score2: first(score?.away, score?.team2, m?.away_score, m?.team2Score, m?.score2, scoreForTeam(team2, scoreList)),
     venue: first(m?.venue, m?.ground, m?.stadium),
     tossWinner: first(m?.toss?.team, m?.toss_winner, m?.tossWinner),
     tossDecision: first(m?.toss?.decision, m?.toss_decision, m?.tossDecision),
@@ -142,9 +160,9 @@ const output = {
   schemaVersion: 1,
   generatedAt: now.toISOString(),
   refreshPolicy: {
-    scheduledRunsPerDay: 4,
+    scheduledRunsPerDay: 0,
     minimumHoursBetweenRuns: 5.75,
-    requestBudget: "Each scheduled run makes at most 1 Big Balls request, 2 OpenCricket requests and 1 CricketData request. Failed requests are not retried."
+    requestBudget: "Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests and 1 CricketData request. Failed requests are not retried."
   },
   providers,
   matches: [...unique.values()],
