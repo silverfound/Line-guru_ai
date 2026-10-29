@@ -577,7 +577,7 @@ async function refreshPublishedCricketFeed() {
             // Only classify it as finished when both teams have a score and both innings are complete.
             if (limitedOvers && hasScore(score1) && hasScore(score2)) {
                 const maxOvers = format.includes("t20") ? 20 : 50;
-                const matchDateForStatus = /^\\d{4}-\\d{2}-\\d{2}/.test(String(match.date || "")) ? String(match.date).slice(0, 10) : "";
+                const matchDateForStatus = /^\d{4}-\d{2}-\d{2}/.test(String(match.date || "")) ? String(match.date).slice(0, 10) : "";
                 const todayForStatus = new Date().toISOString().slice(0, 10);
                 // A stale "Live" label on a past-day T20/ODI scorecard is not a live match.
                 if ((matchDateForStatus && matchDateForStatus < todayForStatus)
