@@ -85,6 +85,15 @@ const teamsData = [
  {name:"Women's Big Bash League - Perth Scorchers",captain:""},
  {name:"Women's Big Bash League - Sydney Sixers",captain:""},
  {name:"Women's Big Bash League - Sydney Thunder",captain:""},
+ // The Hundred Men's Competition
+ {name:"The Hundred Men - Birmingham Phoenix",captain:""},
+ {name:"The Hundred Men - London Spirit",captain:""},
+ {name:"The Hundred Men - Manchester Originals",captain:""},
+ {name:"The Hundred Men - Northern Superchargers",captain:""},
+ {name:"The Hundred Men - Oval Invincibles",captain:""},
+ {name:"The Hundred Men - Southern Brave",captain:""},
+ {name:"The Hundred Men - Trent Rockets",captain:""},
+ {name:"The Hundred Men - Welsh Fire",captain:""},
  // The Hundred Women's Competition
  {name:"The Hundred Women - Birmingham Phoenix",captain:""},
  {name:"The Hundred Women - London Spirit",captain:""},
