@@ -63,6 +63,8 @@ function normalizeMatch(m, source) {
   const team2 = first(away?.name, away?.team, away, m?.away_team, m?.team2Name, teams[1]?.name, teams[1]);
   const scoreList = Array.isArray(score) ? score : (Array.isArray(m?.scores) ? m.scores : []);
   const startTime = first(m?.date, m?.start_time, m?.startTime, m?.dateTimeGMT, m?.match_date, m?.start_date, m?.scheduled_at, m?.dateTime);
+  const rawVenue = first(m?.venue?.name, m?.venue, m?.ground, m?.stadium);
+  const venue = /^(?:TBC|TBD|TBA)(?:\s*,\s*(?:TBC|TBD|TBA))*$/i.test(rawVenue) ? "" : rawVenue;
   const state = first(m?.status, m?.state, m?.match_status, m?.matchStatus, m?.result, m?.stage);
   const status = state || (m?.matchStarted === true ? "Live" : (m?.matchEnded === true ? "Completed" : ""));
   return {
@@ -75,7 +77,7 @@ function normalizeMatch(m, source) {
     team2,
     score1: first(score?.home, score?.team1, m?.home_score, m?.team1Score, m?.score1, totalFor(0), scoreForTeam(team1, scoreList)),
     score2: first(score?.away, score?.team2, m?.away_score, m?.team2Score, m?.score2, totalFor(1), scoreForTeam(team2, scoreList)),
-    venue: first(m?.venue?.name, m?.venue, m?.ground, m?.stadium),
+    venue,
     tossWinner: first(m?.toss?.team, m?.toss_winner, m?.tossWinner),
     tossDecision: first(m?.toss?.decision, m?.toss_decision, m?.tossDecision),
     format: first(m?.format, m?.matchType, m?.match_type)
@@ -224,11 +226,19 @@ if (process.env.CRICKETDATA_API_KEY) {
     const current = currentResult.payload
       ? unwrap(currentResult.payload).map(m => normalizeMatch(m, "CricketData.org"))
       : [];
+    const fixtureStart = new Date(now);
+    fixtureStart.setUTCHours(0, 0, 0, 0);
+    const fixtureEnd = new Date(fixtureStart.getTime() + 14 * 86400000);
     const fixtures = fixturesResult.payload
       ? unwrap(fixturesResult.payload).map(m => ({
           ...normalizeMatch(m, "CricketData.org"),
           status: first(m?.status, m?.state, m?.stage, "Scheduled")
-        }))
+        })).filter(match => {
+          const start = Date.parse(String(match.date || ""));
+          // CricketData's match list can include fixtures many weeks away.
+          // Publish only the next 14 days so distant December fixtures don't crowd Upcoming.
+          return Number.isFinite(start) && start >= fixtureStart.getTime() && start < fixtureEnd.getTime();
+        })
       : [];
     const seen = new Set();
     const combined = [...current, ...fixtures].filter(match => {
