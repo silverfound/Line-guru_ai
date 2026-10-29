@@ -6,7 +6,7 @@ The interface and built-in team/captain data are English-only. The existing pred
 
 GitHub Actions workflow: `.github/workflows/cricket-data-refresh.yml`
 
-- Runs four times per UTC day (every six hours, at minute 23) and can also be started manually.
+- Automatic scheduling is intentionally disabled. The workflow runs only when manually started from GitHub Actions.
 - Each run makes at most one Big Balls request, two OpenCricket requests, and one CricketData.org request.
 - A local guard skips runs that occur less than 5 hours 45 minutes after the last feed write. Failed API calls are not retried.
 - Feed output is written to `data/cricket-feed.json`; API keys are never included in that file.
@@ -22,15 +22,15 @@ Open repository **Settings → Secrets and variables → Actions → New reposit
 
 Paste each provider's key into the GitHub secret value field. Never put keys in `script.js`, HTML, committed JSON, screenshots, or chat messages.
 
-Then open **Actions → Refresh free cricket data → Run workflow**. Check the run logs for provider status. Logs deliberately avoid printing keys and request URLs that might contain keys.
+When ready to spend API quota, open **Actions → Refresh free cricket data → Run workflow**. Review the generated pull request for `data/cricket-feed.json` and merge it to publish the feed. The website then reads the public feed. Check run logs for provider status; logs avoid printing keys and request URLs that might contain keys.
 
 ## Quota planning
 
-The scheduled cadence is 4 runs/day, or about 120 runs in a 30-day month. The maximum scheduled request estimate is about 120 Big Balls requests/month, 240 OpenCricket requests/month, and 120 CricketData requests/month. These are below the published free quotas: Big Balls lists 250/day (500/day with GitHub), OpenCricket lists 5,000/month, and CricketData.org lists 100/day. Manual dispatch is also protected by a 5h45m minimum interval. Provider-side limits always take precedence.
+There are no automatic runs while the app is being finalized. Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests, and 1 CricketData request. A 5h45m minimum interval guard limits repeat runs. Provider-side limits always take precedence.
 
 ## Current limitations
 
-- This workflow creates a public feed but does not yet auto-fill the website's manual form fields.
+- The website reads the sanitized public `data/cricket-feed.json` file and displays matches separately from the manual prediction form. The feed is only updated publicly after the generated feed pull request is reviewed and merged.
 - Team form and ground averages need reliable completed-match results and venue/innings totals; those derived values are intentionally marked unavailable until response shapes and venue coverage are verified.
 - The configured endpoints do not provide a verified match-day pitch report, so the app must not invent one.
 - Provider data should only be republished in accordance with each provider's terms and source licence.
