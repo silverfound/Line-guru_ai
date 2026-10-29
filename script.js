@@ -546,38 +546,20 @@ function calculatePrediction() {
     let dayRulingPlanet = "شمس (سورج)";
     let dayIndex = 0;
 
-    // Team-specific recent match averages; winner-prediction formula remains unchanged.
-    const formatKey = matchFormat === "odi" ? "odi" : (matchFormat === "test" ? "test" : "t20i");
-    const teamNameAliases = {
-        "افغانستان":"Afghanistan","آسٹریلیا":"Australia","بنگلہ دیش":"Bangladesh","انگلینڈ":"England","انڈیا":"India","آئرلینڈ":"Ireland","نیوزی لینڈ":"New Zealand","پاکستان":"Pakistan","جنوبی افریقہ":"South Africa","سری لنکا":"Sri Lanka","ویسٹ انڈیز":"West Indies","زمبابوے":"Zimbabwe","نمیبیا":"Namibia","نیدرلینڈز":"Netherlands","امریکہ":"United States of America","عمان":"Oman","اسکاٹ لینڈ":"Scotland","نیپال":"Nepal","اٹلی":"Italy","کینیڈا":"Canada","متحدہ عرب امارات":"United Arab Emirates","ہانگ کانگ":"Hong Kong","پاپوا نیو گنی":"Papua New Guinea","جرسی":"Jersey","یوگنڈا":"Uganda","ملائیشیا":"Malaysia","سنگاپور":"Singapore","کینیا":"Kenya","نائجیریا":"Nigeria","جرمنی":"Germany","جاپان":"Japan","اسپین":"Spain",
-        "انڈین پریمیئر لیگ - دہلی کیپیٹلز":"Delhi Capitals","انڈین پریمیئر لیگ - گجرات ٹائٹنز":"Gujarat Titans","انڈین پریمیئر لیگ - چنئی سپر کنگز":"Chennai Super Kings","پاکستان سپر لیگ - لاہور قلندرز":"Lahore Qalandars","پاکستان سپر لیگ - کراچی کنگز":"Karachi Kings","پاکستان سپر لیگ - پشاور زلمی":"Peshawar Zalmi","پاکستان سپر لیگ - ملتان سلطانز":"Multan Sultans","پاکستان سپر لیگ - کوئٹہ گلیڈی ایٹرز":"Quetta Gladiators","پاکستان سپر لیگ - اسلام آباد یونائیٹڈ":"Islamabad United",
-        "بگ بیش لیگ - ایڈیلیڈ اسٹرائیکرز":"Adelaide Strikers","بگ بیش لیگ - برسبین ہیٹ":"Brisbane Heat","بگ بیش لیگ - ہوبارٹ ہریکینز":"Hobart Hurricanes","بگ بیش لیگ - میلبورن رینیگیڈز":"Melbourne Renegades","بگ بیش لیگ - میلبورن اسٹارز":"Melbourne Stars","بگ بیش لیگ - پرتھ اسکارچرز":"Perth Scorchers","بگ بیش لیگ - سڈنی سکسرز":"Sydney Sixers","بگ بیش لیگ - سڈنی تھنڈر":"Sydney Thunder",
-        "ایس اے ۲۰ - ڈربن سپر جائنٹس":"Durban's Super Giants","ایس اے ۲۰ - جوبرگ سپر کنگز":"Joburg Super Kings","ایس اے ۲۰ - ایم آئی کیپ ٹاؤن":"MI Cape Town","ایس اے ۲۰ - پارل رائلز":"Paarl Royals","ایس اے ۲۰ - پریٹوریا کیپیٹلز":"Pretoria Capitals","ایس اے ۲۰ - سن رائزرز ایسٹرن کیپ":"Sunrisers Eastern Cape",
-        "میجر لیگ کرکٹ - ایم آئی نیویارک":"MI New York","میجر لیگ کرکٹ - ٹیکساس سپر کنگز":"Texas Super Kings","میجر لیگ کرکٹ - واشنگٹن فریڈم":"Washington Freedom","میجر لیگ کرکٹ - سان فرانسسکو یونی کورنز":"San Francisco Unicorns","میجر لیگ کرکٹ - سیئٹل اورکاز":"Seattle Orcas","میجر لیگ کرکٹ - لاس انجلس نائٹ رائیڈرز":"Los Angeles Knight Riders",
-        "کیریبین پریمیئر لیگ - اینٹیگوا اینڈ باربوڈا فالکنز":"Antigua and Barbuda Falcons","کیریبین پریمیئر لیگ - گیانا ایمیزون واریئرز":"Guyana Amazon Warriors","کیریبین پریمیئر لیگ - بارباڈوس ٹرائیڈنٹس":"Barbados Tridents",
-        "انٹرنیشنل لیگ ٹی ۲۰ - ابوظہبی نائٹ رائیڈرز":"Abu Dhabi Knight Riders","انٹرنیشنل لیگ ٹی ۲۰ - ڈیزرٹ وائپرز":"Desert Vipers","انٹرنیشنل لیگ ٹی ۲۰ - دبئی کیپیٹلز":"Dubai Capitals","انٹرنیشنل لیگ ٹی ۲۰ - گلف جائنٹس":"Gulf Giants"
-    };
-    function getTeamBaseAverage(teamName) {
-        const englishName = teamNameAliases[teamName];
-        if (!englishName || !window.teamFormatAverages) return null;
-        const record = window.teamFormatAverages[englishName + "|" + formatKey] ||
-            (matchFormat === "t20" ? window.teamFormatAverages[englishName + "|t20"] : null);
-        return record ? record.average : null;
-    }
+    // Base scores per format
     let baseScore1 = 165;
     let baseScore2 = 165;
     let formatLabel = "ٹی ٹوئنٹی میچ";
+
     if (matchFormat === "odi") {
-        baseScore1 = 285; baseScore2 = 285;
+        baseScore1 = 285;
+        baseScore2 = 285;
         formatLabel = "ایک روزہ میچ (ODI)";
     } else if (matchFormat === "test") {
-        baseScore1 = 350; baseScore2 = 350;
+        baseScore1 = 350;
+        baseScore2 = 350;
         formatLabel = "ٹیسٹ میچ (فی اننگز)";
     }
-    const average1 = getTeamBaseAverage(team1);
-    const average2 = getTeamBaseAverage(team2);
-    if (average1 !== null) baseScore1 = average1;
-    if (average2 !== null) baseScore2 = average2;
 
     if (matchTimeInput) {
         let dateObj = new Date(matchTimeInput);
