@@ -519,8 +519,9 @@ async function refreshPublishedCricketFeed() {
         const successful = configured.filter(p => p.status === "ok");
         const hasLiveMatches = matches.some(m => /live|in progress|innings|stumps/i.test(String(m.status || "")));
         const generatedAt = feed.generatedAt ? new Date(feed.generatedAt) : null;
-        const ageMs = generatedAt && Number.isFinite(generatedAt.getTime()) ? Date.now() - generatedAt.getTime() : Infinity;
-        const stale = ageMs > 24 * 60 * 60 * 1000;
+        const hasTimestamp = Boolean(generatedAt && Number.isFinite(generatedAt.getTime()));
+        const ageMs = hasTimestamp ? Date.now() - generatedAt.getTime() : Infinity;
+        const stale = hasTimestamp && ageMs > 24 * 60 * 60 * 1000;
         if (successful.length && !stale) {
             status.textContent = hasLiveMatches ? "LIVE DATA: FEED UPDATED" : "CRICKET FEED: CONNECTED";
             status.classList.add("connected");
@@ -528,7 +529,7 @@ async function refreshPublishedCricketFeed() {
             status.textContent = "LIVE DATA: PROVIDER ERROR";
             status.classList.add("error");
         } else {
-            status.textContent = stale ? "LIVE DATA: FEED STALE" : "LIVE DATA: NO PROVIDER DATA";
+            status.textContent = !hasTimestamp ? "LIVE DATA: NO PROVIDER DATA" : "LIVE DATA: FEED STALE";
             status.classList.add("error");
         }
         const updated = generatedAt && Number.isFinite(generatedAt.getTime())
