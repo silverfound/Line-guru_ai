@@ -1,9 +1,8 @@
 name: Refresh free cricket data
 
+# Automatic schedule intentionally disabled until the app is finalized.
+# When ready, restore the schedule under "on".
 on:
-  schedule:
-    # Four scheduled runs per UTC day; offset from the hour to reduce schedule delays.
-    - cron: "23 */6 * * *"
   workflow_dispatch:
 
 permissions:
