@@ -123,7 +123,9 @@ async function providerResult(name, fn) {
     if (endpointErrors.length) messages.push(endpointErrors.join("; "));
     if (filteredCount) messages.push(`Filtered ${filteredCount} invalid/undated match(es)`);
     if (!matches.length) {
-      return { status: "error", message: messages.join("; ") || `No valid dated matches; filtered ${filteredCount}/${rawMatches.length}`, rawMatchCount: rawMatches.length, matchCount: 0, matches: [] };
+      const noDataMessage = messages.join("; ")
+        || (rawMatches.length ? `No valid dated matches; filtered ${filteredCount}/${rawMatches.length}` : "Provider responded but returned no matches for this window");
+      return { status: endpointErrors.length || rawMatches.length ? "error" : "ok", message: noDataMessage, rawMatchCount: rawMatches.length, matchCount: 0, matches: [] };
     }
     return {
       status: endpointErrors.length ? "partial" : "ok",
