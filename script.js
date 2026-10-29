@@ -561,10 +561,38 @@ async function refreshPublishedCricketFeed() {
             return true;
         });
         const statusGroup = match => {
-            const value = String(match.status || "").toLowerCase();
-            if (/won by|match drawn|tied|abandoned|no result|cancelled|conceded|result:/i.test(value)) return "completed";
+            const value = String(match.status || "").toLowerCase().trim();
+            const format = String(match.format || "").toLowerCase();
+            const limitedOvers = format.includes("t20") || format.includes("odi") || format.includes("one day");
+            const score1 = String(match.score1 || "");
+            const score2 = String(match.score2 || "");
+            const hasScore = score => /\d/.test(score);
+            const inningsComplete = (score, maxOvers) => {
+                if (!hasScore(score)) return false;
+                return /\/\s*10\b/.test(score) || new RegExp("(?:^|\\s)(?:" + maxOvers + ")(?:\\.0)?\\s*ov\\b", "i").test(score);
+            };
+            const resultText = /won by|match drawn|tied|abandoned|no result|cancelled|conceded|result:|match finished|completed|finished|innings complete/i.test(value);
+            if (resultText) return "completed";
+            // Some feeds keep the status as "Live" after a limited-overs match has ended.
+            // Only classify it as finished when both teams have a score and both innings are complete.
+            if (limitedOvers && hasScore(score1) && hasScore(score2)) {
+                const maxOvers = format.includes("t20") ? 20 : 50;
+                if (inningsComplete(score1, maxOvers) && inningsComplete(score2, maxOvers)) return "completed";
+            }
+            if (/scheduled|upcoming|not started|fixture|starts at/i.test(value)) return "upcoming";
+            const matchDate = /^\d{4}-\d{2}-\d{2}/.test(String(match.date || "")) ? String(match.date).slice(0, 10) : "";
+            const today = new Date().toISOString().slice(0, 10);
+            if (matchDate && matchDate > today && !hasScore(score1) && !hasScore(score2)) return "upcoming";
             if (/live|in progress|stumps|day\s*[1-5]\s*:/i.test(value)) return "live";
+            if (matchDate && matchDate < today && !hasScore(score1) && !hasScore(score2)) return "completed";
             return "upcoming";
+        };
+        const displayMatchStatus = match => {
+            const group = statusGroup(match);
+            const value = String(match.status || "").trim();
+            if (group === "completed" && !/won by|match drawn|tied|abandoned|no result|cancelled|conceded|result:/i.test(value)) return "Finished";
+            if (group === "upcoming" && !/scheduled|upcoming|not started|fixture|starts at/i.test(value)) return "Upcoming";
+            return value || (group === "live" ? "Live / In Progress" : group === "completed" ? "Finished" : "Upcoming");
         };
         const dateValue = match => {
             const time = Date.parse(String(match.date || ""));
@@ -599,7 +627,7 @@ async function refreshPublishedCricketFeed() {
             const details = [match.competition, match.format, match.date, match.venue].filter(Boolean).join(" · ");
             return '<article class="match-item"><strong>' + escapeHTML(title) + '</strong>'
                 + (score ? '<p>' + escapeHTML(score) + '</p>' : '')
-                + '<p class="match-status">' + escapeHTML(match.status || "Status unavailable") + '</p>'
+                + '<p class="match-status">' + escapeHTML(displayMatchStatus(match)) + '</p>'
                 + (details ? '<p>' + escapeHTML(details) + '</p>' : '')
                 + '</article>';
         };
