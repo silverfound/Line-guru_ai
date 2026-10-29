@@ -8,7 +8,10 @@ GitHub Actions workflow: `.github/workflows/cricket-data-refresh.yml`
 
 - Automatic scheduling is intentionally disabled. The workflow runs only when manually started from GitHub Actions.
 - Each run makes at most one Big Balls request, two OpenCricket requests, and one CricketData.org request.
-- A local guard skips runs that occur less than 5 hours 45 minutes after the last feed write. Failed API calls are not retried.
+- A local guard skips healthy repeat runs that occur less than 5 hours 45 minutes after the last feed write. If the previous feed contains provider errors or invalid/undated records, one diagnostic refresh is allowed inside that interval.
+- Provider errors include the HTTP status and safe error details where available; request URLs and API keys are never logged.
+- The feed filters placeholder team names and matches without ISO-formatted dates before publishing, so undated fixtures do not appear as upcoming matches.
+- OpenCricket live-score and fixture endpoints are checked independently, so one endpoint can still contribute data if the other fails.
 - Feed output is written to `data/cricket-feed.json`; API keys are never included in that file.
 - Pitch reports are not fabricated when no verified report is supplied.
 
