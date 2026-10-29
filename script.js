@@ -543,7 +543,7 @@ async function refreshPublishedCricketFeed() {
             list.innerHTML = '<p class="feed-empty">No matches are available in the published feed yet. Run the manual GitHub Actions refresh and merge its feed-update pull request to publish data.</p>';
             return;
         }
-        const isPlaceholderTeam = value => /\b(?:AB|A|B)\d+\s*\\(/i.test(String(value || ""));
+        const isPlaceholderTeam = value => /\b(?:AB|A|B)\d+\s*\(/i.test(String(value || ""));
         const usableMatches = matches.filter(match => {
             if (!match || !match.team1 || !match.team2) return false;
             if (isPlaceholderTeam(match.team1) || isPlaceholderTeam(match.team2)) return false;
