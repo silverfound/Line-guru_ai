@@ -201,11 +201,44 @@ if (process.env.OPENCRICKET_API_KEY) {
 
 if (process.env.CRICKETDATA_API_KEY) {
   providers.cricketData = await providerResult("CricketData.org", async () => {
-    const url = new URL("https://api.cricapi.com/v1/currentMatches");
-    url.searchParams.set("apikey", process.env.CRICKETDATA_API_KEY);
-    url.searchParams.set("offset", "0");
-    const payload = await requestJson(url.toString(), { "Accept": "application/json" });
-    return unwrap(payload).map(m => normalizeMatch(m, "CricketData.org"));
+    const headers = { "Accept": "application/json" };
+    const buildUrl = endpoint => {
+      const url = new URL(`https://api.cricapi.com/v1/${endpoint}`);
+      url.searchParams.set("apikey", process.env.CRICKETDATA_API_KEY);
+      url.searchParams.set("offset", "0");
+      return url.toString();
+    };
+    // currentMatches supplies live/recent scores; matches supplies the scheduled fixture list.
+    // Keep the calls independent so a temporary failure in one does not discard the other.
+    const [currentResult, fixturesResult] = await Promise.all([
+      requestJson(buildUrl("currentMatches"), headers)
+        .then(payload => ({ kind: "currentMatches", payload }))
+        .catch(error => ({ kind: "currentMatches", error })),
+      requestJson(buildUrl("matches"), headers)
+        .then(payload => ({ kind: "matches", payload }))
+        .catch(error => ({ kind: "matches", error }))
+    ]);
+    const errors = [currentResult, fixturesResult]
+      .filter(result => result.error)
+      .map(result => `${result.kind} endpoint: ${String(result.error?.message || "request failed").slice(0, 120)}`);
+    const current = currentResult.payload
+      ? unwrap(currentResult.payload).map(m => normalizeMatch(m, "CricketData.org"))
+      : [];
+    const fixtures = fixturesResult.payload
+      ? unwrap(fixturesResult.payload).map(m => ({
+          ...normalizeMatch(m, "CricketData.org"),
+          status: first(m?.status, m?.state, m?.stage, "Scheduled")
+        }))
+      : [];
+    const seen = new Set();
+    const combined = [...current, ...fixtures].filter(match => {
+      const key = match.id || [match.date, match.team1, match.team2].join("|");
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    combined.providerErrors = errors;
+    return combined;
   });
 } else {
   providers.cricketData = { status: "not_configured", matchCount: 0, matches: [] };
@@ -227,7 +260,7 @@ const output = {
   refreshPolicy: {
     scheduledRunsPerDay: 0,
     minimumHoursBetweenRuns: 5.75,
-    requestBudget: "Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests and 1 CricketData request. Failed requests are not retried."
+    requestBudget: "Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests and 2 CricketData requests. Failed requests are not retried."
   },
   providers,
   matches: [...unique.values()],
