@@ -56,7 +56,48 @@ const teamsData = [
  {name:"International League T20 - Gulf Giants",captain:"James Vince"},
  {name:"International League T20 - MI Emirates",captain:"Nicholas Pooran"},
  {name:"International League T20 - Sharjah Warriorz",captain:"Tom Kohler-Cadmore"}
-];/* Cricket-statistics prototype.
+,
+ // Women's international teams
+ {name:"Women's International - Afghanistan",captain:""},
+ {name:"Women's International - Australia",captain:"Alyssa Healy"},
+ {name:"Women's International - Bangladesh",captain:"Nigar Sultana Joty"},
+ {name:"Women's International - England",captain:"Nat Sciver-Brunt"},
+ {name:"Women's International - India",captain:"Harmanpreet Kaur"},
+ {name:"Women's International - Ireland",captain:"Gaby Lewis"},
+ {name:"Women's International - New Zealand",captain:"Sophie Devine"},
+ {name:"Women's International - Pakistan",captain:"Fatima Sana"},
+ {name:"Women's International - South Africa",captain:"Laura Wolvaardt"},
+ {name:"Women's International - Sri Lanka",captain:"Chamari Athapaththu"},
+ {name:"Women's International - West Indies",captain:"Hayley Matthews"},
+ {name:"Women's International - Zimbabwe",captain:"Mary-Anne Musonda"},
+ // Women's Premier League (WPL)
+ {name:"Women's Premier League - Delhi Capitals",captain:""},
+ {name:"Women's Premier League - Gujarat Giants",captain:""},
+ {name:"Women's Premier League - Mumbai Indians",captain:""},
+ {name:"Women's Premier League - Royal Challengers Bengaluru",captain:""},
+ {name:"Women's Premier League - UP Warriorz",captain:""},
+ // Women's Big Bash League (WBBL) — all eight teams
+ {name:"Women's Big Bash League - Adelaide Strikers",captain:""},
+ {name:"Women's Big Bash League - Brisbane Heat",captain:""},
+ {name:"Women's Big Bash League - Hobart Hurricanes",captain:""},
+ {name:"Women's Big Bash League - Melbourne Renegades",captain:""},
+ {name:"Women's Big Bash League - Melbourne Stars",captain:""},
+ {name:"Women's Big Bash League - Perth Scorchers",captain:""},
+ {name:"Women's Big Bash League - Sydney Sixers",captain:""},
+ {name:"Women's Big Bash League - Sydney Thunder",captain:""},
+ // The Hundred Women's Competition
+ {name:"The Hundred Women - Birmingham Phoenix",captain:""},
+ {name:"The Hundred Women - London Spirit",captain:""},
+ {name:"The Hundred Women - Manchester Originals",captain:""},
+ {name:"The Hundred Women - Northern Superchargers",captain:""},
+ {name:"The Hundred Women - Oval Invincibles",captain:""},
+ {name:"The Hundred Women - Southern Brave",captain:""},
+ {name:"The Hundred Women - Trent Rockets",captain:""},
+ {name:"The Hundred Women - Welsh Fire",captain:""},
+ // Women's Caribbean Premier League (WCPL)
+ {name:"Women's Caribbean Premier League - Barbados Royals",captain:""},
+ {name:"Women's Caribbean Premier League - Guyana Amazon Warriors",captain:""},
+ {name:"Women's Caribbean Premier League - Trinbago Knight Riders",captain:""}];/* Cricket-statistics prototype.
    The team/captain database above is preserved from the previous project.
    No astrology, Abjad, lunar-date, or planetary-hour calculations are used. */
 
