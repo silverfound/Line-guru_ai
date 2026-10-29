@@ -510,7 +510,10 @@ async function refreshPublishedCricketFeed() {
     meta.textContent = "Loading the latest published feed…";
     list.innerHTML = '<p class="feed-empty">Loading match data…</p>';
     try {
-        const response = await Promise.race([\n            fetch("data/cricket-feed.json?ts=" + Date.now(), { cache: "no-store" }),\n            new Promise((_, reject) => setTimeout(() => reject(new Error("Feed request timed out.")), 12000))\n        ]);
+        const response = await Promise.race([
+            fetch("data/cricket-feed.json?ts=" + Date.now(), { cache: "no-store" }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Feed request timed out.")), 12000))
+        ]);
         if (!response.ok) throw new Error("Published feed is not available yet.");
         const feed = await response.json();
         const matches = Array.isArray(feed.matches) ? feed.matches : [];
