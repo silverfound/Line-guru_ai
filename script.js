@@ -227,13 +227,16 @@ const teamsData = [
 
 document.addEventListener("DOMContentLoaded", () => {
     populateTeamDropdowns();
+    updateTossWinnerOptions();
     updateBattingTeamOptions();
     document.getElementById("team1Select").addEventListener("change", () => {
         updateCaptain(1);
+        updateTossWinnerOptions();
         updateBattingTeamOptions();
     });
     document.getElementById("team2Select").addEventListener("change", () => {
         updateCaptain(2);
+        updateTossWinnerOptions();
         updateBattingTeamOptions();
     });
     document.getElementById("matchFormat").addEventListener("change", () => {
@@ -282,6 +285,18 @@ function updateCaptain(index) {
     }
     const format = document.getElementById("matchFormat").value;
     captainInput.value = team.captain || (team.captains && (team.captains[format] || team.captains.t20)) || "";
+}
+
+function updateTossWinnerOptions() {
+    const select = document.getElementById("tossWinner");
+    if (!select) return;
+    const previous = select.value;
+    const team1 = teamName(1) || "Team 1";
+    const team2 = teamName(2) || "Team 2";
+    select.innerHTML = '<option value="">Not known yet</option><option value="1"></option><option value="2"></option>';
+    select.options[1].textContent = team1;
+    select.options[2].textContent = team2;
+    if (previous === "1" || previous === "2") select.value = previous;
 }
 
 function updateBattingTeamOptions() {
