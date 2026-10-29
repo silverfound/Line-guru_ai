@@ -103,10 +103,11 @@ const teamsData = [
  {name:"The Hundred Women - Southern Brave",captain:""},
  {name:"The Hundred Women - Trent Rockets",captain:""},
  {name:"The Hundred Women - Welsh Fire",captain:""},
- // Women's Caribbean Premier League (WCPL)
- {name:"Women's Caribbean Premier League - Barbados Royals",captain:""},
+ // Women's Caribbean Premier League (WCPL) — all four 2026 teams
+ {name:"Women's Caribbean Premier League - Barbados Tridents",captain:""},
  {name:"Women's Caribbean Premier League - Guyana Amazon Warriors",captain:""},
- ,
+ {name:"Women's Caribbean Premier League - Jamaica Empress",captain:""},
+ {name:"Women's Caribbean Premier League - Trinbago Knight Riders",captain:""},
  // Caribbean Premier League (CPL) — men's franchises
  {name:"Caribbean Premier League - Antigua & Barbuda Falcons",captain:""},
  {name:"Caribbean Premier League - Barbados Royals",captain:""},
