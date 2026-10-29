@@ -577,7 +577,11 @@ async function refreshPublishedCricketFeed() {
             // Only classify it as finished when both teams have a score and both innings are complete.
             if (limitedOvers && hasScore(score1) && hasScore(score2)) {
                 const maxOvers = format.includes("t20") ? 20 : 50;
-                if (inningsComplete(score1, maxOvers) && inningsComplete(score2, maxOvers)) return "completed";
+                const matchDateForStatus = /^\\d{4}-\\d{2}-\\d{2}/.test(String(match.date || "")) ? String(match.date).slice(0, 10) : "";
+                const todayForStatus = new Date().toISOString().slice(0, 10);
+                // A stale "Live" label on a past-day T20/ODI scorecard is not a live match.
+                if ((matchDateForStatus && matchDateForStatus < todayForStatus)
+                    || (inningsComplete(score1, maxOvers) && inningsComplete(score2, maxOvers))) return "completed";
             }
             if (/scheduled|upcoming|not started|fixture|starts at/i.test(value)) return "upcoming";
             const matchDate = /^\d{4}-\d{2}-\d{2}/.test(String(match.date || "")) ? String(match.date).slice(0, 10) : "";
@@ -625,22 +629,37 @@ async function refreshPublishedCricketFeed() {
             const score2 = cleanScore(match.score2, match.score1);
             const score = [score1, score2].filter(Boolean).join(" · ");
             const details = [match.competition, match.format, match.date, match.venue].filter(Boolean).join(" · ");
-            return '<article class="match-item"><strong>' + escapeHTML(title) + '</strong>'
-                + (score ? '<p>' + escapeHTML(score) + '</p>' : '')
-                + '<p class="match-status">' + escapeHTML(displayMatchStatus(match)) + '</p>'
-                + (details ? '<p>' + escapeHTML(details) + '</p>' : '')
+            return '<article class="match-item match-row"><strong class="match-teams">' + escapeHTML(title) + '</strong>'
+                + (score ? '<span class="match-score">' + escapeHTML(score) + '</span>' : '')
+                + '<span class="match-status">' + escapeHTML(displayMatchStatus(match)) + '</span>'
+                + (details ? '<span class="match-details">' + escapeHTML(details) + '</span>' : '')
                 + '</article>';
         };
-        const renderSection = (title, items) => items.length
-            ? '<section class="feed-section"><h3>' + title + ' <span>(' + items.length + ')</span></h3><div class="match-list">' + items.slice(0, 30).map(renderMatch).join("") + '</div></section>'
-            : "";
         if (!unique.length) {
             list.innerHTML = '<p class="feed-empty">No clean, dated matches are available right now. Refresh the feed later for updated fixtures.</p>';
             return;
         }
-        list.innerHTML = renderSection("Live / In Progress", groups.live)
-            + renderSection("Upcoming Matches", groups.upcoming)
-            + renderSection("Completed Matches", groups.completed);
+        const tabs = [
+            { key: "live", label: "Live", items: groups.live },
+            { key: "upcoming", label: "Upcoming", items: groups.upcoming },
+            { key: "completed", label: "Finished", items: groups.completed }
+        ];
+        const renderTabPanel = tab => '<div class="feed-tab-panel' + (tab.key === "live" ? ' active' : '') + '" data-panel="' + tab.key + '">'
+            + (tab.items.length ? tab.items.slice(0, 30).map(renderMatch).join("") : '<p class="feed-empty">No ' + tab.label.toLowerCase() + ' matches available right now.</p>')
+            + '</div>';
+        list.innerHTML = '<div class="feed-tabs" role="tablist" aria-label="Match categories">'
+            + tabs.map((tab, index) => '<button type="button" class="feed-tab' + (index === 0 ? ' active' : '') + '" role="tab" aria-selected="' + (index === 0 ? 'true' : 'false') + '" data-tab="' + tab.key + '">' + tab.label + ' <span>' + tab.items.length + '</span></button>').join("")
+            + '</div><div class="feed-panels">' + tabs.map(renderTabPanel).join("") + '</div>';
+        list.querySelectorAll("[data-tab]").forEach(tabButton => {
+            tabButton.addEventListener("click", () => {
+                list.querySelectorAll("[data-tab]").forEach(item => {
+                    const active = item === tabButton;
+                    item.classList.toggle("active", active);
+                    item.setAttribute("aria-selected", active ? "true" : "false");
+                });
+                list.querySelectorAll("[data-panel]").forEach(panel => panel.classList.toggle("active", panel.dataset.panel === tabButton.dataset.tab));
+            });
+        });
     } catch (error) {
         status.textContent = "LIVE DATA: FEED NOT AVAILABLE";
         status.classList.add("error");
