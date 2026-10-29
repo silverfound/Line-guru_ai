@@ -519,7 +519,10 @@ async function refreshPublishedCricketFeed() {
         const matches = Array.isArray(feed.matches) ? feed.matches : [];
         const providers = Object.values(feed.providers || {});
         const configured = providers.filter(p => p && p.status !== "not_configured");
-        const successful = configured.filter(p => p.status === "ok");
+        const successful = configured.filter(p => p.status === "ok" || p.status === "partial");
+        const providerDiagnostics = Object.entries(feed.providers || {})
+            .filter(([_, provider]) => provider && provider.status !== "not_configured" && provider.message)
+            .map(([name, provider]) => name + ": " + String(provider.message).slice(0, 160));
         const hasLiveMatches = matches.some(m => /live|in progress|innings|stumps/i.test(String(m.status || "")));
         const generatedAt = feed.generatedAt ? new Date(feed.generatedAt) : null;
         const hasTimestamp = Boolean(generatedAt && Number.isFinite(generatedAt.getTime()));
@@ -541,6 +544,7 @@ async function refreshPublishedCricketFeed() {
             ? successful.length + "/" + configured.length + " provider(s) responded"
             : "No API provider configured in the latest feed";
         meta.textContent = "Last feed update: " + updated + " · " + matches.length + " match(es) · " + providerSummary
+            + (providerDiagnostics.length ? " · Provider diagnostics: " + providerDiagnostics.join(" | ") : "")
             + (stale ? " · Feed is older than 24 hours." : "");
         if (!matches.length) {
             list.innerHTML = '<p class="feed-empty">No matches are available in the published feed yet. Run the manual GitHub Actions refresh and merge its feed-update pull request to publish data.</p>';
