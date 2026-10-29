@@ -571,11 +571,21 @@ async function refreshPublishedCricketFeed() {
                 if (!hasScore(score)) return false;
                 return /\/\s*10\b/.test(score) || new RegExp("(?:^|[\\s(])(?:" + maxOvers + ")(?:\\.0)?\\s*ov\\b", "i").test(score);
             };
+            const leadingRuns = score => {
+                const match = String(score || "").match(/^\s*(\d+)\s*\//);
+                return match ? Number(match[1]) : null;
+            };
             const resultText = /won by|match drawn|tied|abandoned|no result|cancelled|conceded|result:|match finished|completed|finished|innings complete/i.test(value);
             if (resultText) return "completed";
             // Some feeds keep the status as "Live" after a limited-overs match has ended.
             // Only classify it as finished when both teams have a score and both innings are complete.
             if (limitedOvers && hasScore(score1) && hasScore(score2)) {
+                const runs1 = leadingRuns(score1);
+                const runs2 = leadingRuns(score2);
+                // A successful chase in a single-innings-per-side match ends immediately.
+                if (runs1 !== null && runs2 !== null
+                    && !/[&;]/.test(score1) && !/[&;]/.test(score2)
+                    && runs2 > runs1) return "completed";
                 const maxOvers = format.includes("t20") ? 20 : 50;
                 const matchDateForStatus = /^\d{4}-\d{2}-\d{2}/.test(String(match.date || "")) ? String(match.date).slice(0, 10) : "";
                 const todayForStatus = new Date().toISOString().slice(0, 10);
