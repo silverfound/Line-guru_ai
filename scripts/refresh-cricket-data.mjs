@@ -62,7 +62,7 @@ function normalizeMatch(m, source) {
   const team1 = first(home?.name, home?.team, home, m?.home_team, m?.team1Name, teams[0]?.name, teams[0]);
   const team2 = first(away?.name, away?.team, away, m?.away_team, m?.team2Name, teams[1]?.name, teams[1]);
   const scoreList = Array.isArray(score) ? score : (Array.isArray(m?.scores) ? m.scores : []);
-  const startTime = first(m?.date, m?.start_time, m?.startTime, m?.dateTimeGMT, m?.match_date, m?.start_date, m?.scheduled_at, m?.dateTime);
+  const startTime = first(m?.date, m?.kickoff_utc, m?.start_time, m?.startTime, m?.dateTimeGMT, m?.match_date, m?.start_date, m?.scheduled_at, m?.dateTime);
   const rawVenue = first(m?.venue?.name, m?.venue, m?.ground, m?.stadium);
   const venue = /^(?:TBC|TBD|TBA)(?:\s*,\s*(?:TBC|TBD|TBA))*$/i.test(rawVenue) ? "" : rawVenue;
   const state = first(m?.status, m?.state, m?.match_status, m?.matchStatus, m?.result, m?.stage);
