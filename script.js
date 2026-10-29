@@ -97,7 +97,43 @@ const teamsData = [
  // Women's Caribbean Premier League (WCPL)
  {name:"Women's Caribbean Premier League - Barbados Royals",captain:""},
  {name:"Women's Caribbean Premier League - Guyana Amazon Warriors",captain:""},
- {name:"Women's Caribbean Premier League - Trinbago Knight Riders",captain:""}];/* Cricket-statistics prototype.
+ ,
+ // Lanka Premier League (LPL) — 2026 franchises
+ {name:"Lanka Premier League - Jaffna Kings",captain:""},
+ {name:"Lanka Premier League - Galle Gallants",captain:""},
+ {name:"Lanka Premier League - Colombo Kaps",captain:""},
+ {name:"Lanka Premier League - Kandy Royals",captain:""},
+ {name:"Lanka Premier League - Dambulla Sixers",captain:""},
+ // Bangladesh Premier League (BPL) — 2026 franchises
+ {name:"Bangladesh Premier League - Chattogram Royals",captain:""},
+ {name:"Bangladesh Premier League - Dhaka Capitals",captain:""},
+ {name:"Bangladesh Premier League - Noakhali Express",captain:""},
+ {name:"Bangladesh Premier League - Rajshahi Warriors",captain:""},
+ {name:"Bangladesh Premier League - Rangpur Riders",captain:""},
+ {name:"Bangladesh Premier League - Sylhet Titans",captain:""},
+ // Global T20 Canada — recent franchise names
+ {name:"Global T20 Canada - Bangla Tigers Mississauga",captain:""},
+ {name:"Global T20 Canada - Brampton Wolves",captain:""},
+ {name:"Global T20 Canada - Montreal Tigers",captain:""},
+ {name:"Global T20 Canada - Surrey Jaguars",captain:""},
+ {name:"Global T20 Canada - Toronto Nationals",captain:""},
+ {name:"Global T20 Canada - Vancouver Knights",captain:""},
+ // GT20 Canada 2026 listed franchises
+ {name:"GT20 Canada 2026 - Mississauga Skyhawks",captain:""},
+ {name:"GT20 Canada 2026 - Toronto Kings",captain:""},
+ {name:"GT20 Canada 2026 - Vancouver Guardians",captain:""},
+ {name:"GT20 Canada 2026 - Montreal Warriors",captain:""},
+ {name:"GT20 Canada 2026 - Brampton Blazers",captain:""},
+ // Women's IPL (commonly known as WPL)
+ {name:"Women's IPL - Delhi Capitals",captain:""},
+ {name:"Women's IPL - Gujarat Giants",captain:""},
+ {name:"Women's IPL - Mumbai Indians",captain:""},
+ {name:"Women's IPL - Royal Challengers Bengaluru",captain:""},
+ {name:"Women's IPL - UP Warriorz",captain:""},
+ // Women's Bangladesh Premier League (WBPL)
+ {name:"Women's Bangladesh Premier League - Team 1",captain:""},
+ {name:"Women's Bangladesh Premier League - Team 2",captain:""},
+ {name:"Women's Bangladesh Premier League - Team 3",captain:""}{name:"Women's Caribbean Premier League - Trinbago Knight Riders",captain:""}];/* Cricket-statistics prototype.
    The team/captain database above is preserved from the previous project.
    No astrology, Abjad, lunar-date, or planetary-hour calculations are used. */
 
