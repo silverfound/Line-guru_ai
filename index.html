@@ -67,7 +67,7 @@
             <div class="input-group"><label for="tossDecision">Toss Decision</label><select id="tossDecision"><option value="">Not known yet</option><option value="bat">Bat first</option><option value="field">Field first</option></select></div>
             <div class="input-group"><label for="pitchType">Pitch Type</label><select id="pitchType"><option value="neutral">Neutral</option><option value="batting">Batting-friendly</option><option value="bowling">Bowling-friendly</option></select></div>
             <div class="input-group full-width"><label for="venueName">Venue (optional)</label><input id="venueName" type="text" placeholder="e.g. Gaddafi Stadium"></div>
-            <div class="input-group full-width"><label for="venueAverage">Venue Average Score (optional)</label><input id="venueAverage" type="number" min="0" placeholder="T20 example: 165; ODI example: 270"><p class="hint">Reference only; the trained model currently uses match format and live score state.</p></div>
+            <div class="input-group full-width"><label for="venueAverage">Venue Average Score (optional)</label><input id="venueAverage" type="number" min="0" placeholder="T20 example: 165; ODI example: 270"><p class="hint">Used only when historical venue data is unavailable in the Team-Aware pre-match model.</p></div>
         </div>
 
         <h2 class="section-title">Score & Innings</h2>
@@ -83,7 +83,7 @@
         </div>
         <button class="calculate-btn" type="button" onclick="calculatePrediction()"><span>Generate Cricket Prediction</span></button>
 
-        <div class="api-note"><strong>Trained AI:</strong> LightGBM models trained on historical ball-by-ball cricket data power first-innings winner, live chase probability, and first-innings score estimates. Enter the current score manually; the live feed does not auto-fill this calculator yet. Team identity, recent form, venue effects, and player availability are not yet model inputs.</div>
+        <div class="api-note"><strong>Trained AI:</strong> Team-Aware LightGBM predicts the winner before the first ball using team identity and available pre-match context. Separate existing LightGBM models handle live first-innings and chase predictions. Live models remain unchanged; unavailable historical features are reported rather than invented.</div>
     </main>
 
     <section id="resultBox" class="result-card hidden" aria-live="polite">
@@ -92,6 +92,7 @@
     </section>
 </div>
 <script src="ml-predictor.js?v=20261030-lightgbm-v1"></script>
+<script src="team-aware-predictor.js?v=team-aware-20261030"></script>
 <script src="script.js?v=20261030-lightgbm-v1"></script>
 </body>
 </html>
