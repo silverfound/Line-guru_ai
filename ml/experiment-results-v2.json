@@ -1,0 +1,30 @@
+{
+  "dataset": {
+    "matches": 16586,
+    "men": 12564,
+    "women": 4022,
+    "T20": 13472,
+    "ODI": 2809,
+    "IT20": 305,
+    "competitions": 988,
+    "venues": 765,
+    "train": 10993,
+    "test": 5593,
+    "test_start_date": "2023-10-18",
+    "parse_errors": 0
+  },
+  "experimental_team_aware_model": {
+    "accuracy": 0.6150545324512784,
+    "log_loss": 0.6735808276979119,
+    "roc_auc": 0.6708434151399931,
+    "brier": 0.23669788510602727,
+    "train_matches": 10993,
+    "test_matches": 5593,
+    "notes": [
+      "Chronological holdout; test dates begin 2023-10-18.",
+      "Includes team, competition, venue, prior-only form/strength, H2H, and toss features.",
+      "This experiment did not beat the existing first-innings result model's reported 65.68% accuracy and is not approved for app deployment.",
+      "Metrics are for the first-batting team's win target; further calibration and per-format/per-competition validation are required."
+    ]
+  }
+}
