@@ -34,6 +34,8 @@ const teamsData = [
  {name:"Pakistan Super League - Karachi Kings",captain:"David Warner"},
  {name:"Pakistan Super League - Lahore Qalandars",captain:"Shaheen Afridi"},
  {name:"Pakistan Super League - Multan Sultans",captain:"Mohammad Rizwan"},
+ {name:"Pakistan Super League - Hyderabad Kingsmen",captain:""},
+ {name:"Pakistan Super League - Rawalpindiz",captain:""},
  {name:"Pakistan Super League - Peshawar Zalmi",captain:"Babar Azam"},
  {name:"Pakistan Super League - Quetta Gladiators",captain:"Saud Shakeel"},
  {name:"Big Bash League - Adelaide Strikers",captain:"Matthew Short"},
