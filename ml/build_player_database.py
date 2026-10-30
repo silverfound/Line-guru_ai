@@ -115,7 +115,7 @@ def main():
     summary={"source":payload["source"],"supported_formats":sorted(SUPPORTED),"match_player_rows":len(rows),
       "player_profiles":len(players),"unique_players":len({p["player"] for p in players}),
       "genders":genders,"formats":formats,"parse_errors":errors,
-      "limitations":["Only observed batting, bowling or fielding participation is counted.",
+      "limitations":["Only players with observed batting or bowling innings are included; fielding-only appearances are not counted.",
         "Cricsheet coverage varies by competition, gender and season.",
         "No future XI, player fitness, pitch report or live availability is inferred.",
         "This is a research artifact; production predictions remain unchanged."]}
