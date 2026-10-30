@@ -4,8 +4,8 @@
 Usage:
   python ml/build_dataset.py --zip all_json.zip --out-dir ml/data
 
-Only completed men's/unspecified T20, IT20 and ODI matches are retained by
-default. Every historical feature is computed strictly from earlier matches.
+Only completed T20, IT20 and ODI matches (including women's matches) are retained.
+Every historical feature is computed strictly from earlier matches.
 """
 from __future__ import annotations
 import argparse
@@ -21,7 +21,7 @@ DLS_WORDS = ("D/L", "DLS", "Duckworth", "revised", "VJD")
 
 def innings_total(innings):
     total = wickets = legal_balls = 0
-    for over in innings or []:
+    for over in (innings or {}).get("overs", []):
         for delivery in over.get("deliveries", []):
             runs = delivery.get("runs", {})
             total += int(runs.get("total", 0) or 0)
