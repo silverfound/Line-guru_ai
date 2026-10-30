@@ -86,7 +86,7 @@ function normalizeMatch(m, source) {
     date: startTime,
     status,
     statusText: first(m?.status_text, m?.statusText, m?.note),
-    competition: first(m?.league, m?.competition, m?.series, m?.seriesName, m?.event_name),
+    competition: first(m?.league, m?.competition?.name, m?.competition, m?.series?.name, m?.series, m?.seriesName, m?.event_name),
     team1,
     team2,
     score1: firstScore(score?.home, score?.team1, home?.score, m?.home_score, m?.team1Score, m?.score1, totalFor(0), scoreForTeam(team1, scoreList)),
@@ -106,6 +106,41 @@ function isPlaceholderTeam(value) {
     || /^(?:TBC|TBD|TBA|Team\s*[A-Z0-9]+)$/i.test(String(value || "").trim());
 }
 
+function isHongKongSixes(match) {
+  const label = [
+    match?.name, match?.seriesName, match?.series?.name, match?.series?.title,
+    match?.league, match?.competition?.name, match?.competition, match?.matchType, match?.match_type
+  ].map(str).join(" ").toLowerCase();
+  if (/hong.?kong.?sixes|super.?sixes|six.?a.?side/.test(label)) return true;
+
+  // CricketData.org can label Hong Kong Sixes as T20. Two six-over innings
+  // are not a T20 match; keep this unsupported format out rather than mislabel it.
+  const rows = Array.isArray(match?.score) ? match.score
+    : (Array.isArray(match?.scores) ? match.scores : []);
+  const overs = rows.map(row => Number.parseFloat(row?.o ?? row?.overs))
+    .filter(Number.isFinite);
+  return /t20|twenty.?20/.test(label) && overs.length >= 2 && overs.every(value => value === 6);
+}
+
+function inFeedDateWindow(match) {
+  const timestamp = Date.parse(String(match?.date || ""));
+  if (!Number.isFinite(timestamp)) return false;
+  const today = new Date(now);
+  today.setUTCHours(0, 0, 0, 0);
+  const todayStart = today.getTime();
+  const futureEnd = todayStart + 14 * 86400000;
+  const status = String(match?.status || "").toLowerCase();
+  if (/live|in.?progress|1st inn|2nd inn|stumps/.test(status)) {
+    return timestamp >= todayStart - 86400000 && timestamp < futureEnd;
+  }
+  if (/won by|drawn|tied|abandoned|no result|cancelled|completed|finished|result:/.test(status)) {
+    return timestamp >= todayStart - 14 * 86400000 && timestamp < futureEnd;
+  }
+  // Upcoming fixtures must be today through the next 13 days, never a distant
+  // season calendar returned by an unbounded provider endpoint.
+  return timestamp >= todayStart && timestamp < futureEnd;
+}
+
 function supportedFormat(match) {
   const text = `${match?.format || ""} ${match?.competition || ""}`.toLowerCase();
   if (/test|first.?class|multi.?day|four.?day|five.?day/.test(text)) return null;
@@ -122,6 +157,7 @@ function isPublishableMatch(match) {
   if (isPlaceholderTeam(match.team1) || isPlaceholderTeam(match.team2)) return false;
   // A match without a usable date cannot be sorted or reliably classified.
   if (!/^\d{4}-\d{2}-\d{2}/.test(String(match.date || ""))) return false;
+  if (!inFeedDateWindow(match)) return false;
   return true;
 }
 
@@ -189,7 +225,7 @@ const toDate = new Date(now.getTime() + 13 * 86400000).toISOString().slice(0, 10
 
 if (process.env.BIGBALLSDATA_API_KEY) {
   providers.bigBalls = await providerResult("Big Balls Data", async () => {
-    const payload = await requestJson("https://api.bigballsdata.com/v1/cricket/matches?limit=100", {
+    const payload = await requestJson(`https://api.bigballsdata.com/v1/cricket/matches?date=${date}:${toDate}&limit=100`, {
       "x-api-key": process.env.BIGBALLSDATA_API_KEY,
       "Accept": "application/json"
     });
@@ -252,13 +288,13 @@ if (process.env.CRICKETDATA_API_KEY) {
       .filter(result => result.error)
       .map(result => `${result.kind} endpoint: ${String(result.error?.message || "request failed").slice(0, 120)}`);
     const current = currentResult.payload
-      ? unwrap(currentResult.payload).map(m => normalizeMatch(m, "CricketData.org"))
+      ? unwrap(currentResult.payload).filter(m => !isHongKongSixes(m)).map(m => normalizeMatch(m, "CricketData.org"))
       : [];
     const fixtureStart = new Date(now);
     fixtureStart.setUTCHours(0, 0, 0, 0);
     const fixtureEnd = new Date(fixtureStart.getTime() + 14 * 86400000);
     const fixtures = fixturesResult.payload
-      ? unwrap(fixturesResult.payload).map(m => ({
+      ? unwrap(fixturesResult.payload).filter(m => !isHongKongSixes(m)).map(m => ({
           ...normalizeMatch(m, "CricketData.org"),
           status: first(m?.status, m?.state, m?.stage, "Scheduled")
         })).filter(match => {
