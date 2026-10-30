@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 
-from ml.build_history_lookup import build_history
+from ml.build_history_lookup import build_history, build_prior_snapshots
 
 
 class RuntimeHistoryLeakageTests(unittest.TestCase):
@@ -11,34 +11,35 @@ class RuntimeHistoryLeakageTests(unittest.TestCase):
              "team1":"Alpha","team2":"Beta","winner":"Alpha","venue":"Ground",
              "first_innings_runs":160},
             {"match_id":"m2","date":"2024-01-01","gender":"male","format":"T20",
-             "team1":"Beta","team2":"Alpha","winner":"Alpha","venue":"Ground",
+             "team1":"Alpha","team2":"Beta","winner":"Beta","venue":"Ground",
              "first_innings_runs":170},
             {"match_id":"m3","date":"2024-01-02","gender":"male","format":"T20",
              "team1":"Alpha","team2":"Beta","winner":"Beta","venue":"Ground",
              "first_innings_runs":150},
         ])
 
-    def test_same_day_results_are_not_in_runtime_history(self):
-        history = build_history(self.rows())
-        alpha = history["teams"]["male|T20|Alpha"]
-        beta = history["teams"]["male|T20|Beta"]
-        h2h = history["h2h"]["male|T20|Alpha|Beta"]
-        venue = history["venues"]["male|T20|Ground"]
-        # Only m3 is after the Jan 1 matches; final history includes all
-        # completed matches, but the intermediate same-day state is tested
-        # through the extracted daily snapshots below.
-        self.assertEqual(alpha["matches"], 3)
-        self.assertEqual(beta["matches"], 3)
-        self.assertEqual(h2h["matches"], 3)
-        self.assertEqual(venue["matches"], 3)
+    def test_same_day_matches_share_identical_prior_history(self):
+        snapshots = {x["match_id"]: x for x in build_prior_snapshots(self.rows())}
+        for key in ("team1_prior_matches", "team2_prior_matches",
+                    "h2h_prior_matches", "venue_prior_matches"):
+            self.assertEqual(snapshots["m1"][key], 0)
+            self.assertEqual(snapshots["m2"][key], 0)
 
-    def test_next_day_history_uses_all_prior_day_matches(self):
+    def test_following_day_sees_all_completed_matches_from_prior_day(self):
+        snapshots = {x["match_id"]: x for x in build_prior_snapshots(self.rows())}
+        self.assertEqual(snapshots["m3"]["team1_prior_matches"], 2)
+        self.assertEqual(snapshots["m3"]["team2_prior_matches"], 2)
+        self.assertEqual(snapshots["m3"]["h2h_prior_matches"], 2)
+        self.assertEqual(snapshots["m3"]["venue_prior_matches"], 2)
+        self.assertEqual(snapshots["m3"]["h2h_team1_win_prior10"], 0.5)
+        self.assertEqual(snapshots["m3"]["venue_first_innings_avg_prior30"], 165.0)
+
+    def test_runtime_lookup_still_exports_compact_model_schema(self):
         history = build_history(self.rows())
-        # Both Jan 1 results count by the end of the archive.
-        # This test guards stable orientation and expected aggregate values.
-        h2h = history["h2h"]["male|T20|Alpha|Beta"]
-        self.assertAlmostEqual(h2h["team1Win"], 0.5)
-        self.assertEqual(h2h["matches"], 3)
+        self.assertEqual(history["version"], 2)
+        self.assertEqual(history["teams"]["male|T20|Alpha"]["matches"], 3)
+        self.assertEqual(history["h2h"]["male|T20|Alpha|Beta"]["matches"], 3)
+        self.assertEqual(history["venues"]["male|T20|Ground"]["matches"], 3)
 
 
 if __name__ == "__main__":
