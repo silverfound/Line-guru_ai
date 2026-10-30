@@ -19,13 +19,13 @@ Outputs (generated locally and intentionally not committed):
 
 ## Leakage safeguards
 
-For each match, team strength (last 20), form (last 10), head-to-head (last 10)
+For each match, gender- and format-specific team strength (last 20), form (last 10), head-to-head (last 10)
 and venue first-innings average (last 30) are calculated from matches strictly
 earlier in date order. The current match is added to history only after its
 features are generated. Train/test separation is chronological by date, so
 matches on the same date are assigned to the same side.
 
-The initial data build retains completed male/unspecified T20, IT20 and ODI
+The initial data build retains completed men's and women's T20, IT20 and ODI
 matches with a winner and at least two innings. Tests, ties/no-results, and
 matches explicitly marked with a revised-target method are excluded. This is
 a conservative baseline; league and competition coverage must be inspected
