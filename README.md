@@ -36,7 +36,7 @@ When ready to spend API quota, open **Actions → Refresh free cricket data → 
 
 ## Historical player performance research database
 
-The model-validation workflow builds `player-performance.json` from the free Cricsheet `all_json.zip` archive. It calculates observed player appearances, batting runs/balls/outs/boundaries, bowling balls/runs/wickets, career aggregates and last-five/last-ten match form, split by gender, format and team. Squad lists are not treated as confirmed playing XIs. Coverage depends on Cricsheet's archive and varies by competition and gender. This generated database is a research artifact only; it does not yet feed the production prediction model. Player features must pass leakage-safe, same-holdout validation before any production model change.
+The model-validation workflow builds `player-performance.json` from the free Cricsheet `all_json.zip` archive. It calculates observed batting/bowling appearances, batting runs/balls/outs/boundaries, bowling balls/runs/wickets, career aggregates and last-five/last-ten match form, split by gender, format and team. Squad lists are not treated as confirmed playing XIs. Coverage depends on Cricsheet's archive and varies by competition and gender. This generated database is a research artifact only; it does not yet feed the production prediction model. Player features must pass leakage-safe, same-holdout validation before any production model change.
 
 ## Current limitations
 
