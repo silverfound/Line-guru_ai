@@ -96,40 +96,43 @@ def parse_match(name, raw):
 
 
 def add_historical_features(df):
-    """Add prior-only team form/strength, H2H and venue score baselines."""
+    """Add prior-only features; all matches on a date share the same history."""
     df = df.sort_values(["date", "match_id"]).reset_index(drop=True).copy()
     team_results = defaultdict(lambda: deque(maxlen=20))
     team_form = defaultdict(lambda: deque(maxlen=10))
     h2h = defaultdict(lambda: deque(maxlen=10))
     venue_scores = defaultdict(lambda: deque(maxlen=30))
     rows = []
-    for row in df.to_dict("records"):
-        a, b, venue = row["team1"], row["team2"], row.get("venue") or "UNKNOWN"
-        pair = tuple(sorted((a, b)))
-        ra, rb = list(team_results[a]), list(team_results[b])
-        fa, fb = list(team_form[a]), list(team_form[b])
-        hh = list(h2h[pair])
-        vs = list(venue_scores[venue])
-        row.update({
-            "team1_strength_prior20": sum(ra) / len(ra) if ra else None,
-            "team2_strength_prior20": sum(rb) / len(rb) if rb else None,
-            "team1_form_prior10": sum(fa) / len(fa) if fa else None,
-            "team2_form_prior10": sum(fb) / len(fb) if fb else None,
-            "h2h_team1_win_prior10": sum(hh) / len(hh) if hh else None,
-            "venue_first_innings_avg_prior30": sum(vs) / len(vs) if vs else None,
-            "team1_prior_matches": len(ra),
-            "team2_prior_matches": len(rb),
-            "h2h_prior_matches": len(hh),
-            "venue_prior_matches": len(vs),
-        })
-        rows.append(row)
-        # Update histories only after creating this match's features.
-        team_results[a].append(int(row["winner"] == a))
-        team_results[b].append(int(row["winner"] == b))
-        team_form[a].append(int(row["winner"] == a))
-        team_form[b].append(int(row["winner"] == b))
-        h2h[pair].append(int(row["winner"] == a))
-        venue_scores[venue].append(int(row["first_innings_runs"]))
+    for _, day in df.groupby(df["date"].dt.date, sort=True):
+        pending = []
+        for row in day.to_dict("records"):
+            a, b, venue = row["team1"], row["team2"], row.get("venue") or "UNKNOWN"
+            pair = tuple(sorted((a, b)))
+            ra, rb = list(team_results[a]), list(team_results[b])
+            fa, fb = list(team_form[a]), list(team_form[b])
+            hh, vs = list(h2h[pair]), list(venue_scores[venue])
+            row.update({
+                "team1_strength_prior20": sum(ra) / len(ra) if ra else None,
+                "team2_strength_prior20": sum(rb) / len(rb) if rb else None,
+                "team1_form_prior10": sum(fa) / len(fa) if fa else None,
+                "team2_form_prior10": sum(fb) / len(fb) if fb else None,
+                "h2h_team1_win_prior10": sum(hh) / len(hh) if hh else None,
+                "venue_first_innings_avg_prior30": sum(vs) / len(vs) if vs else None,
+                "team1_prior_matches": len(ra), "team2_prior_matches": len(rb),
+                "h2h_prior_matches": len(hh), "venue_prior_matches": len(vs),
+            })
+            rows.append(row)
+            pending.append(row)
+        # Add results only after every match from this date has been featured.
+        for row in pending:
+            a, b, venue = row["team1"], row["team2"], row.get("venue") or "UNKNOWN"
+            pair = tuple(sorted((a, b)))
+            team_results[a].append(int(row["winner"] == a))
+            team_results[b].append(int(row["winner"] == b))
+            team_form[a].append(int(row["winner"] == a))
+            team_form[b].append(int(row["winner"] == b))
+            h2h[pair].append(int(row["winner"] == a))
+            venue_scores[venue].append(int(row["first_innings_runs"]))
     return pd.DataFrame(rows)
 
 
