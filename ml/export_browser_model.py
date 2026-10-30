@@ -44,8 +44,12 @@ function treeValue(node,row,categories){
    const cats=categories[name]||[], idx=cats.indexOf(value);
    goLeft=idx>=0 ? node.threshold.split('||').map(Number).includes(idx) : Boolean(node.default_left);
   }else{
-   const n=Number(value);
-   goLeft=Number.isFinite(n) ? (node.decision_type.includes('<=' ) ? n<=node.threshold : n<node.threshold) : Boolean(node.default_left);
+   if(value===null || value===undefined || value===""){
+    goLeft=Boolean(node.default_left);
+   }else{
+    const n=Number(value);
+    goLeft=Number.isFinite(n) ? (node.decision_type.includes('<=' ) ? n<=node.threshold : n<node.threshold) : Boolean(node.default_left);
+   }
   }
   node=goLeft?node.left_child:node.right_child;
  }
