@@ -566,9 +566,9 @@ function findOrAddTeamOption(selectId, name) {
     if (!select || !clean) return false;
     let option = Array.from(select.options).find(o => o.textContent.trim().toLowerCase() === clean.toLowerCase());
     if (!option) {
-        const normalized = clean.toLowerCase().replace(/\\s+/g, " ").trim();
+        const normalized = clean.toLowerCase().replace(/\s+/g, " ").trim();
         const teamIndex = teamsData.findIndex(t => {
-            const candidate = t.name.toLowerCase().replace(/\\s+/g, " ").trim();
+            const candidate = t.name.toLowerCase().replace(/\s+/g, " ").trim();
             return candidate === normalized || candidate.endsWith(" - " + normalized)
                 || normalized.endsWith(" - " + candidate);
         });
@@ -585,8 +585,8 @@ function findOrAddTeamOption(selectId, name) {
 }
 
 function parseFeedScore(score) {
-    const match = String(score || "").match(/^\\s*(\\d+)\\s*\\/\\s*(\\d+)(?:\\s*\\((\\d+(?:\\.\\d+)?)\\s*ov\\))?/i)
-        || String(score || "").match(/^\\s*(\\d+)\\s*\\((\\d+(?:\\.\\d+)?)\\s*ov\\)/i);
+    const match = String(score || "").match(/^\s*(\d+)\s*\/\s*(\d+)(?:\s*\((\d+(?:\.\d+)?)\s*ov\))?/i)
+        || String(score || "").match(/^\s*(\d+)\s*\((\d+(?:\.\d+)?)\s*ov\)/i);
     if (!match) return null;
     return { runs:Number(match[1]), wickets:match[2] === undefined ? 0 : Number(match[2]), overs:match[3] || match[2] || "0" };
 }
