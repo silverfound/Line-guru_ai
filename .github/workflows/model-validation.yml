@@ -1,0 +1,29 @@
+name: Model validation audit
+on:
+  push:
+    branches: [main]
+    paths: ["ml/**", "tests/**", ".github/workflows/model-validation.yml"]
+  pull_request:
+    branches: [main]
+    paths: ["ml/**", "tests/**", ".github/workflows/model-validation.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install validation dependencies
+        run: python -m pip install --upgrade pip pandas scikit-learn lightgbm joblib
+      - name: Run regression tests
+        run: python -m unittest discover -s tests -v
+      - name: Audit prepared dataset split and feature leakage
+        run: python ml/audit_dataset.py
+      - name: Check serialized training artifact if present
+        run: |
+          python -c "from pathlib import Path; import joblib; ps=[p for p in [Path('ml/output/team-aware-model.joblib'),Path('ml/team-aware-model.joblib')] if p.exists()]; print('No serialized artifact committed; load check skipped.' if not ps else '\\n'.join(str(p) for p in ps)); [joblib.load(p) for p in ps]"
