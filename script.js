@@ -269,7 +269,9 @@ function selectedTeam(index) {
 
 function teamName(index) {
     const team = selectedTeam(index);
-    return team ? team.name : "";
+    if (team) return team.name;
+    const select = document.getElementById(index === 1 ? "team1Select" : "team2Select");
+    return select && select.selectedIndex > 0 ? select.options[select.selectedIndex].textContent.trim() : "";
 }
 
 function captainName(index) {
