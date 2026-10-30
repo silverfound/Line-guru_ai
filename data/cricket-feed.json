@@ -15,8 +15,8 @@
       "matches": []
     },
     "openCricket": {
-      "status": "error",
-      "message": "live endpoint: HTTP 502: The live data source answered HTTP 403. Try again shortly.; fixtures endpoint: HTTP 502: The live data source answered HTTP 403. Try again shortly.",
+      "status": "paused",
+      "message": "Temporarily disabled after upstream HTTP 403; re-enable after access is restored.",
       "rawMatchCount": 0,
       "matchCount": 0,
       "matches": []
