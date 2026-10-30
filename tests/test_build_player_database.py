@@ -1,5 +1,5 @@
 import unittest
-from ml.build_player_database import match_player_rows, summarize
+from ml.build_player_database import match_player_rows, summarize, build_prior_player_snapshots
 
 class PlayerDatabaseTests(unittest.TestCase):
     def sample(self):
@@ -30,6 +30,23 @@ class PlayerDatabaseTests(unittest.TestCase):
         p=next(x for x in summarize(match_player_rows("sample.json",self.sample())) if x["player"]=="A Batter")
         self.assertEqual(p["matches"],1); self.assertEqual(p["last5"]["runs"],5)
         self.assertEqual(p["strike_rate"],250.0)
+    def test_prior_player_snapshots_exclude_same_day_and_include_earlier_dates(self):
+        first = match_player_rows("first.json", self.sample())
+        same_day_data = self.sample()
+        same_day_data["info"]["dates"] = ["2025-01-01"]
+        same_day = match_player_rows("same-day.json", same_day_data)
+        next_day_data = self.sample()
+        next_day_data["info"]["dates"] = ["2025-01-02"]
+        next_day = match_player_rows("next-day.json", next_day_data)
+        snapshots = build_prior_player_snapshots(first + same_day + next_day)
+        indexed = {(x["match_id"], x["player"]): x for x in snapshots}
+        self.assertEqual(indexed[("first", "A Batter")]["prior_matches"], 0)
+        self.assertEqual(indexed[("same-day", "A Batter")]["prior_matches"], 0)
+        prior = indexed[("next-day", "A Batter")]
+        self.assertEqual(prior["prior_matches"], 2)
+        self.assertEqual(prior["last5"]["runs"], 10)
+        self.assertEqual(prior["last_match_date"], "2025-01-01")
+
     def test_test_cricket_ignored(self):
         d=self.sample(); d["info"]["match_type"]="TEST"
         self.assertEqual(match_player_rows("test.json",d),[])
