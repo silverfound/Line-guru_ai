@@ -95,7 +95,8 @@ function normalizeMatch(m, source) {
     tossWinner: first(m?.toss?.team, m?.toss_winner, m?.tossWinner),
     tossDecision: first(m?.toss?.decision, m?.toss_decision, m?.tossDecision),
     battingTeam: first(m?.batting_team?.name, m?.battingTeam?.name, m?.batting_team, m?.battingTeam, m?.batting),
-    target: first(m?.target, m?.chase_target),
+    inningsNumber: first(m?.innings_number, m?.current_innings_number, m?.current_innings?.number, m?.inningsNo, typeof m?.innings === "number" ? m.innings : ""),
+    target: first(m?.target, m?.chase_target, m?.runs_target),
     format: first(m?.format, m?.matchType, m?.match_type)
   };
 }
