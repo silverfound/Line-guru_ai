@@ -13,7 +13,9 @@ async function readPrevious() {
 function unwrap(payload) {
   if (Array.isArray(payload?.data)) return payload.data;
   if (Array.isArray(payload?.matches)) return payload.matches;
+  if (Array.isArray(payload?.fixtures)) return payload.fixtures;
   if (Array.isArray(payload?.data?.matches)) return payload.data.matches;
+  if (Array.isArray(payload?.data?.fixtures)) return payload.data.fixtures;
   if (Array.isArray(payload?.response)) return payload.response;
   return [];
 }
@@ -62,10 +64,10 @@ function normalizeMatch(m, source) {
   const team1 = first(home?.name, home?.team, home, m?.home_team, m?.team1Name, teams[0]?.name, teams[0]);
   const team2 = first(away?.name, away?.team, away, m?.away_team, m?.team2Name, teams[1]?.name, teams[1]);
   const scoreList = Array.isArray(score) ? score : (Array.isArray(m?.scores) ? m.scores : []);
-  const startTime = first(m?.date, m?.kickoff_utc, m?.start_time, m?.startTime, m?.dateTimeGMT, m?.match_date, m?.start_date, m?.scheduled_at, m?.dateTime);
+  const startTime = first(m?.date, m?.time, m?.kickoff_utc, m?.start_time, m?.startTime, m?.dateTimeGMT, m?.match_date, m?.start_date, m?.scheduled_at, m?.dateTime);
   const rawVenue = first(m?.venue?.name, m?.venue, m?.ground, m?.stadium);
   const venue = /^(?:TBC|TBD|TBA)(?:\s*,\s*(?:TBC|TBD|TBA))*$/i.test(rawVenue) ? "" : rawVenue;
-  const state = first(m?.status, m?.state, m?.match_status, m?.matchStatus, m?.result, m?.stage);
+  const state = first(m?.status, m?.state, m?.status_text, m?.match_status, m?.matchStatus, m?.result, m?.stage);
   const status = state || (m?.matchStarted === true ? "Live" : (m?.matchEnded === true ? "Completed" : ""));
   return {
     id: first(m?.id, m?.match_id, m?.matchId),
@@ -265,6 +267,61 @@ if (process.env.CRICKETDATA_API_KEY) {
   providers.cricketData = { status: "not_configured", matchCount: 0, matches: [] };
 }
 
+
+if (process.env.SPORTSCORE_API_KEY) {
+  providers.sportScore = await providerResult("SportScore", async () => {
+    const headers = {
+      "Accept": "application/json",
+      "X-Api-Key": process.env.SPORTSCORE_API_KEY
+    };
+    const request = async url => requestJson(url, headers);
+    const day = new Date(now);
+    day.setUTCHours(0, 0, 0, 0);
+    const tomorrow = new Date(day.getTime() + 86400000);
+    const dayString = value => value.toISOString().slice(0, 10);
+
+    // One live/recent request plus today's and tomorrow's fixtures.
+    // The API accepts a single UTC calendar date per fixtures request.
+    const results = await Promise.all([
+      request("https://sportscore.com/api/widget/matches/?sport=cricket&limit=50")
+        .then(payload => ({ kind: "live/recent", payload }))
+        .catch(error => ({ kind: "live/recent", error })),
+      request(`https://sportscore.com/api/v1/fixtures/?sport=cricket&date=${dayString(day)}&limit=200`)
+        .then(payload => ({ kind: "today fixtures", payload }))
+        .catch(error => ({ kind: "today fixtures", error })),
+      request(`https://sportscore.com/api/v1/fixtures/?sport=cricket&date=${dayString(tomorrow)}&limit=200`)
+        .then(payload => ({ kind: "tomorrow fixtures", payload }))
+        .catch(error => ({ kind: "tomorrow fixtures", error }))
+    ]);
+
+    const errors = results.filter(result => result.error)
+      .map(result => `${result.kind}: ${String(result.error?.message || "request failed").slice(0, 120)}`);
+    const liveMatches = results[0].payload
+      ? unwrap(results[0].payload).map(match => ({
+          ...normalizeMatch(match, "SportScore"),
+          status: first(match?.status, match?.state, match?.status_text, "Live / recent")
+        }))
+      : [];
+    const fixtureMatches = results.slice(1).flatMap(result => result.payload
+      ? unwrap(result.payload).map(match => ({
+          ...normalizeMatch(match, "SportScore"),
+          status: first(match?.status, match?.state, match?.status_text, "Scheduled")
+        }))
+      : []);
+    const seen = new Set();
+    const combined = [...liveMatches, ...fixtureMatches].filter(match => {
+      const key = match.id || [match.date, match.team1, match.team2].join("|");
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    combined.providerErrors = errors;
+    return combined;
+  });
+} else {
+  providers.sportScore = { status: "not_configured", matchCount: 0, matches: [] };
+}
+
 const allMatches = Object.values(providers).flatMap(p => p.matches || []);
 const unique = new Map();
 for (const match of allMatches) {
@@ -281,7 +338,7 @@ const output = {
   refreshPolicy: {
     scheduledRunsPerDay: 0,
     minimumHoursBetweenRuns: 5.75,
-    requestBudget: "Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests and 2 CricketData requests. Failed requests are not retried."
+    requestBudget: "Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests, 2 CricketData requests and 3 SportScore requests (live/recent, today fixtures, tomorrow fixtures). Failed requests are not retried."
   },
   providers,
   matches: [...unique.values()],
