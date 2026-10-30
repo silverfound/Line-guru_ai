@@ -8,12 +8,15 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
     ap.add_argument("--output", required=True)
+    ap.add_argument("--history", required=True)
     args=ap.parse_args()
     obj=joblib.load(args.model)
     booster=obj["model"].booster_
     dump=booster.dump_model()
+    history=json.loads(Path(args.history).read_text(encoding="utf-8"))
     payload={
-      "version":"TeamAware-2026.10-v1",
+      "version":"TeamAware-2026.10-v2",
+      "history":history,
       "features":obj["features"],
       "categorical":obj["categorical"],
       "categories":dict(zip(obj["categorical"], booster.pandas_categorical)),
@@ -57,20 +60,28 @@ function treeValue(node,row,categories){
 }
 async function predict(input){
  const m=await load(), row={};
+ const history=m.history||{}, fmt=(String(input.format||"").toUpperCase()==="IT20"?"T20":String(input.format||"").toUpperCase());
+ const gender=String(input.gender||"unknown").toLowerCase();
+ const team1Key=[gender,fmt,input.team1].join("|"), team2Key=[gender,fmt,input.team2].join("|");
+ const pairKey=[gender,fmt,input.team1,input.team2].join("|");
+ const venueKey=[gender,fmt,input.venue||"UNKNOWN"].join("|");
+ const h1=history.teams?.[team1Key]||{}, h2=history.teams?.[team2Key]||{};
+ const hh=history.h2h?.[pairKey]||{}, vh=history.venues?.[venueKey]||{};
+ const choose=(provided,fallback)=>provided===undefined||provided===null||provided===""?fallback:provided;
  const map={
-  format:input.format, gender:input.gender,
+  format:fmt, gender,
   team1:input.team1, team2:input.team2, venue:input.venue,
   competition:input.competition,
-  team1_strength_prior20:input.team1Strength,
-  team2_strength_prior20:input.team2Strength,
-  team1_form_prior10:input.team1Form,
-  team2_form_prior10:input.team2Form,
-  h2h_team1_win_prior10:input.h2hTeam1Win,
-  venue_first_innings_avg_prior30:input.venueAverage,
-  team1_prior_matches:input.team1PriorMatches,
-  team2_prior_matches:input.team2PriorMatches,
-  h2h_prior_matches:input.h2hPriorMatches,
-  venue_prior_matches:input.venuePriorMatches
+  team1_strength_prior20:choose(input.team1Strength,h1.strength),
+  team2_strength_prior20:choose(input.team2Strength,h2.strength),
+  team1_form_prior10:choose(input.team1Form,h1.form),
+  team2_form_prior10:choose(input.team2Form,h2.form),
+  h2h_team1_win_prior10:choose(input.h2hTeam1Win,hh.team1Win),
+  venue_first_innings_avg_prior30:choose(input.venueAverage,vh.average),
+  team1_prior_matches:choose(input.team1PriorMatches,h1.matches),
+  team2_prior_matches:choose(input.team2PriorMatches,h2.matches),
+  h2h_prior_matches:choose(input.h2hPriorMatches,hh.matches),
+  venue_prior_matches:choose(input.venuePriorMatches,vh.matches)
  };
  const missing=new Set();
  for(const f of m.features){
