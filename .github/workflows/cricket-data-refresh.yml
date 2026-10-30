@@ -30,8 +30,6 @@ jobs:
 
       - name: Fetch within free-tier request budget
         env:
-          BIGBALLSDATA_API_KEY: ${{ secrets.BIGBALLSDATA_API_KEY }}
-          OPENCRICKET_API_KEY: ${{ secrets.OPENCRICKET_API_KEY }}
           CRICKETDATA_API_KEY: ${{ secrets.CRICKETDATA_API_KEY }}
           SPORTSCORE_API_KEY: ${{ secrets.SPORTSCORE_API_KEY }}
         run: node scripts/refresh-cricket-data.mjs
