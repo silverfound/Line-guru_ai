@@ -1,20 +1,77 @@
 #!/usr/bin/env python3
-"""Create runtime historical lookups from completed Cricsheet matches only."""
+"""Create leakage-safe runtime historical lookups from completed Cricsheet matches.
+
+All matches on the same calendar date receive the same prior history. Results
+from that date are added only after every match on the date has been evaluated.
+"""
 import argparse, json
 from collections import defaultdict, deque
 from pathlib import Path
 import pandas as pd
 
+
 def fmt_key(value):
     value = str(value).upper()
     return "T20" if value in ("T20", "IT20") else value
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--input", default="ml/data/matches.csv")
-    ap.add_argument("--output", default="ml/data/pre-match-history.json")
-    args = ap.parse_args()
-    df = pd.read_csv(args.input)
+
+def build_prior_snapshots(df):
+    """Return one prior-only feature row per match, excluding same-day outcomes."""
+    df = df.copy()
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df = df.dropna(subset=["date"]).sort_values(["date", "match_id"])
+    team_results = defaultdict(lambda: deque(maxlen=20))
+    team_form = defaultdict(lambda: deque(maxlen=10))
+    h2h_results = defaultdict(lambda: deque(maxlen=10))
+    venue_scores = defaultdict(lambda: deque(maxlen=30))
+    snapshots = []
+
+    for _, day in df.groupby(df["date"].dt.date, sort=True):
+        pending = []
+        for row in day.to_dict("records"):
+            gender = str(row.get("gender") or "unknown").lower()
+            fmt = fmt_key(row.get("format"))
+            t1, t2 = str(row["team1"]), str(row["team2"])
+            winner = str(row["winner"])
+            venue = str(row.get("venue") or "UNKNOWN")
+            key1, key2 = (gender, fmt, t1), (gender, fmt, t2)
+            pair = (gender, fmt, t1, t2)
+            prior1, prior2 = list(team_results[key1]), list(team_results[key2])
+            form1, form2 = list(team_form[key1]), list(team_form[key2])
+            h2h = list(h2h_results[pair])
+            scores = list(venue_scores[(gender, fmt, venue)])
+            pending.append({
+                "match_id": str(row["match_id"]),
+                "team1_strength_prior20": sum(prior1) / len(prior1) if prior1 else None,
+                "team2_strength_prior20": sum(prior2) / len(prior2) if prior2 else None,
+                "team1_form_prior10": sum(form1) / len(form1) if form1 else None,
+                "team2_form_prior10": sum(form2) / len(form2) if form2 else None,
+                "h2h_team1_win_prior10": sum(h2h) / len(h2h) if h2h else None,
+                "venue_first_innings_avg_prior30": sum(scores) / len(scores) if scores else None,
+                "team1_prior_matches": len(prior1), "team2_prior_matches": len(prior2),
+                "h2h_prior_matches": len(h2h), "venue_prior_matches": len(scores),
+            })
+        snapshots.extend(pending)
+        for row in day.to_dict("records"):
+            gender = str(row.get("gender") or "unknown").lower()
+            fmt = fmt_key(row.get("format"))
+            t1, t2, winner = str(row["team1"]), str(row["team2"]), str(row["winner"])
+            key1, key2 = (gender, fmt, t1), (gender, fmt, t2)
+            pair = (gender, fmt, t1, t2)
+            team_results[key1].append(int(winner == t1))
+            team_results[key2].append(int(winner == t2))
+            team_form[key1].append(int(winner == t1))
+            team_form[key2].append(int(winner == t2))
+            h2h_results[pair].append(int(winner == t1))
+            score = row.get("first_innings_runs")
+            if pd.notna(score):
+                venue_scores[(gender, fmt, str(row.get("venue") or "UNKNOWN"))].append(float(score))
+    return snapshots
+
+
+def build_history(df):
+    """Build the compact runtime lookup from the final completed-match history."""
+    df = df.copy()
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
     df = df.dropna(subset=["date"]).sort_values(["date", "match_id"])
     team_results = defaultdict(lambda: deque(maxlen=20))
@@ -24,8 +81,7 @@ def main():
     for row in df.to_dict("records"):
         gender = str(row.get("gender") or "unknown").lower()
         fmt = fmt_key(row.get("format"))
-        t1, t2 = str(row["team1"]), str(row["team2"])
-        winner = str(row["winner"])
+        t1, t2, winner = str(row["team1"]), str(row["team2"]), str(row["winner"])
         venue = str(row.get("venue") or "UNKNOWN")
         key1, key2 = (gender, fmt, t1), (gender, fmt, t2)
         pair = (gender, fmt, t1, t2)
@@ -37,29 +93,42 @@ def main():
         score = row.get("first_innings_runs")
         if pd.notna(score):
             venue_scores[(gender, fmt, venue)].append(float(score))
-    result = {"version": 1, "source": "Cricsheet completed matches", "teams": {}, "h2h": {}, "venues": {}}
-    for key, values in team_results.items():
-        gender, fmt, team = key
-        form = list(team_form[key])
-        result["teams"]["|".join(key)] = {
+    result = {"version": 2, "source": "Cricsheet completed matches",
+              "history_policy": "strictly earlier calendar dates only",
+              "teams": {}, "h2h": {}, "venues": {}}
+    for (gender, fmt, team), values in team_results.items():
+        form = list(team_form[(gender, fmt, team)])
+        result["teams"]["|".join((gender, fmt, team))] = {
             "strength": sum(values) / len(values) if values else None,
             "form": sum(form) / len(form) if form else None,
             "matches": len(values),
         }
-    for key, values in h2h_results.items():
-        result["h2h"]["|".join(key)] = {
+    for (gender, fmt, t1, t2), values in h2h_results.items():
+        result["h2h"]["|".join((gender, fmt, t1, t2))] = {
             "team1Win": sum(values) / len(values) if values else None,
             "matches": len(values),
         }
-    for key, values in venue_scores.items():
-        result["venues"]["|".join(key)] = {
+    for (gender, fmt, venue), values in venue_scores.items():
+        result["venues"]["|".join((gender, fmt, venue))] = {
             "average": sum(values) / len(values) if values else None,
             "matches": len(values),
         }
+    return result
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--input", default="ml/data/matches.csv")
+    ap.add_argument("--output", default="ml/data/pre-match-history.json")
+    args = ap.parse_args()
+    df = pd.read_csv(args.input)
+    result = build_history(df)
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, separators=(",", ":")), encoding="utf-8")
-    print(json.dumps({"teams": len(result["teams"]), "h2h_pairs": len(result["h2h"]), "venues": len(result["venues"]), "output": str(output)}))
+    print(json.dumps({"teams": len(result["teams"]), "h2h_pairs": len(result["h2h"]),
+                      "venues": len(result["venues"]), "output": str(output),
+                      "history_policy": result["history_policy"]}))
+
 
 if __name__ == "__main__":
     main()
