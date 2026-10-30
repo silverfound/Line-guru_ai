@@ -114,7 +114,10 @@ def add_historical_features(df):
                 "team2_strength_prior20": sum(rb) / len(rb) if rb else None,
                 "team1_form_prior10": sum(fa) / len(fa) if fa else None,
                 "team2_form_prior10": sum(fb) / len(fb) if fb else None,
-                "h2h_team1_win_prior10": sum(hh) / len(hh) if hh else None,
+                "h2h_team1_win_prior10": (
+                    (sum(hh) if a == pair[0] else len(hh) - sum(hh)) / len(hh)
+                    if hh else None
+                ),
                 "venue_first_innings_avg_prior30": sum(vs) / len(vs) if vs else None,
                 "team1_prior_matches": len(ra), "team2_prior_matches": len(rb),
                 "h2h_prior_matches": len(hh), "venue_prior_matches": len(vs),
@@ -130,7 +133,7 @@ def add_historical_features(df):
             team_results[b].append(int(row["winner"] == b))
             team_form[a].append(int(row["winner"] == a))
             team_form[b].append(int(row["winner"] == b))
-            h2h[pair].append(int(row["winner"] == a))
+            h2h[pair].append(int(row["winner"] == pair[0][2]))
             venue_scores[venue].append(int(row["first_innings_runs"]))
     return pd.DataFrame(rows)
 
