@@ -4,23 +4,9 @@
   "refreshPolicy": {
     "scheduledRunsPerDay": 0,
     "minimumHoursBetweenRuns": 5.75,
-    "requestBudget": "Each manual run makes at most 1 Big Balls request, 0 OpenCricket requests (provider paused after HTTP 403), 2 CricketData requests and up to 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
+    "requestBudget": "Each manual run makes at most 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
   },
   "providers": {
-    "bigBalls": {
-      "status": "paused",
-      "message": "Temporarily withheld: previous unbounded response included distant 2027 fixtures. Re-enable after the bounded date-window request is verified.",
-      "rawMatchCount": 100,
-      "matchCount": 0,
-      "matches": []
-    },
-    "openCricket": {
-      "status": "paused",
-      "message": "Temporarily disabled after upstream HTTP 403; re-enable after access is restored.",
-      "rawMatchCount": 0,
-      "matchCount": 0,
-      "matches": []
-    },
     "cricketData": {
       "status": "ok",
       "message": "Excluded 3 six-over-or-shorter matches misreported as T20; retained recent results only.",
