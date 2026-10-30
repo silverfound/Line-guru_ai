@@ -7,7 +7,7 @@ The interface and built-in team/captain data are English-only. The existing pred
 GitHub Actions workflow: `.github/workflows/cricket-data-refresh.yml`
 
 - Automatic scheduling is intentionally disabled. The workflow runs only when manually started from GitHub Actions.
-- Each run makes at most one Big Balls request, two OpenCricket requests, and two CricketData.org requests (current matches + scheduled matches).
+- Provider request budget in the current code: up to 1 Big Balls request, 0 OpenCricket requests (temporarily paused after HTTP 403), 2 CricketData.org requests (current + scheduled matches), and up to 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried.
 - A local guard skips healthy repeat runs that occur less than 5 hours 45 minutes after the last feed write. If the previous feed contains provider errors or invalid/undated records, one diagnostic refresh is allowed inside that interval.
 - Provider errors include the HTTP status and safe error details where available; request URLs and API keys are never logged.
 - The feed filters placeholder team names and matches without ISO-formatted dates before publishing, so undated fixtures do not appear as upcoming matches.
@@ -22,6 +22,7 @@ Open repository **Settings → Secrets and variables → Actions → New reposit
 - `BIGBALLSDATA_API_KEY`
 - `OPENCRICKET_API_KEY`
 - `CRICKETDATA_API_KEY`
+- `SPORTSCORE_API_KEY`
 
 Paste each provider's key into the GitHub secret value field. Never put keys in `script.js`, HTML, committed JSON, screenshots, or chat messages.
 
@@ -29,7 +30,13 @@ When ready to spend API quota, open **Actions → Refresh free cricket data → 
 
 ## Quota planning
 
-There are no automatic runs while the app is being finalized. Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests, and 2 CricketData requests (currentMatches + matches). A 5h45m minimum interval guard limits repeat runs. Provider-side limits always take precedence.
+There are no automatic runs while the app is being finalized. Each manual run currently makes at most 1 Big Balls request, 0 OpenCricket requests (temporarily paused), 2 CricketData.org requests (`currentMatches` + `matches`), and 15 SportScore requests maximum (3 base requests plus up to 12 live-match detail requests). A 5h45m minimum interval guard limits healthy repeat runs. Provider-side limits always take precedence.
+
+### SportScore provider
+
+- SportScore is the fourth configured provider and is enabled when `SPORTSCORE_API_KEY` is present in repository Actions secrets.
+- It requests live/recent cricket matches, today's fixtures, and tomorrow's fixtures; it may then request details for up to 12 live matches to enrich scores and match state.
+- SportScore records are normalized and filtered through the same date, team-name, and supported-format checks before they enter the public feed.
 
 ## Current limitations
 
