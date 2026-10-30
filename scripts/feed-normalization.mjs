@@ -21,8 +21,8 @@ export function competitionName(match = {}) {
 }
 
 function teamKey(value) {
-  return String(value || "").toLowerCase().replace(/\\bwomen\\b/g, " women ")
-    .replace(/[^a-z0-9]+/g, " ").trim().replace(/\\s+/g, " ");
+  return String(value || "").toLowerCase().replace(/\bwomen\b/g, " women ")
+    .replace(/[^a-z0-9]+/g, " ").trim().replace(/\s+/g, " ");
 }
 
 export function matchIdentity(match = {}) {
