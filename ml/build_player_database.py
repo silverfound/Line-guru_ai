@@ -96,6 +96,56 @@ def summarize(rows):
           "last5":form(hist[-5:]),"last10":form(hist[-10:]),"last_match_date":hist[-1]["date"]})
     return result
 
+
+def build_prior_player_snapshots(rows):
+    """Build per-match player form using only strictly earlier match dates.
+
+    Rows represent players with an observed batting or bowling contribution.
+    These snapshots are a joinable research feed, not proof of a confirmed XI.
+    """
+    by_player = defaultdict(list)
+    by_match = defaultdict(list)
+    for row in rows:
+        key = (row["gender"], row["format"], row["team"], row["player"])
+        by_player[key].append(row)
+        by_match[row["match_id"]].append(row)
+
+    def form(items):
+        runs = sum(n(x.get("runs")) for x in items)
+        balls = sum(n(x.get("balls_faced")) for x in items)
+        outs = sum(n(x.get("outs")) for x in items)
+        wickets = sum(n(x.get("wickets")) for x in items)
+        conceded = sum(n(x.get("runs_conceded")) for x in items)
+        bowled = sum(n(x.get("balls_bowled")) for x in items)
+        return {
+            "matches": len(items), "runs": runs, "balls_faced": balls,
+            "outs": outs, "batting_average": round(runs / outs, 2) if outs else None,
+            "strike_rate": round(100 * runs / balls, 2) if balls else None,
+            "wickets": wickets, "runs_conceded": conceded, "balls_bowled": bowled,
+            "economy": round(6 * conceded / bowled, 2) if bowled else None,
+        }
+
+    snapshots = []
+    for match_id, current_rows in by_match.items():
+        current = current_rows[0]
+        match_date = current["date"]
+        for player_row in current_rows:
+            key = (player_row["gender"], player_row["format"],
+                   player_row["team"], player_row["player"])
+            history = [x for x in by_player[key] if x["date"] < match_date]
+            history.sort(key=lambda x: (x["date"], x["match_id"]))
+            snapshots.append({
+                "match_id": match_id, "date": match_date,
+                "gender": player_row["gender"], "format": player_row["format"],
+                "team": player_row["team"], "player": player_row["player"],
+                "prior_matches": len(history),
+                "last5": form(history[-5:]), "last10": form(history[-10:]),
+                "last_match_date": history[-1]["date"] if history else None,
+                "history_policy": "strictly earlier calendar dates only",
+            })
+    snapshots.sort(key=lambda x: (x["date"], x["match_id"], x["team"], x["player"]))
+    return snapshots
+
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument("--zip",required=True); ap.add_argument("--out-dir",default="ml/data")
     args=ap.parse_args(); out=Path(args.out_dir); out.mkdir(parents=True,exist_ok=True)
@@ -107,8 +157,15 @@ def main():
             except (ValueError,KeyError,TypeError,UnicodeDecodeError): errors+=1
     if not rows: raise SystemExit("No player appearances found in supported Cricsheet matches.")
     players=summarize(rows)
-    payload={"version":1,"source":"Cricsheet ball-by-ball archive","generated_from":"all_json.zip",
-             "match_player_rows":len(rows),"player_profiles":len(players),"players":players}
+    snapshots=build_prior_player_snapshots(rows)
+    payload={"version":2,"source":"Cricsheet ball-by-ball archive","generated_from":"all_json.zip",
+             "match_player_rows":len(rows),"player_profiles":len(players),"players":players,
+             "prior_match_snapshots":len(snapshots)}
+    (out/"player-prior-snapshots.json").write_text(
+        json.dumps({"version":1,"source":payload["source"],
+                    "history_policy":"strictly earlier calendar dates only",
+                    "snapshots":snapshots},separators=(",",":"),ensure_ascii=False),
+        encoding="utf-8")
     (out/"player-performance.json").write_text(json.dumps(payload,separators=(",",":"),ensure_ascii=False),encoding="utf-8")
     genders={g:sum(1 for p in players if p["gender"]==g) for g in sorted({p["gender"] for p in players})}
     formats={f:sum(1 for p in players if p["format"]==f) for f in sorted({p["format"] for p in players})}
@@ -118,7 +175,7 @@ def main():
       "limitations":["Only players with observed batting or bowling innings are included; fielding-only appearances are not counted.",
         "Cricsheet coverage varies by competition, gender and season.",
         "No future XI, player fitness, pitch report or live availability is inferred.",
-        "This is a research artifact; production predictions remain unchanged."]}
+        "Only observed batting/bowling contributors receive snapshots; confirmed playing-XI matching is required before use.",\n        "This is a research artifact; production predictions remain unchanged."]}
     (out/"player-dataset-summary.json").write_text(json.dumps(summary,indent=2),encoding="utf-8")
     print(json.dumps(summary,indent=2))
 if __name__=="__main__": main()
