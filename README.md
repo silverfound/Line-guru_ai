@@ -34,6 +34,10 @@ Never put keys in `script.js`, HTML, committed JSON, screenshots, or chat messag
 
 When ready to spend API quota, open **Actions → Refresh free cricket data → Run workflow**. Review the generated pull request for `data/cricket-feed.json` and merge it to publish the feed. Check run logs for provider status; logs avoid printing keys and request URLs that might contain keys.
 
+## Historical player performance research database
+
+The model-validation workflow builds `player-performance.json` from the free Cricsheet `all_json.zip` archive. It calculates observed player appearances, batting runs/balls/outs/boundaries, bowling balls/runs/wickets, career aggregates and last-five/last-ten match form, split by gender, format and team. Squad lists are not treated as confirmed playing XIs. Coverage depends on Cricsheet's archive and varies by competition and gender. This generated database is a research artifact only; it does not yet feed the production prediction model. Player features must pass leakage-safe, same-holdout validation before any production model change.
+
 ## Current limitations
 
 - The website reads the sanitized public `data/cricket-feed.json` file and currently displays matches separately from the manual prediction form. The feed is only updated publicly after the generated feed pull request is reviewed and merged.
