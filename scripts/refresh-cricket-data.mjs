@@ -235,35 +235,15 @@ if (process.env.BIGBALLSDATA_API_KEY) {
   providers.bigBalls = { status: "not_configured", matchCount: 0, matches: [] };
 }
 
-if (process.env.OPENCRICKET_API_KEY) {
-  providers.openCricket = await providerResult("OpenCricket", async () => {
-    const headers = { "Authorization": `Bearer ${process.env.OPENCRICKET_API_KEY}`, "Accept": "application/json" };
-    const [liveResult, fixtureResult] = await Promise.all([
-      requestJson("https://opencricketapi.com/v1/live", headers)
-        .then(payload => ({ kind: "live", payload }))
-        .catch(error => ({ kind: "live", error })),
-      requestJson(`https://opencricketapi.com/v1/fixtures?from=${date}&to=${toDate}`, headers)
-        .then(payload => ({ kind: "fixtures", payload }))
-        .catch(error => ({ kind: "fixtures", error }))
-    ]);
-    const results = [liveResult, fixtureResult];
-    const errors = results.filter(result => result.error)
-      .map(result => `${result.kind} endpoint: ${String(result.error?.message || "request failed").slice(0, 120)}`);
-    const live = liveResult.payload ? unwrap(liveResult.payload).map(m => ({ ...normalizeMatch(m, "OpenCricket"), status: first(m?.status, m?.state, "Live"), feedType: "live" })) : [];
-    const fixtures = fixtureResult.payload ? unwrap(fixtureResult.payload).map(m => ({ ...normalizeMatch(m, "OpenCricket"), status: first(m?.status, m?.state, m?.stage, "Scheduled"), feedType: "fixture" })) : [];
-    const seen = new Set();
-    const combined = [...live, ...fixtures].filter(m => {
-      const key = m.id || [m.date, m.team1, m.team2].join("|");
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-    combined.providerErrors = errors;
-    return combined;
-  });
-} else {
-  providers.openCricket = { status: "not_configured", matchCount: 0, matches: [] };
-}
+// OpenCricket is temporarily paused: its live and fixture endpoints returned HTTP 403.
+ // Do not spend refresh requests on a provider that is currently denying access.
+ providers.openCricket = {
+   status: "paused",
+   message: "Temporarily disabled after upstream HTTP 403; re-enable after access is restored.",
+   rawMatchCount: 0,
+   matchCount: 0,
+   matches: []
+ };
 
 if (process.env.CRICKETDATA_API_KEY) {
   providers.cricketData = await providerResult("CricketData.org", async () => {
