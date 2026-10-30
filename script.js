@@ -372,7 +372,7 @@ function escapeHTML(value) {
     }[char]));
 }
 
-function calculatePrediction() {
+async function calculatePrediction() {
     const team1 = teamName(1);
     const team2 = teamName(2);
     if (!team1 || !team2) return showError("Select both teams to generate a prediction.");
@@ -475,10 +475,53 @@ function calculatePrediction() {
         winReason = "Pre-match estimate is based on entered form, toss, and pitch information; historical data is not connected automatically.";
     }
 
+    if (format === "test") {
+        return showError("The trained LightGBM models currently support T20 and ODI matches. Test-match model training is a separate next phase.");
+    }
+
+    let aiPrediction;
+    try {
+        await window.LineGuruML.load();
+        const venue = document.getElementById("venueName")?.value.trim() || "";
+        const tossDecision = document.getElementById("tossDecision")?.value || "";
+        const tossWinnerIndex = toss ? Number(toss) : 0;
+        if (inningsType === "chase") {
+            const battingIndex = Number(document.getElementById("battingTeam").value);
+            const battingName = battingIndex === 1 ? team1 : team2;
+            const bowlingName = battingIndex === 1 ? team2 : team1;
+            aiPrediction = await window.LineGuruML.predict({
+                format, runs: currentRuns, wickets, ballsUsed: legalBalls,
+                target: Math.max(1, Math.floor(safeNumber("target", 1)))
+            });
+            const chaseChance = aiPrediction.chaseWin;
+            win1 = battingIndex === 1 ? chaseChance : 100 - chaseChance;
+            win2 = 100 - win1;
+            winReason = "Trained LightGBM live-chase model using historical ball-by-ball match states. Team form, venue and player availability are not yet included.";
+            scoreLabel = "Run-rate projection (not ML)";
+        } else {
+            let firstBattingIndex = 1;
+            if (tossWinnerIndex && tossDecision === "bat") firstBattingIndex = tossWinnerIndex;
+            else if (tossWinnerIndex && tossDecision === "field") firstBattingIndex = tossWinnerIndex === 1 ? 2 : 1;
+            const firstBattingWin = aiPrediction = await window.LineGuruML.predict({
+                format, runs: currentRuns, wickets, ballsUsed: legalBalls
+            });
+            const firstBattingChance = firstBattingWin.firstBattingWin;
+            win1 = firstBattingIndex === 1 ? firstBattingChance : 100 - firstBattingChance;
+            win2 = 100 - win1;
+            winReason = tossWinnerIndex && tossDecision
+                ? "Trained LightGBM first-innings match-winner model. Team form, venue and player availability are not yet included."
+                : "Trained LightGBM first-innings model. Team 1 is assumed to bat first because toss details are not complete; change the toss fields when known.";
+            scoreProjection = firstBattingWin.projectedTotal;
+            scoreLabel = "AI projected first-innings total";
+        }
+    } catch (error) {
+        return showError("Trained AI model could not load. Check your internet connection and refresh the app. " + error.message);
+    }
+
     const result = document.getElementById("outputContent");
     result.innerHTML = `
         <div class="result-hero">
-            <span class="eyebrow">CRICKET STATS · PROTOTYPE ESTIMATE</span>
+            <span class="eyebrow">TRAINED LIGHTGBM · HISTORICAL MODEL</span>
             <h3>${escapeHTML(team1)} <span>vs</span> ${escapeHTML(team2)}</h3>
             <p class="subtle">${format === "t20" ? "T20" : format === "odi" ? "ODI" : "Test"} · ${inningsType === "chase" ? "Second Innings / Chase" : "First Innings"}</p>
         </div>
@@ -500,7 +543,7 @@ function calculatePrediction() {
             return '<div class="chase-line"><span>Target: <b>' + target + '</b></span><span>Runs Needed: <b>' + runsNeeded + '</b></span><span>Required Run Rate: <b>' + formatNumber(rrr, 2) + '</b></span><span>Balls Remaining: <b>' + ballsLeft + '</b></span></div>';
         })() : ""}
         <p class="analysis-note">${escapeHTML(winReason)}</p>
-        <p class="disclaimer">Important: This is an initial rule-based estimate, not a trained machine-learning model. Live score API and historical match data are not connected, so this is not a real-time prediction.</p>
+        <p class="disclaimer">AI model version: LightGBM-2026.10-v1. This is a historical-data estimate, not a guarantee. Entered match state is used; live score feed is not automatically connected. Team strength, venue, toss strategy and player availability are not yet included in the trained features.</p>
     `;
     document.getElementById("resultBox").classList.remove("hidden");
     document.getElementById("resultBox").scrollIntoView({ behavior: "smooth", block: "start" });
