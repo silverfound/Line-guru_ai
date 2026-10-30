@@ -8,7 +8,7 @@ on:
     paths: ["ml/**", "tests/**", ".github/workflows/model-validation.yml"]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   regression:
     runs-on: ubuntu-latest
@@ -42,6 +42,18 @@ jobs:
         run: python ml/build_dataset.py --zip all_json.zip --out-dir ml/data
       - name: Train pre-match and post-toss Team-Aware models
         run: python ml/train_model.py --input ml/data/matches_with_features.csv --out-dir ml/output
+      - name: Export browser model from this exact training run
+        run: python ml/export_browser_model.py --model ml/output/team-aware-pre-match.joblib --output team-aware-predictor.js
+      - name: Commit generated browser model to this PR branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add team-aware-predictor.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Export Team-Aware model from validated training run"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
       - name: Upload dataset summary, metrics and research models
         uses: actions/upload-artifact@v4
         with:
