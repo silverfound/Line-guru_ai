@@ -15,18 +15,17 @@ def fmt_key(value):
     return "T20" if value in ("T20", "IT20") else value
 
 
-def build_history(df):
-    """Return team, H2H and venue summaries using strictly earlier dates."""
+def build_prior_snapshots(df):
+    """Return one prior-only feature row per match, excluding same-day outcomes."""
     df = df.copy()
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
     df = df.dropna(subset=["date"]).sort_values(["date", "match_id"])
-
     team_results = defaultdict(lambda: deque(maxlen=20))
     team_form = defaultdict(lambda: deque(maxlen=10))
     h2h_results = defaultdict(lambda: deque(maxlen=10))
     venue_scores = defaultdict(lambda: deque(maxlen=30))
+    snapshots = []
 
-    # Stage each date: build all rows from the old state, then apply outcomes.
     for _, day in df.groupby(df["date"].dt.date, sort=True):
         pending = []
         for row in day.to_dict("records"):
@@ -42,22 +41,21 @@ def build_history(df):
             h2h = list(h2h_results[pair])
             scores = list(venue_scores[(gender, fmt, venue)])
             pending.append({
-                "gender": gender, "format": fmt, "team1": t1, "team2": t2,
-                "winner": winner, "venue": venue,
-                "team1_strength": sum(prior1) / len(prior1) if prior1 else None,
-                "team2_strength": sum(prior2) / len(prior2) if prior2 else None,
-                "team1_form": sum(form1) / len(form1) if form1 else None,
-                "team2_form": sum(form2) / len(form2) if form2 else None,
-                "h2h_team1_win": sum(h2h) / len(h2h) if h2h else None,
-                "venue_average": sum(scores) / len(scores) if scores else None,
-                "team1_matches": len(prior1), "team2_matches": len(prior2),
-                "h2h_matches": len(h2h), "venue_matches": len(scores),
-                "first_innings_runs": row.get("first_innings_runs"),
+                "match_id": str(row["match_id"]),
+                "team1_strength_prior20": sum(prior1) / len(prior1) if prior1 else None,
+                "team2_strength_prior20": sum(prior2) / len(prior2) if prior2 else None,
+                "team1_form_prior10": sum(form1) / len(form1) if form1 else None,
+                "team2_form_prior10": sum(form2) / len(form2) if form2 else None,
+                "h2h_team1_win_prior10": sum(h2h) / len(h2h) if h2h else None,
+                "venue_first_innings_avg_prior30": sum(scores) / len(scores) if scores else None,
+                "team1_prior_matches": len(prior1), "team2_prior_matches": len(prior2),
+                "h2h_prior_matches": len(h2h), "venue_prior_matches": len(scores),
             })
-
-        for row in pending:
-            gender, fmt = row["gender"], row["format"]
-            t1, t2, winner = row["team1"], row["team2"], row["winner"]
+        snapshots.extend(pending)
+        for row in day.to_dict("records"):
+            gender = str(row.get("gender") or "unknown").lower()
+            fmt = fmt_key(row.get("format"))
+            t1, t2, winner = str(row["team1"]), str(row["team2"]), str(row["winner"])
             key1, key2 = (gender, fmt, t1), (gender, fmt, t2)
             pair = (gender, fmt, t1, t2)
             team_results[key1].append(int(winner == t1))
@@ -65,10 +63,36 @@ def build_history(df):
             team_form[key1].append(int(winner == t1))
             team_form[key2].append(int(winner == t2))
             h2h_results[pair].append(int(winner == t1))
-            score = row["first_innings_runs"]
+            score = row.get("first_innings_runs")
             if pd.notna(score):
-                venue_scores[(gender, fmt, row["venue"])].append(float(score))
+                venue_scores[(gender, fmt, str(row.get("venue") or "UNKNOWN"))].append(float(score))
+    return snapshots
 
+
+def build_history(df):
+    """Build the compact runtime lookup from the final completed-match history."""
+    df = df.copy()
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df = df.dropna(subset=["date"]).sort_values(["date", "match_id"])
+    team_results = defaultdict(lambda: deque(maxlen=20))
+    team_form = defaultdict(lambda: deque(maxlen=10))
+    h2h_results = defaultdict(lambda: deque(maxlen=10))
+    venue_scores = defaultdict(lambda: deque(maxlen=30))
+    for row in df.to_dict("records"):
+        gender = str(row.get("gender") or "unknown").lower()
+        fmt = fmt_key(row.get("format"))
+        t1, t2, winner = str(row["team1"]), str(row["team2"]), str(row["winner"])
+        venue = str(row.get("venue") or "UNKNOWN")
+        key1, key2 = (gender, fmt, t1), (gender, fmt, t2)
+        pair = (gender, fmt, t1, t2)
+        team_results[key1].append(int(winner == t1))
+        team_results[key2].append(int(winner == t2))
+        team_form[key1].append(int(winner == t1))
+        team_form[key2].append(int(winner == t2))
+        h2h_results[pair].append(int(winner == t1))
+        score = row.get("first_innings_runs")
+        if pd.notna(score):
+            venue_scores[(gender, fmt, venue)].append(float(score))
     result = {"version": 2, "source": "Cricsheet completed matches",
               "history_policy": "strictly earlier calendar dates only",
               "teams": {}, "h2h": {}, "venues": {}}
@@ -90,7 +114,6 @@ def build_history(df):
             "matches": len(values),
         }
     return result
-
 
 def main():
     ap = argparse.ArgumentParser()
