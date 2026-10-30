@@ -34,6 +34,11 @@ function first(...values) {
   return "";
 }
 
+function cleanScore(value) {
+  const text = str(value).trim();
+  return !text || /^(?:-|—|N\/A|null|undefined)$/i.test(text) ? "" : text;
+}
+
 function scoreForTeam(teamName, scores) {
   if (!Array.isArray(scores)) return "";
   const relevant = scores.filter(item => {
@@ -71,17 +76,21 @@ function normalizeMatch(m, source) {
   const status = state || (m?.matchStarted === true ? "Live" : (m?.matchEnded === true ? "Completed" : ""));
   return {
     id: first(m?.id, m?.match_id, m?.matchId),
+    slug: first(m?.slug, m?.match_slug, m?.matchSlug),
     source,
     date: startTime,
     status,
+    statusText: first(m?.status_text, m?.statusText, m?.note),
     competition: first(m?.league, m?.competition, m?.series, m?.seriesName, m?.event_name),
     team1,
     team2,
-    score1: first(score?.home, score?.team1, m?.home_score, m?.team1Score, m?.score1, totalFor(0), scoreForTeam(team1, scoreList)),
-    score2: first(score?.away, score?.team2, m?.away_score, m?.team2Score, m?.score2, totalFor(1), scoreForTeam(team2, scoreList)),
+    score1: cleanScore(first(score?.home, score?.team1, home?.score, m?.home_score, m?.team1Score, m?.score1, totalFor(0), scoreForTeam(team1, scoreList))),
+    score2: cleanScore(first(score?.away, score?.team2, away?.score, m?.away_score, m?.team2Score, m?.score2, totalFor(1), scoreForTeam(team2, scoreList))),
     venue,
     tossWinner: first(m?.toss?.team, m?.toss_winner, m?.tossWinner),
     tossDecision: first(m?.toss?.decision, m?.toss_decision, m?.tossDecision),
+    battingTeam: first(m?.batting_team?.name, m?.battingTeam?.name, m?.batting_team, m?.battingTeam, m?.batting),
+    target: first(m?.target, m?.chase_target),
     format: first(m?.format, m?.matchType, m?.match_type)
   };
 }
@@ -308,8 +317,29 @@ if (process.env.SPORTSCORE_API_KEY) {
           status: first(match?.status, match?.state, match?.status_text, "Scheduled")
         }))
       : []);
+    const liveDetails = await Promise.all(liveMatches
+      .filter(match => match.slug && /live|in.?progress|1st inn|2nd inn/i.test(match.status + " " + match.statusText))
+      .slice(0, 12)
+      .map(async match => {
+        try {
+          const url = new URL("https://sportscore.com/api/widget/match/");
+          url.searchParams.set("sport", "cricket");
+          url.searchParams.set("slug", match.slug);
+          const payload = await request(url.toString());
+          const detail = payload?.match || payload?.data?.match || payload?.data || payload;
+          const enriched = normalizeMatch(detail, "SportScore");
+          return {
+            ...match,
+            ...Object.fromEntries(Object.entries(enriched).filter(([key, value]) => value !== "" && value !== null && value !== undefined)),
+            source: "SportScore",
+            slug: match.slug
+          };
+        } catch {
+          return match;
+        }
+      }));
     const seen = new Set();
-    const combined = [...liveMatches, ...fixtureMatches].filter(match => {
+    const combined = [...liveDetails, ...liveMatches.filter(m => !liveDetails.includes(m)), ...fixtureMatches].filter(match => {
       const key = match.id || [match.date, match.team1, match.team2].join("|");
       if (seen.has(key)) return false;
       seen.add(key);
@@ -338,7 +368,7 @@ const output = {
   refreshPolicy: {
     scheduledRunsPerDay: 0,
     minimumHoursBetweenRuns: 5.75,
-    requestBudget: "Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests, 2 CricketData requests and 3 SportScore requests (live/recent, today fixtures, tomorrow fixtures). Failed requests are not retried."
+    requestBudget: "Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests, 2 CricketData requests and 15 SportScore requests maximum (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
   },
   providers,
   matches: [...unique.values()],
