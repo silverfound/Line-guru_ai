@@ -488,6 +488,7 @@ async function calculatePrediction() {
         const tossWinnerIndex = toss ? Number(toss) : 0;
         const isPreMatch = inningsType === "first" && currentRuns === 0 && legalBalls === 0;
         if (isPreMatch) {
+            if (format === "test") throw new Error("The Team-Aware pre-match model currently supports T20 and ODI only. Test pre-match training is not included yet.");
             if (!window.TeamAwarePreMatch) throw new Error("Team-Aware browser model is not loaded yet. Refresh the app after the model export finishes.");
             await window.TeamAwarePreMatch.load();
             const splitTeam = value => {
