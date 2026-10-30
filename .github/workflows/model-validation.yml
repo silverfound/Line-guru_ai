@@ -40,6 +40,8 @@ jobs:
           test -s all_json.zip
       - name: Build leakage-safe pre-match dataset
         run: python ml/build_dataset.py --zip all_json.zip --out-dir ml/data
+      - name: Build historical player performance database
+        run: python ml/build_player_database.py --zip all_json.zip --out-dir ml/data
       - name: Build runtime team, head-to-head and venue history
         run: python ml/build_history_lookup.py --input ml/data/matches.csv --output ml/data/pre-match-history.json
       - name: Train pre-match and post-toss Team-Aware models
@@ -67,6 +69,8 @@ jobs:
           path: |
             ml/data/dataset-summary.json
             ml/data/pre-match-history.json
+            ml/data/player-performance.json
+            ml/data/player-dataset-summary.json
             ml/output/team-aware-metrics.json
             team-aware-predictor.js
             ml/output/*.joblib
