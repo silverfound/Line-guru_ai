@@ -1,0 +1,53 @@
+name: App JavaScript validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "script.js"
+      - "teams-data.js"
+      - "index.html"
+      - "style.css"
+      - "ml-predictor.js"
+      - "team-aware-predictor.js"
+      - "tests/**"
+      - ".github/workflows/app-js-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "script.js"
+      - "teams-data.js"
+      - "index.html"
+      - "style.css"
+      - "ml-predictor.js"
+      - "team-aware-predictor.js"
+      - "tests/**"
+      - ".github/workflows/app-js-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  javascript:
+    name: JavaScript syntax and regression tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check application JavaScript syntax
+        run: |
+          node --check script.js
+          node --check teams-data.js
+          node --check ml-predictor.js
+          node --check team-aware-predictor.js
+      - name: Run JavaScript regression tests
+        run: |
+          if compgen -G "tests/*.test.js" > /dev/null; then
+            node --test tests/*.test.js
+          else
+            echo "No JavaScript regression tests found; syntax checks completed."
+          fi
