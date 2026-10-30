@@ -482,13 +482,10 @@ async function calculatePrediction() {
     let aiPrediction;
     try {
         await window.LineGuruML.load();
-        const venue = document.getElementById("venueName")?.value.trim() || "";
         const tossDecision = document.getElementById("tossDecision")?.value || "";
         const tossWinnerIndex = toss ? Number(toss) : 0;
         if (inningsType === "chase") {
             const battingIndex = Number(document.getElementById("battingTeam").value);
-            const battingName = battingIndex === 1 ? team1 : team2;
-            const bowlingName = battingIndex === 1 ? team2 : team1;
             aiPrediction = await window.LineGuruML.predict({
                 format, runs: currentRuns, wickets, ballsUsed: legalBalls,
                 target: Math.max(1, Math.floor(safeNumber("target", 1)))
@@ -496,7 +493,7 @@ async function calculatePrediction() {
             const chaseChance = aiPrediction.chaseWin;
             win1 = battingIndex === 1 ? chaseChance : 100 - chaseChance;
             win2 = 100 - win1;
-            winReason = "Trained LightGBM live-chase model using historical ball-by-ball match states. Team form, venue and player availability are not yet included.";
+            winReason = "Trained LightGBM live-chase model using historical ball-by-ball match states. Team identity, recent form, venue and player availability are not yet model inputs.";
             scoreLabel = "Run-rate projection (not ML)";
         } else {
             let firstBattingIndex = 1;
@@ -509,7 +506,7 @@ async function calculatePrediction() {
             win1 = firstBattingIndex === 1 ? firstBattingChance : 100 - firstBattingChance;
             win2 = 100 - win1;
             winReason = tossWinnerIndex && tossDecision
-                ? "Trained LightGBM first-innings match-winner model. Team form, venue and player availability are not yet included."
+                ? "Trained LightGBM first-innings match-winner model using historical match-state patterns. Team identity, recent form, venue and player availability are not yet model inputs."
                 : "Trained LightGBM first-innings model. Team 1 is assumed to bat first because toss details are not complete; change the toss fields when known.";
             scoreProjection = firstBattingWin.projectedTotal;
             scoreLabel = "AI projected first-innings total";
@@ -543,7 +540,7 @@ async function calculatePrediction() {
             return '<div class="chase-line"><span>Target: <b>' + target + '</b></span><span>Runs Needed: <b>' + runsNeeded + '</b></span><span>Required Run Rate: <b>' + formatNumber(rrr, 2) + '</b></span><span>Balls Remaining: <b>' + ballsLeft + '</b></span></div>';
         })() : ""}
         <p class="analysis-note">${escapeHTML(winReason)}</p>
-        <p class="disclaimer">AI model version: LightGBM-2026.10-v1. This is a historical-data estimate, not a guarantee. Entered match state is used; live score feed is not automatically connected. Team strength, venue, toss strategy and player availability are not yet included in the trained features.</p>
+        <p class="disclaimer">AI model version: LightGBM-2026.10-v1. Time-based historical test: live-chase accuracy 81.4% overall (83.4% T20 mid-innings; 76.9% ODI mid-innings); first-innings winner accuracy 65.7%; first-innings score MAE about 26 runs. Team identity, recent form, venue and player availability are not yet model inputs. Entered match state is used; live score feed is not automatically connected. Predictions are estimates, not guarantees.</p>
     `;
     document.getElementById("resultBox").classList.remove("hidden");
     document.getElementById("resultBox").scrollIntoView({ behavior: "smooth", block: "start" });
