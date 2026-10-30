@@ -219,32 +219,6 @@ if (Number.isFinite(previousAt) && now.getTime() - previousAt < MIN_INTERVAL_MS)
 }
 
 const providers = {};
-const date = now.toISOString().slice(0, 10);
-// The API allows a maximum 14-calendar-day fixture window (inclusive).
-const toDate = new Date(now.getTime() + 13 * 86400000).toISOString().slice(0, 10);
-
-if (process.env.BIGBALLSDATA_API_KEY) {
-  providers.bigBalls = await providerResult("Big Balls Data", async () => {
-    const payload = await requestJson(`https://api.bigballsdata.com/v1/cricket/matches?date=${date}:${toDate}&limit=100`, {
-      "x-api-key": process.env.BIGBALLSDATA_API_KEY,
-      "Accept": "application/json"
-    });
-    return unwrap(payload).map(m => normalizeMatch(m, "Big Balls Data"));
-  });
-} else {
-  providers.bigBalls = { status: "not_configured", matchCount: 0, matches: [] };
-}
-
-// OpenCricket is temporarily paused: its live and fixture endpoints returned HTTP 403.
- // Do not spend refresh requests on a provider that is currently denying access.
- providers.openCricket = {
-   status: "paused",
-   message: "Temporarily disabled after upstream HTTP 403; re-enable after access is restored.",
-   rawMatchCount: 0,
-   matchCount: 0,
-   matches: []
- };
-
 if (process.env.CRICKETDATA_API_KEY) {
   providers.cricketData = await providerResult("CricketData.org", async () => {
     const headers = { "Accept": "application/json" };
@@ -390,7 +364,7 @@ const output = {
   refreshPolicy: {
     scheduledRunsPerDay: 0,
     minimumHoursBetweenRuns: 5.75,
-    requestBudget: "Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests, 2 CricketData requests and 15 SportScore requests maximum (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
+    requestBudget: "Each manual run makes at most 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
   },
   providers,
   matches: [...unique.values()],
