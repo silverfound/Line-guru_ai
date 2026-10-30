@@ -378,7 +378,7 @@ async function calculatePrediction() {
     const team1 = teamName(1);
     const team2 = teamName(2);
     if (!team1 || !team2) return showError("Select both teams to generate a prediction.");
-    if (Number(document.getElementById("team1Select").value) === Number(document.getElementById("team2Select").value)) {
+    if (team1.trim().toLowerCase() === team2.trim().toLowerCase()) {
         return showError("Please select two different teams.");
     }
 
@@ -754,9 +754,13 @@ async function refreshPublishedCricketFeed() {
                 .join("|").toLowerCase().replace(/\s+/g, " ").trim();
             if (!seen.has(key)) { seen.add(key); unique.push(match); }
         });
+        // Keep button indexes aligned with the exact deduplicated objects rendered below.
+        publishedMatchesForPrediction = unique;
+        const upcomingCutoff = Date.now() + 90 * 24 * 60 * 60 * 1000;
         const groups = {
             live: unique.filter(m => statusGroup(m) === "live").sort((a,b) => dateValue(b)-dateValue(a)),
-            upcoming: unique.filter(m => statusGroup(m) === "upcoming").sort((a,b) => dateValue(a)-dateValue(b)),
+            // Hide distant fixtures (e.g. next year's schedule) from the near-term feed.
+            upcoming: unique.filter(m => statusGroup(m) === "upcoming" && dateValue(m) <= upcomingCutoff).sort((a,b) => dateValue(a)-dateValue(b)),
             completed: unique.filter(m => statusGroup(m) === "completed").sort((a,b) => dateValue(b)-dateValue(a))
         };
         const cleanScore = (score, opposingScore) => {
