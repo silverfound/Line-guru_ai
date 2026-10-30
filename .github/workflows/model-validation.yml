@@ -1,4 +1,4 @@
-name: Model validation audit
+name: Model validation and Team-Aware training
 on:
   push:
     branches: [main]
@@ -8,9 +8,9 @@ on:
     paths: ["ml/**", "tests/**", ".github/workflows/model-validation.yml"]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
-  audit:
+  regression:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -24,6 +24,51 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Audit prepared dataset split and feature leakage
         run: python ml/audit_dataset.py
-      - name: Check serialized training artifact if present
+  train-team-aware:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install training dependencies
+        run: python -m pip install --upgrade pip pandas scikit-learn lightgbm joblib
+      - name: Download free Cricsheet historical match data
         run: |
-          python -c "from pathlib import Path; import joblib; ps=[p for p in [Path('ml/output/team-aware-model.joblib'),Path('ml/team-aware-model.joblib')] if p.exists()]; print('No serialized artifact committed; load check skipped.' if not ps else '\\n'.join(str(p) for p in ps)); [joblib.load(p) for p in ps]"
+          curl --fail --location --retry 3 https://cricsheet.org/downloads/all_json.zip --output all_json.zip
+          test -s all_json.zip
+      - name: Build leakage-safe pre-match dataset
+        run: python ml/build_dataset.py --zip all_json.zip --out-dir ml/data
+      - name: Build runtime team, head-to-head and venue history
+        run: python ml/build_history_lookup.py --input ml/data/matches.csv --output ml/data/pre-match-history.json
+      - name: Train pre-match and post-toss Team-Aware models
+        run: python ml/train_model.py --input ml/data/matches_with_features.csv --out-dir ml/output
+      - name: Export browser model from this exact training run
+        run: python ml/export_browser_model.py --model ml/output/team-aware-pre-match.joblib --history ml/data/pre-match-history.json --output team-aware-predictor.js
+      - name: Publish generated model to the current PR branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          cp team-aware-predictor.js /tmp/team-aware-predictor.js
+          git fetch origin "${{ github.head_ref }}"
+          git checkout -B "${{ github.head_ref }}" "origin/${{ github.head_ref }}"
+          cp /tmp/team-aware-predictor.js team-aware-predictor.js
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add team-aware-predictor.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish trained Team-Aware browser model"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
+      - name: Upload dataset summary, metrics and research models
+        uses: actions/upload-artifact@v4
+        with:
+          name: team-aware-training-results
+          path: |
+            ml/data/dataset-summary.json
+            ml/data/pre-match-history.json
+            ml/output/team-aware-metrics.json
+            team-aware-predictor.js
+            ml/output/*.joblib
+          if-no-files-found: error
+          retention-days: 30

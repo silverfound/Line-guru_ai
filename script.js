@@ -486,7 +486,43 @@ async function calculatePrediction() {
         await window.LineGuruML.load();
         const tossDecision = document.getElementById("tossDecision")?.value || "";
         const tossWinnerIndex = toss ? Number(toss) : 0;
-        if (inningsType === "chase") {
+        const isPreMatch = inningsType === "first" && currentRuns === 0 && legalBalls === 0;
+        if (isPreMatch) {
+            if (format === "test") throw new Error("The Team-Aware pre-match model currently supports T20 and ODI only. Test pre-match training is not included yet.");
+            if (!window.TeamAwarePreMatch) throw new Error("Team-Aware browser model is not loaded yet. Refresh the app after the model export finishes.");
+            await window.TeamAwarePreMatch.load();
+            const splitTeam = value => {
+                const parts = String(value).split(" - ");
+                return { name: parts[parts.length - 1].trim(), competition: parts.length > 1 ? parts.slice(0,-1).join(" - ").trim() : "" };
+            };
+            const a = splitTeam(team1), b = splitTeam(team2);
+            const sorted = [a.name,b.name].sort((x,y)=>x.localeCompare(y));
+            const swapped = sorted[0] !== a.name;
+            const competition = a.competition || b.competition || "";
+            const genderText = (team1 + " " + team2 + " " + competition).toLowerCase();
+            const prediction = await window.TeamAwarePreMatch.predict({
+                format: format === "odi" ? "ODI" : "T20",
+                gender: /women|woman|female/.test(genderText) ? "female" : "male",
+                team1: sorted[0], team2: sorted[1],
+                venue: document.getElementById("venueName").value.trim() || null,
+                competition: competition || null,
+                team1Form: null,
+                team2Form: null,
+                team1Strength: null, team2Strength: null,
+                h2hTeam1Win: null,
+                venueAverage: document.getElementById("venueAverage").value === "" ? null : safeNumber("venueAverage"),
+                team1PriorMatches: null, team2PriorMatches: null,
+                h2hPriorMatches: null, venuePriorMatches: null
+            });
+            const modelTeam1Chance = prediction.team1Win;
+            win1 = swapped ? prediction.team2Win : modelTeam1Chance;
+            win2 = 100 - win1;
+            winReason = "Team-Aware pre-match LightGBM prediction. It uses stable team identities and available match context; missing historical form, H2H, or venue-history inputs are not fabricated. Form fields are treated as user-provided estimates.";
+            scoreProjection = "Not available";
+            scoreLabel = "Pre-match score projection";
+            window.__lineGuruModelLabel = "TEAM-AWARE · PRE-MATCH";
+            window.__lineGuruCoverage = prediction.featureCoverage;
+        } else if (inningsType === "chase") {
             const battingIndex = Number(document.getElementById("battingTeam").value);
             aiPrediction = await window.LineGuruML.predict({
                 format, runs: currentRuns, wickets, ballsUsed: legalBalls,
@@ -495,8 +531,10 @@ async function calculatePrediction() {
             const chaseChance = aiPrediction.chaseWin;
             win1 = battingIndex === 1 ? chaseChance : 100 - chaseChance;
             win2 = 100 - win1;
-            winReason = "Trained LightGBM live-chase model using historical ball-by-ball match states. Team identity, recent form, venue and player availability are not yet model inputs.";
+            winReason = "Existing LightGBM live-chase model using historical ball-by-ball match states. This live model is unchanged.";
             scoreLabel = "Run-rate projection (not ML)";
+            window.__lineGuruModelLabel = "LIGHTGBM · LIVE CHASE";
+            window.__lineGuruCoverage = null;
         } else {
             let firstBattingIndex = 1;
             if (tossWinnerIndex && tossDecision === "bat") firstBattingIndex = tossWinnerIndex;
@@ -507,11 +545,11 @@ async function calculatePrediction() {
             const firstBattingChance = firstBattingWin.firstBattingWin;
             win1 = firstBattingIndex === 1 ? firstBattingChance : 100 - firstBattingChance;
             win2 = 100 - win1;
-            winReason = tossWinnerIndex && tossDecision
-                ? "Trained LightGBM first-innings match-winner model using historical match-state patterns. Team identity, recent form, venue and player availability are not yet model inputs."
-                : "Trained LightGBM first-innings model. Team 1 is assumed to bat first because toss details are not complete; change the toss fields when known.";
+            winReason = "Existing LightGBM live first-innings model using historical match-state patterns. This live model is unchanged.";
             scoreProjection = firstBattingWin.projectedTotal;
             scoreLabel = "AI projected first-innings total";
+            window.__lineGuruModelLabel = "LIGHTGBM · LIVE FIRST INNINGS";
+            window.__lineGuruCoverage = null;
         }
     } catch (error) {
         return showError("Trained AI model could not load. Check your internet connection and refresh the app. " + error.message);
@@ -520,7 +558,7 @@ async function calculatePrediction() {
     const result = document.getElementById("outputContent");
     result.innerHTML = `
         <div class="result-hero">
-            <span class="eyebrow">TRAINED LIGHTGBM · HISTORICAL MODEL</span>
+            <span class="eyebrow">${escapeHTML(window.__lineGuruModelLabel || "LIGHTGBM · LIVE MODEL")}</span>
             <h3>${escapeHTML(team1)} <span>vs</span> ${escapeHTML(team2)}</h3>
             <p class="subtle">${format === "t20" ? "T20" : format === "odi" ? "ODI" : "Test"} · ${inningsType === "chase" ? "Second Innings / Chase" : "First Innings"}</p>
         </div>
@@ -529,7 +567,7 @@ async function calculatePrediction() {
             <div class="prob-card"><span>${escapeHTML(team2)}</span><strong>${formatNumber(win2, 0)}%</strong><div class="bar"><i style="width:${win2}%"></i></div></div>
         </div>
         <div class="stats-grid">
-            <div class="stat"><small>${scoreLabel}</small><strong>${scoreProjection}</strong></div>
+            <div class="stat"><small>${scoreLabel}</small><strong>${escapeHTML(String(scoreProjection ?? "—"))}</strong></div>
             <div class="stat"><small>Current Run Rate</small><strong>${formatNumber(currentRate, 2)}</strong></div>
             <div class="stat"><small>Current Score</small><strong>${currentRuns}/${wickets}</strong></div>
             <div class="stat"><small>Overs</small><strong>${Math.floor(legalBalls / 6)}.${legalBalls % 6}</strong></div>
@@ -542,7 +580,7 @@ async function calculatePrediction() {
             return '<div class="chase-line"><span>Target: <b>' + target + '</b></span><span>Runs Needed: <b>' + runsNeeded + '</b></span><span>Required Run Rate: <b>' + formatNumber(rrr, 2) + '</b></span><span>Balls Remaining: <b>' + ballsLeft + '</b></span></div>';
         })() : ""}
         <p class="analysis-note">${escapeHTML(winReason)}</p>
-        <p class="disclaimer">AI model version: LightGBM-2026.10-v1. Time-based historical test: live-chase accuracy 81.4% overall (83.4% T20 mid-innings; 76.9% ODI mid-innings); first-innings winner accuracy 65.7%; first-innings score MAE about 26 runs. Team identity, recent form, venue and player availability are not yet model inputs. Entered match state is used; live score feed is not automatically connected. Predictions are estimates, not guarantees.</p>
+        <p class="disclaimer">AI models: Team-Aware-2026.10-v1 for pre-match; existing LightGBM-2026.10-v1 for live match states. Pre-match feature coverage: ${window.__lineGuruCoverage ? window.__lineGuruCoverage.available + "/" + window.__lineGuruCoverage.total + " model features available" : "not applicable"}. Missing historical values are not invented. Predictions are estimates, not guarantees.</p>
     `;
     document.getElementById("resultBox").classList.remove("hidden");
     document.getElementById("resultBox").scrollIntoView({ behavior: "smooth", block: "start" });
