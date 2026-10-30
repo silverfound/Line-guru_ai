@@ -64,8 +64,10 @@
             <div class="input-group"><label for="form1">Team 1 Recent Form (%)</label><input id="form1" type="number" min="0" max="100" value="50"></div>
             <div class="input-group"><label for="form2">Team 2 Recent Form (%)</label><input id="form2" type="number" min="0" max="100" value="50"></div>
             <div class="input-group"><label for="tossWinner">Toss Winner</label><select id="tossWinner"><option value="">Not known yet</option><option value="1">Team 1</option><option value="2">Team 2</option></select></div>
+            <div class="input-group"><label for="tossDecision">Toss Decision</label><select id="tossDecision"><option value="">Not known yet</option><option value="bat">Bat first</option><option value="field">Field first</option></select></div>
             <div class="input-group"><label for="pitchType">Pitch Type</label><select id="pitchType"><option value="neutral">Neutral</option><option value="batting">Batting-friendly</option><option value="bowling">Bowling-friendly</option></select></div>
-            <div class="input-group full-width"><label for="venueAverage">Venue Average Score (optional)</label><input id="venueAverage" type="number" min="0" placeholder="T20 example: 165; ODI example: 270"><p class="hint">Used to estimate the score at the start of the first innings. Leave blank to use a default.</p></div>
+            <div class="input-group full-width"><label for="venueName">Venue (optional)</label><input id="venueName" type="text" placeholder="e.g. Gaddafi Stadium"></div>
+            <div class="input-group full-width"><label for="venueAverage">Venue Average Score (optional)</label><input id="venueAverage" type="number" min="0" placeholder="T20 example: 165; ODI example: 270"><p class="hint">Reference only; the trained model currently uses match format and live score state.</p></div>
         </div>
 
         <h2 class="section-title">Score & Innings</h2>
@@ -81,7 +83,7 @@
         </div>
         <button class="calculate-btn" type="button" onclick="calculatePrediction()"><span>Generate Cricket Prediction</span></button>
 
-        <div class="api-note"><strong>Prediction inputs:</strong> The prediction calculation still uses the values entered in this form. Match feed data is shown separately and does not automatically overwrite your inputs. Team form and historical statistics are not yet connected.</div>
+        <div class="api-note"><strong>Trained AI:</strong> LightGBM models trained on historical ball-by-ball cricket data power first-innings winner, live chase probability, and first-innings score estimates. Enter the current score manually; the live feed does not auto-fill this calculator yet. Team strength, venue effects, and player availability are not yet model inputs.</div>
     </main>
 
     <section id="resultBox" class="result-card hidden" aria-live="polite">
@@ -89,6 +91,7 @@
         <div id="outputContent"></div>
     </section>
 </div>
-<script src="script.js?v=20261030-completed-chase-v10"></script>
+<script src="ml-predictor.js?v=20261030-lightgbm-v1"></script>
+<script src="script.js?v=20261030-lightgbm-v1"></script>
 </body>
 </html>
