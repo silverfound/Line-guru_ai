@@ -1,7 +1,7 @@
 (()=>{"use strict";
 const $=id=>document.getElementById(id),S={matches:[],tab:"live"},teams=window.LineGuruTeams||[];
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const team=id=>{let v=$(id).value;return v===""?null:teams[+v]||null},label=id=>team(id)?.name||"";
+const team=id=>{let v=$(id).value;if(v==="")return null;if(v.indexOf("feed:")===0)return {name:v.slice(5),captain:""};return teams[+v]||null},label=id=>team(id)?.name||"";
 function sync(){let f=$("matchFormat").value;["1","2"].forEach(n=>{$("captain"+n).value=team("team"+n+"Select")?.captain||(team("team"+n+"Select")?.captains?.[f]||team("team"+n+"Select")?.captains?.t20||"")});$("tossWinner").options[1].text=label("team1Select")||"Team A";$("tossWinner").options[2].text=label("team2Select")||"Team B";$("battingTeam").options[0].text=label("team1Select")||"Team A";$("battingTeam").options[1].text=label("team2Select")||"Team B"}
 function init(){let o='<option value="">Choose a team</option>'+teams.map((t,i)=>'<option value="'+i+'">'+esc(t.name)+'</option>').join("");$("team1Select").innerHTML=o;$("team2Select").innerHTML=o;["team1Select","team2Select","matchFormat"].forEach(id=>$(id).addEventListener("change",sync));sync()}
 function fmt(m){let s=(m.format||m.competition||"").toLowerCase();return /test|first.?class|multi.?day/.test(s)?"test":/odi|one.?day|50.?over/.test(s)?"odi":"t20"}
