@@ -16,7 +16,6 @@ from pathlib import Path
 import pandas as pd
 
 SUPPORTED = {"T20", "IT20", "ODI"}
-BAD_GENDER = {"female"}
 DLS_WORDS = ("D/L", "DLS", "Duckworth", "revised", "VJD")
 
 
@@ -38,8 +37,6 @@ def parse_match(name, raw):
     info = raw.get("info", {})
     match_type = str(info.get("match_type", "")).upper()
     if match_type not in SUPPORTED:
-        return None
-    if str(info.get("gender", "")).lower() in BAD_GENDER:
         return None
     teams = info.get("teams") or []
     outcome = info.get("outcome") or {}
@@ -106,7 +103,8 @@ def add_historical_features(df):
     for _, day in df.groupby(df["date"].dt.date, sort=True):
         pending = []
         for row in day.to_dict("records"):
-            a, b, venue = row["team1"], row["team2"], row.get("venue") or "UNKNOWN"
+            gender, fmt = row.get("gender", "unknown"), row["format"]
+            a, b, venue = (gender, fmt, row["team1"]), (gender, fmt, row["team2"]), (gender, fmt, row.get("venue") or "UNKNOWN")
             pair = tuple(sorted((a, b)))
             ra, rb = list(team_results[a]), list(team_results[b])
             fa, fb = list(team_form[a]), list(team_form[b])
@@ -125,7 +123,8 @@ def add_historical_features(df):
             pending.append(row)
         # Add results only after every match from this date has been featured.
         for row in pending:
-            a, b, venue = row["team1"], row["team2"], row.get("venue") or "UNKNOWN"
+            gender, fmt = row.get("gender", "unknown"), row["format"]
+            a, b, venue = (gender, fmt, row["team1"]), (gender, fmt, row["team2"]), (gender, fmt, row.get("venue") or "UNKNOWN")
             pair = tuple(sorted((a, b)))
             team_results[a].append(int(row["winner"] == a))
             team_results[b].append(int(row["winner"] == b))
