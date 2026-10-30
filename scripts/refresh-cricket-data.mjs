@@ -39,6 +39,11 @@ function cleanScore(value) {
   return !text || /^(?:-|—|N\/A|null|undefined)$/i.test(text) ? "" : text;
 }
 
+function firstScore(...values) {
+  for (const value of values) { const score = cleanScore(value); if (score) return score; }
+  return "";
+}
+
 function scoreForTeam(teamName, scores) {
   if (!Array.isArray(scores)) return "";
   const relevant = scores.filter(item => {
@@ -84,8 +89,8 @@ function normalizeMatch(m, source) {
     competition: first(m?.league, m?.competition, m?.series, m?.seriesName, m?.event_name),
     team1,
     team2,
-    score1: cleanScore(first(score?.home, score?.team1, home?.score, m?.home_score, m?.team1Score, m?.score1, totalFor(0), scoreForTeam(team1, scoreList))),
-    score2: cleanScore(first(score?.away, score?.team2, away?.score, m?.away_score, m?.team2Score, m?.score2, totalFor(1), scoreForTeam(team2, scoreList))),
+    score1: firstScore(score?.home, score?.team1, home?.score, m?.home_score, m?.team1Score, m?.score1, totalFor(0), scoreForTeam(team1, scoreList)),
+    score2: firstScore(score?.away, score?.team2, away?.score, m?.away_score, m?.team2Score, m?.score2, totalFor(1), scoreForTeam(team2, scoreList)),
     venue,
     tossWinner: first(m?.toss?.team, m?.toss_winner, m?.tossWinner),
     tossDecision: first(m?.toss?.decision, m?.toss_decision, m?.tossDecision),
