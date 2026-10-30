@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
+import { competitionName, mergeMatchLists } from "./feed-normalization.mjs";
 
 const OUTPUT = "data/cricket-feed.json";
 const MIN_INTERVAL_MS = 5 * 60 * 60 * 1000 + 45 * 60 * 1000; // at most 4 scheduled refreshes/day
@@ -86,7 +87,7 @@ function normalizeMatch(m, source) {
     date: startTime,
     status,
     statusText: first(m?.status_text, m?.statusText, m?.note),
-    competition: first(m?.league, m?.competition?.name, m?.competition, m?.series?.name, m?.series, m?.seriesName, m?.event_name),
+    competition: competitionName(m),
     team1,
     team2,
     score1: firstScore(score?.home, score?.team1, home?.score, m?.home_score, m?.team1Score, m?.score1, totalFor(0), scoreForTeam(team1, scoreList)),
@@ -258,13 +259,7 @@ if (process.env.CRICKETDATA_API_KEY) {
           return Number.isFinite(start) && start >= fixtureStart.getTime() && start < fixtureEnd.getTime();
         })
       : [];
-    const seen = new Set();
-    const combined = [...current, ...fixtures].filter(match => {
-      const key = match.id || [match.date, match.team1, match.team2].join("|");
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
+    const combined = mergeMatchLists(current, fixtures);
     combined.providerErrors = errors;
     return combined;
   });
@@ -334,13 +329,7 @@ if (process.env.SPORTSCORE_API_KEY) {
           return match;
         }
       }));
-    const seen = new Set();
-    const combined = [...liveDetails, ...liveMatches.filter(m => !liveDetails.includes(m)), ...fixtureMatches].filter(match => {
-      const key = match.id || [match.date, match.team1, match.team2].join("|");
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
+    const combined = mergeMatchLists(liveDetails, liveMatches, fixtureMatches);
     combined.providerErrors = errors;
     return combined;
   });
@@ -349,14 +338,7 @@ if (process.env.SPORTSCORE_API_KEY) {
 }
 
 const allMatches = Object.values(providers).flatMap(p => p.matches || []);
-const unique = new Map();
-for (const match of allMatches) {
-  const key = match.id || [match.date, match.team1, match.team2].join("|");
-  if (key.replaceAll("|", "").trim()) {
-    const existing = unique.get(key);
-    if (!existing || (existing.score1 === "" && match.score1 !== "")) unique.set(key, match);
-  }
-}
+const mergedMatches = mergeMatchLists(allMatches);
 
 const output = {
   schemaVersion: 1,
@@ -367,7 +349,7 @@ const output = {
     requestBudget: "Each manual run makes at most 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
   },
   providers,
-  matches: [...unique.values()],
+  matches: mergedMatches,
   derived: {
     teamForm: "Not computed in this first feed version; requires verified completed-match results per selected team.",
     groundAverages: "Not computed in this first feed version; requires confirmed venue and innings totals from historical scorecards.",
