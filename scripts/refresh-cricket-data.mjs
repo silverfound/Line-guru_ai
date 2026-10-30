@@ -93,8 +93,8 @@ function supportedFormat(match) {
   const text = `${match?.format || ""} ${match?.competition || ""}`.toLowerCase();
   if (/test|first.?class|multi.?day|four.?day|five.?day/.test(text)) return null;
   if (/odi|one.?day|50.?over/.test(text)) return "odi";
-  if (/t20|twenty.?20/.test(text)
-    || /indian premier league|\bipl\b|pakistan super league|\bpsl\b|big bash|\bbbl\b|\bwbbl\b|caribbean premier league|\bcpl\b|bangladesh premier league|\bbpl\b|lanka premier league|\blpl\b|sa20|international league t20|\bilt20\b|major league cricket|\bmlc\b|women.?s premier league|\bwpl\b|women.?s caribbean premier league|\bwcpl\b|global t20|global super league|super smash|vitality blast|t20 spring challenge|nepal premier league/.test(text)) return "t20";
+  if (/t20|twenty.?20|t10|ten10|100.?ball|hundred/.test(text)
+    || /the hundred|women.?s hundred|abu dhabi t10|lanka t10|european cricket league|indian premier league|\bipl\b|pakistan super league|\bpsl\b|big bash|\bbbl\b|\bwbbl\b|caribbean premier league|\bcpl\b|bangladesh premier league|\bbpl\b|lanka premier league|\blpl\b|sa20|international league t20|\bilt20\b|major league cricket|\bmlc\b|women.?s premier league|\bwpl\b|women.?s caribbean premier league|\bwcpl\b|global t20|global super league|super smash|vitality blast|t20 spring challenge|nepal premier league/.test(text)) return "t20";
   return null;
 }
 
