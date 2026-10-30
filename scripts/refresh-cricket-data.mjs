@@ -89,8 +89,19 @@ function isPlaceholderTeam(value) {
     || /^(?:TBC|TBD|TBA|Team\s*[A-Z0-9]+)$/i.test(String(value || "").trim());
 }
 
+function supportedFormat(match) {
+  const text = `${match?.format || ""} ${match?.competition || ""}`.toLowerCase();
+  if (/test|first.?class|multi.?day|four.?day|five.?day/.test(text)) return null;
+  if (/odi|one.?day|50.?over/.test(text)) return "odi";
+  if (/t20|twenty.?20/.test(text)
+    || /indian premier league|\\bipl\\b|pakistan super league|\\bpsl\\b|big bash|\\bbbl\\b|\\bwbbl\\b|caribbean premier league|\\bcpl\\b|bangladesh premier league|\\bbpl\\b|lanka premier league|\\blpl\\b|sa20|international league t20|\\bilt20\\b|major league cricket|\\bmlc\\b|women.?s premier league|\\bwpl\\b|women.?s caribbean premier league|\\bwcpl\\b|global t20|global super league|super smash|vitality blast|t20 spring challenge|nepal premier league/.test(text)) return "t20";
+  return null;
+}
+
 function isPublishableMatch(match) {
   if (!match?.team1 || !match?.team2) return false;
+  // Publish only supported white-ball formats; Test and unknown formats never enter the feed.
+  if (!supportedFormat(match)) return false;
   if (isPlaceholderTeam(match.team1) || isPlaceholderTeam(match.team2)) return false;
   // A match without a usable date cannot be sorted or reliably classified.
   if (!/^\d{4}-\d{2}-\d{2}/.test(String(match.date || ""))) return false;
