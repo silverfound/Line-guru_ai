@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07111f"><title>Line Guru AI — Cricket Intelligence</title><link rel="stylesheet" href="style.css?v=20261030-clean"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07111f"><title>Line Guru AI — Cricket Intelligence</title><link rel="stylesheet" href="style.css?v=20261030-liveintel"></head>
 <body><div class="shell">
 <header><a class="brand" href="./">🏏 <span>LINE GURU <b>AI</b><small>CRICKET INTELLIGENCE</small></span></a><span id="liveApiStatus" class="status">CONNECTING</span></header>
 <section class="hero"><div><small>MATCH CENTRE / AI ENGINE</small><h1>Know the game.<br><i>Before it happens.</i></h1><p>Historical team profiles and live match-state intelligence. No invented statistics.</p></div><div class="counter"><b id="matchCount">—</b><small>matches in feed</small></div></section>
@@ -8,11 +8,11 @@
 <div class="form">
 <label>FORMAT<select id="matchFormat"><option value="t20">T20 / League</option><option value="odi">ODI</option></select></label>
 <label>TEAM A<select id="team1Select"></select></label><label>TEAM B<select id="team2Select"></select></label>
-<label>TEAM A CAPTAIN<input id="captain1" placeholder="Optional"></label><label>TEAM B CAPTAIN<input id="captain2" placeholder="Optional"></label>
+<label>TEAM A CAPTAIN<input id="captain1" placeholder="Not announced / unavailable"></label><label>TEAM B CAPTAIN<input id="captain2" placeholder="Not announced / unavailable"></label>
 <label class="wide">VENUE <small>Historical ground profile checked automatically</small><input id="venueName" placeholder="Enter ground (optional)"></label></div>
 <div class="subhead">MATCH STATE <small>Zero score means pre-match</small></div>
 <div class="form">
-<label>INNINGS<select id="inningsType"><option value="pre">Pre-match / Before first ball</option><option value="first">First innings — live</option><option value="chase">Second innings — chase</option></select></label>
+<label>INNINGS<select id="inningsType"><option value="pre">Pre-match / Before first ball</option><option value="unknown">Live — score/innings not confirmed</option><option value="first">First innings — live</option><option value="chase">Second innings — chase</option></select></label>
 <label>TOSS WINNER<select id="tossWinner"><option value="">Not known yet</option><option value="1">Team A</option><option value="2">Team B</option></select></label>
 <label>TOSS DECISION<select id="tossDecision"><option value="">Not known yet</option><option value="bat">Bat first</option><option value="field">Field first</option></select></label>
 <label>BATTING TEAM<select id="battingTeam"><option value="1">Team A</option><option value="2">Team B</option></select></label>
@@ -24,4 +24,4 @@
 <section id="resultBox" class="panel hidden"><div class="head"><div><small>MODEL OUTPUT</small><h2>Prediction report</h2></div><span id="resultModel" class="tag"></span></div><div id="outputContent"></div></section>
 <footer>LINE GURU AI <span>Predictions are estimates, not guarantees.</span><span>Cricket data: <a href="https://sportscore.com/" rel="dofollow" target="_blank">Powered by SportScore</a></span></footer>
 </div>
-<script src="ml-predictor.js?v=20261030-clean"></script><script src="team-aware-predictor.js?v=20261030-clean"></script><script src="teams-data.js?v=20261030-clean"></script><script src="script.js?v=20261030-clean"></script></body></html>
+<script src="ml-predictor.js?v=20261030-liveintel"></script><script src="team-aware-predictor.js?v=20261030-liveintel"></script><script src="teams-data.js?v=20261030-liveintel"></script><script src="script.js?v=20261030-liveintel"></script></body></html>
