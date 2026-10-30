@@ -4,7 +4,7 @@
   "refreshPolicy": {
     "scheduledRunsPerDay": 0,
     "minimumHoursBetweenRuns": 5.75,
-    "requestBudget": "Each manual run makes at most 1 Big Balls request, 2 OpenCricket requests, 2 CricketData requests and 3 SportScore requests (live/recent, today fixtures, tomorrow fixtures). Failed requests are not retried."
+    "requestBudget": "Each manual run makes at most 1 Big Balls request, 0 OpenCricket requests (provider paused after HTTP 403), 2 CricketData requests and up to 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
   },
   "providers": {
     "bigBalls": {
