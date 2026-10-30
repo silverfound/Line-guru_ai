@@ -53,6 +53,9 @@ jobs:
         run: |
           cp team-aware-predictor.js /tmp/team-aware-predictor.js
           git fetch origin "${{ github.head_ref }}"
+          # The export step modifies team-aware-predictor.js in the checkout.
+          # Reset that generated working-tree change before switching to the PR head.
+          git reset --hard
           git checkout -B "${{ github.head_ref }}" "origin/${{ github.head_ref }}"
           cp /tmp/team-aware-predictor.js team-aware-predictor.js
           git config user.name "github-actions[bot]"
