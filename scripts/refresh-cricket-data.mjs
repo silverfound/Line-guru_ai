@@ -225,7 +225,7 @@ const toDate = new Date(now.getTime() + 13 * 86400000).toISOString().slice(0, 10
 
 if (process.env.BIGBALLSDATA_API_KEY) {
   providers.bigBalls = await providerResult("Big Balls Data", async () => {
-    const payload = await requestJson("https://api.bigballsdata.com/v1/cricket/matches?date=${date}:${toDate}&limit=100", {
+    const payload = await requestJson(`https://api.bigballsdata.com/v1/cricket/matches?date=${date}:${toDate}&limit=100`, {
       "x-api-key": process.env.BIGBALLSDATA_API_KEY,
       "Accept": "application/json"
     });
