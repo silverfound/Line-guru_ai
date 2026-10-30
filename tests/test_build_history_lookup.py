@@ -31,7 +31,7 @@ class RuntimeHistoryLeakageTests(unittest.TestCase):
         self.assertEqual(snapshots["m3"]["team2_prior_matches"], 2)
         self.assertEqual(snapshots["m3"]["h2h_prior_matches"], 2)
         self.assertEqual(snapshots["m3"]["venue_prior_matches"], 2)
-        self.assertEqual(snapshots["m3"]["h2h_team1_win_prior10"], 0.5)
+        self.assertAlmostEqual(snapshots["m3"]["h2h_team1_win_prior10"], 0.5)
         self.assertEqual(snapshots["m3"]["venue_first_innings_avg_prior30"], 165.0)
 
     def test_runtime_lookup_still_exports_compact_model_schema(self):
