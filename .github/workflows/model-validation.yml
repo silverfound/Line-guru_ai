@@ -49,7 +49,7 @@ jobs:
       - name: Export browser model from this exact training run
         run: python ml/export_browser_model.py --model ml/output/team-aware-pre-match.joblib --history ml/data/pre-match-history.json --output team-aware-predictor.js
       - name: Publish generated model to the current PR branch
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref != 'feature/player-performance-database'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && !startsWith(github.head_ref, 'feature/player-performance-database')
         run: |
           cp team-aware-predictor.js /tmp/team-aware-predictor.js
           git fetch origin "${{ github.head_ref }}"
