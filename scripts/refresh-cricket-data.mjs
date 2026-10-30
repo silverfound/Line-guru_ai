@@ -113,13 +113,13 @@ function isHongKongSixes(match) {
   ].map(str).join(" ").toLowerCase();
   if (/hong.?kong.?sixes|super.?sixes|six.?a.?side/.test(label)) return true;
 
-  // CricketData.org can label Hong Kong Sixes as T20. Two six-over innings
+  // CricketData.org can label Hong Kong Sixes as T20. Two six-over-or-shorter innings
   // are not a T20 match; keep this unsupported format out rather than mislabel it.
   const rows = Array.isArray(match?.score) ? match.score
     : (Array.isArray(match?.scores) ? match.scores : []);
   const overs = rows.map(row => Number.parseFloat(row?.o ?? row?.overs))
     .filter(Number.isFinite);
-  return /t20|twenty.?20/.test(label) && overs.length >= 2 && overs.every(value => value === 6);
+  return /t20|twenty.?20/.test(label) && overs.length >= 2 && overs.every(value => value <= 6);
 }
 
 function inFeedDateWindow(match) {
