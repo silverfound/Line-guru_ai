@@ -1,0 +1,26 @@
+name: Check OpenCricket live endpoint
+
+# Manual only. This workflow makes exactly one request to /v1/live.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-live-endpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check OpenCricket live endpoint safely
+        env:
+          OPENCRICKET_API_KEY: ${{ secrets.OPENCRICKET_API_KEY }}
+        run: node scripts/check-opencricket-live.mjs
