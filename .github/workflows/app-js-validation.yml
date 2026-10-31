@@ -41,6 +41,7 @@ jobs:
       - name: Check application JavaScript syntax
         run: |
           node --check script.js
+          node --check live-match-state.js
           node --check teams-data.js
           node --check ml-predictor.js
           node --check team-aware-predictor.js
