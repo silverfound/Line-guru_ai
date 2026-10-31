@@ -1,9 +1,9 @@
 name: Refresh free cricket data
 
-# Refresh four times per day; the script also enforces a 5h45m quota guard.
+# Refresh every hour; the script also enforces a 50-minute quota guard.
 on:
   schedule:
-    - cron: "17 */6 * * *"
+    - cron: "13 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -16,7 +16,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -33,6 +33,38 @@ jobs:
           CRICKETDATA_API_KEY: ${{ secrets.CRICKETDATA_API_KEY }}
           SPORTSCORE_API_KEY: ${{ secrets.SPORTSCORE_API_KEY }}
         run: node scripts/refresh-cricket-data.mjs
+
+      - name: Write feed diagnostics to workflow summary
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile } from "node:fs/promises";
+          try {
+            const feed = JSON.parse(await readFile("data/cricket-feed.json", "utf8"));
+            const providers = Object.entries(feed.providers || {});
+            const rows = providers.map(([name, p]) => `| ${name} | ${p.status || "unknown"} | ${p.rawMatchCount ?? p.matchCount ?? 0} | ${p.matchCount ?? (p.matches || []).length} | ${String(p.message || "—").replaceAll("|", "/")} |`).join("\\n");
+            const matches = feed.matches || [];
+            const live = matches.filter(m => /live|in.?progress|1st inn|2nd inn|stumps/i.test(String(m.status || "") + " " + String(m.statusText || ""))).length;
+            const finished = matches.filter(m => /won by|drawn|tied|abandoned|no result|cancelled|completed|finished|result:/i.test(String(m.status || "") + " " + String(m.statusText || ""))).length;
+            const upcoming = matches.length - live - finished;
+            const summary = `## Cricket feed refresh diagnostics\\n\\n- Generated at: ${feed.generatedAt || "unknown"}\\n- Total matches: ${matches.length} (Live: ${live}, Upcoming/other: ${upcoming}, Finished: ${finished})\\n\\n| Provider | Status | Raw matches | Published matches | Message |\\n|---|---:|---:|---:|---|\\n${rows}\\n`;
+            await import("node:fs/promises").then(fs => fs.appendFile(process.env.GITHUB_STEP_SUMMARY, summary));
+            console.log(summary);
+          } catch (error) {
+            const message = "Could not read feed diagnostics: " + String(error?.message || error);
+            await import("node:fs/promises").then(fs => fs.appendFile(process.env.GITHUB_STEP_SUMMARY, message + "\\n"));
+            console.error(message);
+          }
+          NODE
+
+      - name: Upload feed diagnostics artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cricket-feed-diagnostics
+          path: data/cricket-feed.json
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Publish refreshed feed
         run: |
