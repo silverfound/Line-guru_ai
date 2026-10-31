@@ -81,10 +81,10 @@ const teamsData = [
  // Women's Big Bash League (WBBL) — all eight teams
  {name:"Women's Big Bash League - Adelaide Strikers",captain:"Tahlia McGrath"},
  {name:"Women's Big Bash League - Brisbane Heat",captain:"Georgia Redmayne"},
- {name:"Women's Big Bash League - Hobart Hurricanes",captain:""},
+ {name:"Women's Big Bash League - Hobart Hurricanes",captain:"Nicola Carey"},
  {name:"Women's Big Bash League - Melbourne Renegades",captain:"Sophie Molineux"},
  {name:"Women's Big Bash League - Melbourne Stars",captain:"Meg Lanning"},
- {name:"Women's Big Bash League - Perth Scorchers",captain:"Sophie Devine"},
+ {name:"Women's Big Bash League - Perth Scorchers",captain:"Beth Mooney"},
  {name:"Women's Big Bash League - Sydney Sixers",captain:"Ashleigh Gardner"},
  {name:"Women's Big Bash League - Sydney Thunder",captain:"Phoebe Litchfield"},
  // The Hundred Men's Competition
