@@ -42,17 +42,17 @@ jobs:
           try {
             const feed = JSON.parse(await readFile("data/cricket-feed.json", "utf8"));
             const providers = Object.entries(feed.providers || {});
-            const rows = providers.map(([name, p]) => `| ${name} | ${p.status || "unknown"} | ${p.rawMatchCount ?? p.matchCount ?? 0} | ${p.matchCount ?? (p.matches || []).length} | ${String(p.message || "—").replaceAll("|", "/")} |`).join("\\n");
+            const rows = providers.map(([name, p]) => `| ${name} | ${p.status || "unknown"} | ${p.rawMatchCount ?? p.matchCount ?? 0} | ${p.matchCount ?? (p.matches || []).length} | ${String(p.message || "—").replaceAll("|", "/")} |`).join("\n");
             const matches = feed.matches || [];
             const live = matches.filter(m => /live|in.?progress|1st inn|2nd inn|stumps/i.test(String(m.status || "") + " " + String(m.statusText || ""))).length;
             const finished = matches.filter(m => /won by|drawn|tied|abandoned|no result|cancelled|completed|finished|result:/i.test(String(m.status || "") + " " + String(m.statusText || ""))).length;
             const upcoming = matches.length - live - finished;
-            const summary = `## Cricket feed refresh diagnostics\\n\\n- Generated at: ${feed.generatedAt || "unknown"}\\n- Total matches: ${matches.length} (Live: ${live}, Upcoming/other: ${upcoming}, Finished: ${finished})\\n\\n| Provider | Status | Raw matches | Published matches | Message |\\n|---|---:|---:|---:|---|\\n${rows}\\n`;
+            const summary = `## Cricket feed refresh diagnostics\n\n- Generated at: ${feed.generatedAt || "unknown"}\n- Total matches: ${matches.length} (Live: ${live}, Upcoming/other: ${upcoming}, Finished: ${finished})\n\n| Provider | Status | Raw matches | Published matches | Message |\n|---|---:|---:|---:|---|\n${rows}\n`;
             await import("node:fs/promises").then(fs => fs.appendFile(process.env.GITHUB_STEP_SUMMARY, summary));
             console.log(summary);
           } catch (error) {
             const message = "Could not read feed diagnostics: " + String(error?.message || error);
-            await import("node:fs/promises").then(fs => fs.appendFile(process.env.GITHUB_STEP_SUMMARY, message + "\\n"));
+            await import("node:fs/promises").then(fs => fs.appendFile(process.env.GITHUB_STEP_SUMMARY, message + "\n"));
             console.error(message);
           }
           NODE
