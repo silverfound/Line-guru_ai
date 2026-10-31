@@ -3,7 +3,7 @@ import { dirname } from "node:path";
 import { competitionName, mergeMatchLists } from "./feed-normalization.mjs";
 
 const OUTPUT = "data/cricket-feed.json";
-const MIN_INTERVAL_MS = 50 * 60 * 1000; // hourly schedule with a 10-minute safety buffer
+const MIN_INTERVAL_MS = 5.75 * 60 * 60 * 1000; // manual refresh quota guard
 const now = new Date();
 
 async function readPrevious() {
@@ -292,7 +292,7 @@ if (Number.isFinite(previousAt) && now.getTime() - previousAt < MIN_INTERVAL_MS)
   const previousHasBadData = previousProviders.some(p => (p?.matches || []).some(m => !isPublishableMatch(m)));
   const previousNormalizerVersion = Number(previous?.normalizerVersion || 0);
   if (!previousHasProviderFailure && !previousHasBadData && previousNormalizerVersion >= 2) {
-    console.log("Refresh skipped by local quota guard; minimum interval is 50 minutes.");
+    console.log("Refresh skipped by local quota guard; minimum interval is 5 hours 45 minutes.");
     process.exit(0);
   }
   console.log(previousNormalizerVersion < 2
@@ -426,9 +426,9 @@ const output = {
   normalizerVersion: 2,
   generatedAt: now.toISOString(),
   refreshPolicy: {
-    scheduledRunsPerDay: 24,
-    minimumHoursBetweenRuns: 0.8333,
-    requestBudget: "Each hourly run makes at most 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
+    scheduledRunsPerDay: 0,
+    minimumHoursBetweenRuns: 5.75,
+    requestBudget: "Manual refresh only. Each permitted run makes at most 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
   },
   providers,
   matches: mergedMatches,
