@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07111f"><title>Line Guru AI — Cricket Intelligence</title><link rel="stylesheet" href="style.css?v=20261030-liveintel"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07111f"><title>Line Guru AI — Cricket Intelligence</title><link rel="stylesheet" href="style.css?v=20261031-match-autofill"></head>
 <body><div class="shell">
 <header><a class="brand" href="./">🏏 <span>LINE GURU <b>AI</b><small>CRICKET INTELLIGENCE</small></span></a><span id="liveApiStatus" class="status">CONNECTING</span></header>
 <section class="hero"><div><small>MATCH CENTRE / AI ENGINE</small><h1>Know the game.<br><i>Before it happens.</i></h1><p>Historical team profiles and live match-state intelligence. No invented statistics.</p></div><div class="counter"><b id="matchCount">—</b><small>matches in feed</small></div></section>
 <section class="panel"><div class="head"><div><small>LIVE CENTRE</small><h2>Matches</h2></div><button id="refreshFeedButton">↻ Refresh</button></div><p id="feedMeta" class="muted">Loading match feed…</p><div id="liveMatchList">Loading…</div></section>
 <main class="panel"><div class="head"><div><small>PREDICTION WORKSPACE</small><h2>Build a prediction</h2></div><span class="tag">TEAM-AWARE ML</span></div>
+<div id="selectedMatchMeta" class="selected-match-meta">Choose a fixture and tap Use for prediction to load its available details.</div>
 <div class="form">
 <label>FORMAT<select id="matchFormat"><option value="t20">T20 / League</option><option value="odi">ODI</option></select></label>
 <label>TEAM A<select id="team1Select"></select></label><label>TEAM B<select id="team2Select"></select></label>
@@ -24,4 +25,4 @@
 <section id="resultBox" class="panel hidden"><div class="head"><div><small>MODEL OUTPUT</small><h2>Prediction report</h2></div><span id="resultModel" class="tag"></span></div><div id="outputContent"></div></section>
 <footer>LINE GURU AI <span>Predictions are estimates, not guarantees.</span><span>Cricket data: <a href="https://sportscore.com/" rel="dofollow" target="_blank">Powered by SportScore</a></span></footer>
 </div>
-<script src="ml-predictor.js?v=20261030-liveintel"></script><script src="team-aware-predictor.js?v=20261030-liveintel"></script><script src="teams-data.js?v=20261030-liveintel"></script><script src="match-status.js?v=20261031-statusfix"></script><script src="live-match-state.js?v=20261031-autolive"></script><script src="script.js?v=20261031-autolive"></script></body></html>
+<script src="ml-predictor.js?v=20261030-liveintel"></script><script src="team-aware-predictor.js?v=20261030-liveintel"></script><script src="teams-data.js?v=20261030-liveintel"></script><script src="match-status.js?v=20261031-statusfix"></script><script src="live-match-state.js?v=20261031-autolive"></script><script src="script.js?v=20261031-match-autofill"></script></body></html>
