@@ -53,3 +53,9 @@ test("matches batting team names with or without Women suffix",()=>{
  assert.equal(live.battingTeam,"Melbourne Stars Women");
  assert.equal(live.team2Score,"90/2 (10.1 ov)");
 });
+
+test("matches live provider fixtures when Women suffix is missing and home/away order changes",()=>{
+ const {sameTeams}=require("../live-match-state.js");
+ assert.equal(sameTeams("Melbourne Stars Women","Adelaide Strikers Women","Adelaide Strikers","Melbourne Stars"),true);
+ assert.equal(sameTeams("India","Australia","India A","Australia"),false);
+});

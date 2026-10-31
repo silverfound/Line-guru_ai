@@ -82,7 +82,8 @@ function normalize(payload,team1,team2){
   currentOvers:currentOvers===undefined?"":String(currentOvers),raw:d
  };
 }
-const api={normalize};
+function sameTeams(a1,a2,b1,b2){const x=teamKey(a1),y=teamKey(a2),u=teamKey(b1),v=teamKey(b2);return Boolean(x&&y&&u&&v)&&((x===u&&y===v)||(x===v&&y===u))}
+const api={normalize,sameTeams};
 if(typeof module!=="undefined"&&module.exports)module.exports=api;
 root.LineGuruLiveState=api;
 })(typeof window!=="undefined"?window:globalThis);
