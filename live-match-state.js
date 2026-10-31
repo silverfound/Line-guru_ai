@@ -7,7 +7,7 @@ function normalize(payload,team1,team2){
  const d=payload?.match||payload?.data?.match||payload?.data||payload||{};
  const rows=Array.isArray(d.innings)?d.innings:Array.isArray(d.scorecard)?d.scorecard:[];
  const now=d.now||d.current||{};
- const phase=Number(now.innings??d.innings_number??d.current_innings_number??d.current_innings?.number??d.inningsNo??d.current_innings??rows.length)||0;
+ const phase=Number(now.innings??d.innings_number??d.current_innings_number??d.current_innings?.number??d.inningsNo??rows.length)||0;
  const rowFor=name=>rows.find(x=>teamKey(x.team||x.batting_team||x.name)===teamKey(name));
  const row1=rowFor(team1),row2=rowFor(team2);
  const s1=score(row1)||text(d.home_score??d.team1Score??d.score1??d.scores?.home??d.score?.home);
