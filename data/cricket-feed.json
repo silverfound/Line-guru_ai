@@ -3,9 +3,9 @@
   "normalizerVersion": 2,
   "generatedAt": "2026-10-31T11:45:12.705Z",
   "refreshPolicy": {
-    "scheduledRunsPerDay": 24,
-    "minimumHoursBetweenRuns": 0.8333,
-    "requestBudget": "Each hourly run makes at most 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
+    "scheduledRunsPerDay": 0,
+    "minimumHoursBetweenRuns": 5.75,
+    "requestBudget": "Manual refresh only. Each permitted run makes at most 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
   },
   "providers": {
     "cricketData": {
