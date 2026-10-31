@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: cricket-data-refresh
@@ -72,14 +73,26 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Publish refreshed feed
+      - name: Create or update feed pull request
+        id: feed-pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ github.token }}
+          branch: automation/cricket-feed-refresh
+          delete-branch: true
+          commit-message: "Refresh cricket match feed"
+          title: "Refresh cricket match feed"
+          body: |
+            Automated cricket feed refresh from the configured free providers.
+            Provider diagnostics and generated timestamp are included in the updated feed.
+
+      - name: Merge feed update when repository rules allow
+        if: steps.feed-pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.feed-pr.outputs.pull-request-number }}
         run: |
-          if git diff --quiet -- data/cricket-feed.json; then
-            echo "Feed has no changes; nothing to publish."
+          gh pr merge "$PR_NUMBER" --squash --delete-branch || {
+            echo "Feed PR was created or updated, but repository rules require additional merge conditions."
             exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/cricket-feed.json
-          git commit -m "Refresh cricket match feed"
-          git push
+          }
