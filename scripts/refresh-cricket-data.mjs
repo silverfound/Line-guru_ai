@@ -3,13 +3,7 @@ import { dirname } from "node:path";
 import { competitionName, mergeMatchLists } from "./feed-normalization.mjs";
 
 const OUTPUT = "data/cricket-feed.json";
-const MIN_INTERVAL_MS = 5.75 * 60 * 60 * 1000; // manual refresh quota guard
 const now = new Date();
-
-async function readPrevious() {
-  try { return JSON.parse(await readFile(OUTPUT, "utf8")); }
-  catch { return null; }
-}
 
 function unwrap(payload) {
   if (Array.isArray(payload?.data)) return payload.data;
@@ -285,21 +279,7 @@ async function providerResult(name, fn) {
   }
 }
 
-const previous = await readPrevious();
-const previousAt = Date.parse(previous?.generatedAt || "");
-if (Number.isFinite(previousAt) && now.getTime() - previousAt < MIN_INTERVAL_MS) {
-  const previousProviders = Object.values(previous?.providers || {});
-  const previousHasProviderFailure = previousProviders.some(p => p?.status === "error" || p?.status === "partial");
-  const previousHasBadData = previousProviders.some(p => (p?.matches || []).some(m => !isPublishableMatch(m)));
-  const previousNormalizerVersion = Number(previous?.normalizerVersion || 0);
-  if (!previousHasProviderFailure && !previousHasBadData && previousNormalizerVersion >= 2) {
-    console.log("Refresh skipped by local quota guard; minimum interval is 5 hours 45 minutes.");
-    process.exit(0);
-  }
-  console.log(previousNormalizerVersion < 2
-    ? "Quota guard bypassed once because the feed normalizer was upgraded; refreshing with the new field mappings."
-    : "Quota guard bypassed because the previous feed has provider errors or invalid match records; running one diagnostic refresh.");
-}
+// Every manual workflow run refreshes providers immediately; provider quotas remain subject to each service plan.
 
 const providers = {};
 if (process.env.CRICKETDATA_API_KEY) {
@@ -452,8 +432,7 @@ const output = {
   generatedAt: now.toISOString(),
   refreshPolicy: {
     scheduledRunsPerDay: 0,
-    minimumHoursBetweenRuns: 5.75,
-    requestBudget: "Manual refresh only. Each permitted run makes at most 1 OpenCricket live request, 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
+    requestBudget: "Manual refresh only, with no local cooldown. Every manual run makes at most 1 OpenCricket live request, 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Repeated manual runs consume provider quota; failed requests are not retried."
   },
   providers,
   matches: mergedMatches,
