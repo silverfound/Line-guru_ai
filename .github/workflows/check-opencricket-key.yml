@@ -1,0 +1,26 @@
+name: Check OpenCricket API key
+
+# Run manually only. This makes exactly one low-cost Starter-tier API request.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-key:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test OpenCricket API key safely
+        env:
+          OPENCRICKET_API_KEY: ${{ secrets.OPENCRICKET_API_KEY }}
+        run: node scripts/check-opencricket-key.mjs
