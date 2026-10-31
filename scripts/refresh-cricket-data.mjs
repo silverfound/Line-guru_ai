@@ -67,7 +67,7 @@ function dateValue(...values) {
       ? first(value.utc, value.datetime, value.dateTime, value.start, value.value, value.timestamp, value.date, value.local)
       : value;
     if (raw === "") continue;
-    if (typeof raw === "number" || /^\\d{10,13}$/.test(String(raw))) {
+    if (typeof raw === "number" || /^\d{10,13}$/.test(String(raw))) {
       const n = Number(raw);
       const ms = String(raw).length <= 10 ? n * 1000 : n;
       const parsed = new Date(ms);
@@ -126,7 +126,7 @@ function normalizeMatch(m, source) {
     m?.ground?.name, m?.ground, m?.stadium?.name, m?.stadium,
     m?.location?.name, m?.venue_name, m?.venueName, m?.ground_name, m?.stadium_name
   );
-  const venue = /^(?:TBC|TBD|TBA)(?:\\s*,\\s*(?:TBC|TBD|TBA))*$/i.test(rawVenue) ? "" : rawVenue;
+  const venue = /^(?:TBC|TBD|TBA)(?:\s*,\s*(?:TBC|TBD|TBA))*$/i.test(rawVenue) ? "" : rawVenue;
   const state = first(
     m?.status?.name, m?.status?.description, m?.status?.text, m?.status,
     m?.state?.name, m?.state?.description, m?.state, m?.match_status,
@@ -143,8 +143,8 @@ function normalizeMatch(m, source) {
   );
   let tossDecision = first(tossObject?.decision, tossObject?.elected, m?.toss_decision, m?.tossDecision);
   if (tossText) {
-    const winnerMatch = tossText.match(/^(.+?)\\s+won the toss/i);
-    const decisionMatch = tossText.match(/(?:elected to|chose to|opted to)\\s+(bat|field|bowl)/i);
+    const winnerMatch = tossText.match(/^(.+?)\s+won the toss/i);
+    const decisionMatch = tossText.match(/(?:elected to|chose to|opted to)\s+(bat|field|bowl)/i);
     if (!tossWinner && winnerMatch) tossWinner = winnerMatch[1].trim();
     if (!tossDecision && decisionMatch) tossDecision = decisionMatch[1].toLowerCase();
   }
