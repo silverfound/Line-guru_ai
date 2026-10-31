@@ -50,7 +50,7 @@ function normalize(payload,team1,team2){
  const score1=rowScore(row1)||text(firstValue(d.home_score,d.team1Score,d.score1,d.scores?.home,d.scores?.team1,d.home?.score,d.teams?.[0]?.score));
  const score2=rowScore(row2)||text(firstValue(d.away_score,d.team2Score,d.score2,d.scores?.away,d.scores?.team2,d.away?.score,d.teams?.[1]?.score));
  let current=rows.find(x=>Number(x.innings||x.number)===phase)||rows.find(x=>x.current||x.is_current)||rows[phase-1]||{};
- const battingRaw=firstValue(d.batting_team,d.battingTeam,d.current_batting_team,d.current_batting,d.batting,state.batting_team,state.battingTeam,state.batting,current.team,current.batting_team);
+ const battingRaw=firstValue(d.batting_team,d.battingTeam,d.current_batting_team,d.current_batting,d.batting,state.batting_team,state.battingTeam,state.batting,state.team,state.team_name,state.batting_side,current.team,current.batting_team);
  let batting=text(battingRaw);
  if(battingRaw&&typeof battingRaw==="object")batting=text(battingRaw.name||battingRaw.team?.name||battingRaw.team||battingRaw.short_name);
  const battingKey=teamKey(batting);
