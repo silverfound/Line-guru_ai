@@ -62,6 +62,7 @@ jobs:
             ml/data/player-dataset-summary.json
             ml/output/team-aware-metrics.json
             team-aware-predictor.js
+            team-aware-post-toss-predictor.js
             ml/output/*.joblib
           if-no-files-found: error
           retention-days: 30
