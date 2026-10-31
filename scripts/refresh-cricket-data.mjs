@@ -290,11 +290,14 @@ if (Number.isFinite(previousAt) && now.getTime() - previousAt < MIN_INTERVAL_MS)
   const previousProviders = Object.values(previous?.providers || {});
   const previousHasProviderFailure = previousProviders.some(p => p?.status === "error" || p?.status === "partial");
   const previousHasBadData = previousProviders.some(p => (p?.matches || []).some(m => !isPublishableMatch(m)));
-  if (!previousHasProviderFailure && !previousHasBadData) {
+  const previousNormalizerVersion = Number(previous?.normalizerVersion || 0);
+  if (!previousHasProviderFailure && !previousHasBadData && previousNormalizerVersion >= 2) {
     console.log("Refresh skipped by local quota guard; minimum interval is 50 minutes.");
     process.exit(0);
   }
-  console.log("Quota guard bypassed because the previous feed has provider errors or invalid match records; running one diagnostic refresh.");
+  console.log(previousNormalizerVersion < 2
+    ? "Quota guard bypassed once because the feed normalizer was upgraded; refreshing with the new field mappings."
+    : "Quota guard bypassed because the previous feed has provider errors or invalid match records; running one diagnostic refresh.");
 }
 
 const providers = {};
@@ -420,6 +423,7 @@ const mergedMatches = mergeMatchLists(allMatches);
 
 const output = {
   schemaVersion: 1,
+  normalizerVersion: 2,
   generatedAt: now.toISOString(),
   refreshPolicy: {
     scheduledRunsPerDay: 24,
