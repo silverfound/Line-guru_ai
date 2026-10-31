@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "script.js"
+      - "scripts/refresh-cricket-data.mjs"
       - "live-match-state.js"
       - "teams-data.js"
       - "index.html"
@@ -44,6 +45,7 @@ jobs:
       - name: Check application JavaScript syntax
         run: |
           node --check script.js
+          node --check scripts/refresh-cricket-data.mjs
           node --check live-match-state.js
           node --check teams-data.js
           node --check ml-predictor.js

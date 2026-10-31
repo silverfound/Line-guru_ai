@@ -60,48 +60,126 @@ function scoreForTeam(teamName, scores) {
   }).filter(Boolean).join(" & ");
 }
 
+function dateValue(...values) {
+  for (const value of values) {
+    if (value === undefined || value === null || value === "") continue;
+    const raw = value && typeof value === "object"
+      ? first(value.utc, value.datetime, value.dateTime, value.start, value.value, value.timestamp, value.date, value.local)
+      : value;
+    if (raw === "") continue;
+    if (typeof raw === "number" || /^\d{10,13}$/.test(String(raw))) {
+      const n = Number(raw);
+      const ms = String(raw).length <= 10 ? n * 1000 : n;
+      const parsed = new Date(ms);
+      if (Number.isFinite(parsed.getTime())) return parsed.toISOString();
+    }
+    const parsed = Date.parse(String(raw));
+    if (Number.isFinite(parsed)) return new Date(parsed).toISOString();
+  }
+  return "";
+}
+
+function scoreValue(value) {
+  if (value && typeof value === "object") {
+    const runs = value.runs ?? value.run ?? value.r ?? value.total?.runs;
+    const wickets = value.wickets ?? value.w ?? value.total?.wickets;
+    const overs = value.overs ?? value.o ?? value.total?.overs;
+    if (runs !== undefined && runs !== null && runs !== "") {
+      return String(runs) + (wickets === undefined || wickets === null || wickets === "" ? "" : "/" + wickets)
+        + (overs === undefined || overs === null || overs === "" ? "" : " (" + overs + " ov)");
+    }
+    return first(value.display, value.current, value.score, value.value, value.name, value.title);
+  }
+  return cleanScore(value);
+}
+
 function normalizeMatch(m, source) {
   const teams = Array.isArray(m?.teams) ? m.teams : [];
-  const home = m?.home ?? m?.team1 ?? m?.home_team ?? teams[0];
-  const away = m?.away ?? m?.team2 ?? m?.away_team ?? teams[1];
-  const score = m?.score ?? m?.scores ?? {};
-  const innings = Array.isArray(m?.innings) ? m.innings : [];
+  const home = m?.home ?? m?.team1 ?? m?.home_team ?? m?.homeTeam ?? m?.localteam ?? teams[0];
+  const away = m?.away ?? m?.team2 ?? m?.away_team ?? m?.awayTeam ?? m?.visitorteam ?? teams[1];
+  const score = m?.score ?? m?.scores ?? m?.scoreboard ?? {};
+  const innings = Array.isArray(m?.innings) ? m.innings
+    : Array.isArray(m?.scorecard) ? m.scorecard
+    : Array.isArray(m?.scorecards) ? m.scorecards : [];
   const totalFor = (index) => {
-    const total = innings[index]?.total;
-    if (!total || total.runs === undefined) return "";
-    return String(total.runs) + (total.wickets === undefined ? "" : "/" + total.wickets)
-      + (total.overs === undefined ? "" : " (" + total.overs + " ov)");
+    const total = innings[index]?.total ?? innings[index]?.score ?? innings[index];
+    if (!total || (total.runs === undefined && total.r === undefined)) return "";
+    const runs = total.runs ?? total.r;
+    const wickets = total.wickets ?? total.w;
+    const overs = total.overs ?? total.o;
+    return String(runs) + (wickets === undefined ? "" : "/" + wickets)
+      + (overs === undefined ? "" : " (" + overs + " ov)");
   };
-  const team1 = first(home?.name, home?.team, home, m?.home_team, m?.team1Name, teams[0]?.name, teams[0]);
-  const team2 = first(away?.name, away?.team, away, m?.away_team, m?.team2Name, teams[1]?.name, teams[1]);
-  const scoreList = Array.isArray(score) ? score : (Array.isArray(m?.scores) ? m.scores : []);
-  const startTime = first(m?.date, m?.time, m?.kickoff_utc, m?.start_time, m?.startTime, m?.dateTimeGMT, m?.match_date, m?.start_date, m?.scheduled_at, m?.dateTime);
-  const rawVenue = first(m?.venue?.name, m?.venue, m?.ground, m?.stadium);
+  const team1 = first(home?.name, home?.team?.name, home?.team, home, m?.home_team?.name, m?.homeTeam?.name, m?.localteam?.name, m?.team1Name, teams[0]?.name, teams[0]);
+  const team2 = first(away?.name, away?.team?.name, away?.team, away, m?.away_team?.name, m?.awayTeam?.name, m?.visitorteam?.name, m?.team2Name, teams[1]?.name, teams[1]);
+  const scoreList = Array.isArray(score) ? score : (Array.isArray(m?.scores) ? m.scores : innings);
+  const startTime = dateValue(
+    m?.date?.utc, m?.date?.datetime, m?.date, m?.time?.utc, m?.time,
+    m?.kickoff_utc, m?.kickoff, m?.kickoffTime, m?.start_at, m?.startAt,
+    m?.start_time, m?.startTime?.utc, m?.startTime, m?.startDate,
+    m?.dateTimeGMT, m?.dateTime, m?.datetime_utc, m?.date_utc,
+    m?.match_date, m?.fixture_date, m?.start_date, m?.scheduled_at,
+    m?.scheduled, m?.timestamp, m?.start_timestamp, m?.match_start
+  );
+  const rawVenue = first(
+    m?.venue?.name, m?.venue?.full_name, m?.venue?.ground, m?.venue,
+    m?.ground?.name, m?.ground, m?.stadium?.name, m?.stadium,
+    m?.location?.name, m?.venue_name, m?.venueName, m?.ground_name, m?.stadium_name
+  );
   const venue = /^(?:TBC|TBD|TBA)(?:\s*,\s*(?:TBC|TBD|TBA))*$/i.test(rawVenue) ? "" : rawVenue;
-  const state = first(m?.status, m?.state, m?.status_text, m?.match_status, m?.matchStatus, m?.result, m?.stage);
-  const status = state || (m?.matchStarted === true ? "Live" : (m?.matchEnded === true ? "Completed" : ""));
+  const state = first(
+    m?.status?.name, m?.status?.description, m?.status?.text, m?.status,
+    m?.state?.name, m?.state?.description, m?.state, m?.match_status,
+    m?.matchStatus, m?.live_status, m?.match_state, m?.result, m?.stage
+  );
+  const status = state || (m?.matchStarted === true || m?.is_live === true ? "Live"
+    : (m?.matchEnded === true || m?.is_completed === true ? "Completed" : ""));
+  const statusTextRaw = first(m?.status_text, m?.statusText, m?.status?.text, m?.status?.description, m?.note, m?.info, m?.commentary);
+  const statusText = /^(?:abnormal|normal|unknown|n\/a|null|undefined)$/i.test(statusTextRaw) ? "" : statusTextRaw;
+  const tossObject = m?.toss && typeof m.toss === "object" ? m.toss : {};
+  const tossText = typeof m?.toss === "string" ? m.toss : first(m?.toss_text, m?.toss_result);
+  let tossWinner = first(
+    tossObject?.team?.name, tossObject?.winner?.name, tossObject?.winner,
+    tossObject?.won_by?.name, tossObject?.won_by, m?.toss_winner?.name,
+    m?.toss_winner, m?.tossWinner, m?.toss_won_by
+  );
+  let tossDecision = first(tossObject?.decision, tossObject?.elected, m?.toss_decision, m?.tossDecision);
+  if (tossText) {
+    const winnerMatch = tossText.match(/^(.+?)\s+won the toss/i);
+    const decisionMatch = tossText.match(/(?:elected to|chose to|opted to)\s+(bat|field|bowl)/i);
+    if (!tossWinner && winnerMatch) tossWinner = winnerMatch[1].trim();
+    if (!tossDecision && decisionMatch) tossDecision = decisionMatch[1].toLowerCase();
+  }
+  const rawScores = Array.isArray(score) ? score : [];
   return {
-    id: first(m?.id, m?.match_id, m?.matchId),
-    slug: first(m?.slug, m?.match_slug, m?.matchSlug),
+    id: first(m?.id, m?.match_id, m?.matchId, m?.fixture_id, m?.event_id),
+    slug: first(m?.slug, m?.match_slug, m?.matchSlug, m?.url_slug, m?.event_slug),
     source,
     date: startTime,
     status,
-    statusText: first(m?.status_text, m?.statusText, m?.note),
+    statusText,
     competition: competitionName(m),
     team1,
     team2,
-    score1: firstScore(score?.home, score?.team1, home?.score, m?.home_score, m?.team1Score, m?.score1, totalFor(0), scoreForTeam(team1, scoreList)),
-    score2: firstScore(score?.away, score?.team2, away?.score, m?.away_score, m?.team2Score, m?.score2, totalFor(1), scoreForTeam(team2, scoreList)),
+    score1: firstScore(
+      scoreValue(score?.home), scoreValue(score?.team1), scoreValue(home?.score),
+      scoreValue(home?.runs), scoreValue(m?.home_score), scoreValue(m?.team1Score),
+      scoreValue(m?.score1), scoreValue(m?.localteam_score), totalFor(0), scoreForTeam(team1, scoreList)
+    ),
+    score2: firstScore(
+      scoreValue(score?.away), scoreValue(score?.team2), scoreValue(away?.score),
+      scoreValue(away?.runs), scoreValue(m?.away_score), scoreValue(m?.team2Score),
+      scoreValue(m?.score2), scoreValue(m?.visitorteam_score), totalFor(1), scoreForTeam(team2, scoreList)
+    ),
     venue,
-    tossWinner: first(m?.toss?.team, m?.toss_winner, m?.tossWinner),
-    tossDecision: first(m?.toss?.decision, m?.toss_decision, m?.tossDecision),
-    battingTeam: first(m?.batting_team?.name, m?.battingTeam?.name, m?.batting_team, m?.battingTeam, m?.batting),
-    inningsNumber: first(m?.innings_number, m?.current_innings_number, m?.current_innings?.number, m?.inningsNo, typeof m?.innings === "number" ? m.innings : ""),
-    target: first(m?.target, m?.chase_target, m?.runs_target),
-    format: first(m?.format, m?.matchType, m?.match_type)
+    tossWinner,
+    tossDecision,
+    battingTeam: first(m?.batting_team?.name, m?.battingTeam?.name, m?.current_batting_team?.name, m?.batting_team, m?.battingTeam, m?.batting, m?.current_batting_team),
+    inningsNumber: first(m?.innings_number, m?.current_innings_number, m?.current_innings?.number, m?.currentInnings?.number, m?.inningsNo, typeof m?.innings === "number" ? m.innings : ""),
+    target: first(m?.target, m?.chase_target, m?.runs_target, m?.target_score),
+    format: first(m?.format?.name, m?.format, m?.matchType, m?.match_type, m?.game_type)
   };
 }
-
 function isPlaceholderTeam(value) {
   return /^(?:A|B|AB)\d+\s*\(/i.test(String(value || "").trim())
     || /^(?:TBC|TBD|TBA|Team\s*[A-Z0-9]+)$/i.test(String(value || "").trim());
