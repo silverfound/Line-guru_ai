@@ -31,6 +31,7 @@ jobs:
         env:
           CRICKETDATA_API_KEY: ${{ secrets.CRICKETDATA_API_KEY }}
           SPORTSCORE_API_KEY: ${{ secrets.SPORTSCORE_API_KEY }}
+          OPENCRICKET_API_KEY: ${{ secrets.OPENCRICKET_API_KEY }}
         run: node scripts/refresh-cricket-data.mjs
 
       - name: Write feed diagnostics to workflow summary

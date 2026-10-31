@@ -16,6 +16,7 @@ function unwrap(payload) {
   if (Array.isArray(payload?.matches)) return payload.matches;
   if (Array.isArray(payload?.fixtures)) return payload.fixtures;
   if (Array.isArray(payload?.data?.matches)) return payload.data.matches;
+  if (Array.isArray(payload?.data?.results)) return payload.data.results;
   if (Array.isArray(payload?.data?.fixtures)) return payload.data.fixtures;
   if (Array.isArray(payload?.response)) return payload.response;
   return [];
@@ -119,7 +120,7 @@ function normalizeMatch(m, source) {
     m?.start_time, m?.startTime?.utc, m?.startTime, m?.startDate,
     m?.dateTimeGMT, m?.dateTime, m?.datetime_utc, m?.date_utc,
     m?.match_date, m?.fixture_date, m?.start_date, m?.scheduled_at,
-    m?.scheduled, m?.timestamp, m?.start_timestamp, m?.match_start
+    m?.scheduled, m?.starts_at, m?.timestamp, m?.start_timestamp, m?.match_start
   );
   const rawVenue = first(
     m?.venue?.name, m?.venue?.full_name, m?.venue?.ground, m?.venue,
@@ -418,7 +419,31 @@ if (process.env.SPORTSCORE_API_KEY) {
   providers.sportScore = { status: "not_configured", matchCount: 0, matches: [] };
 }
 
-const allMatches = Object.values(providers).flatMap(p => p.matches || []);
+if (process.env.OPENCRICKET_API_KEY) {
+  providers.openCricket = await providerResult("OpenCricket", async () => {
+    const payload = await requestJson("https://opencricketapi.com/v1/live", {
+      "Accept": "application/json",
+      "Authorization": `Bearer ${process.env.OPENCRICKET_API_KEY}`
+    });
+    return unwrap(payload).map(match => ({
+      ...normalizeMatch({
+        ...match,
+        date: match?.starts_at ?? match?.date,
+        status: match?.status ?? match?.state,
+        status_text: match?.status ?? match?.state
+      }, "OpenCricket"),
+      status: first(match?.status, match?.state, "Live")
+    }));
+  });
+} else {
+  providers.openCricket = { status: "not_configured", matchCount: 0, matches: [] };
+}
+
+// Prefer the dedicated live provider's values when the same fixture is present.
+const allMatches = [
+  ...(providers.openCricket?.matches || []),
+  ...Object.entries(providers).filter(([name]) => name !== "openCricket").flatMap(([, p]) => p.matches || [])
+];
 const mergedMatches = mergeMatchLists(allMatches);
 
 const output = {
@@ -428,7 +453,7 @@ const output = {
   refreshPolicy: {
     scheduledRunsPerDay: 0,
     minimumHoursBetweenRuns: 5.75,
-    requestBudget: "Manual refresh only. Each permitted run makes at most 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
+    requestBudget: "Manual refresh only. Each permitted run makes at most 1 OpenCricket live request, 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
   },
   providers,
   matches: mergedMatches,
