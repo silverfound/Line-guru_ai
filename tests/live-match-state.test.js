@@ -37,3 +37,19 @@ test("does not invent missing score or toss fields",()=>{
  assert.equal(live.tossWinner,"");
  assert.equal(live.tossDecision,"");
 });
+
+test("supports numeric innings, current_innings object and batting side without a scorecard array",()=>{
+ const live=normalize({data:{status_text:"2nd innings",innings:2,current_innings:{number:2,team:{name:"Melbourne Stars"},runs:185,wickets:2,overs:"16.4"},batting_team:{name:"Melbourne Stars"},home_score:"42/1",away_score:"185/2",target:190,toss:"Adelaide Strikers Women won the toss and elected to bat",venue:"Adelaide Oval"}},"Adelaide Strikers Women","Melbourne Stars Women");
+ assert.equal(live.inningsNumber,2);
+ assert.equal(live.battingTeam,"Melbourne Stars Women");
+ assert.equal(live.currentOvers,"16.4");
+ assert.equal(live.target,"190");
+ assert.equal(live.tossWinner,"Adelaide Strikers Women");
+ assert.equal(live.tossDecision,"bat");
+ assert.equal(live.venue,"Adelaide Oval");
+});
+test("matches batting team names with or without Women suffix",()=>{
+ const live=normalize({match:{innings:[{innings:1,team:"Adelaide Strikers",runs:170,wickets:5,overs:"20.0"},{innings:2,team:"Melbourne Stars",runs:90,wickets:2,overs:"10.1"}],current_innings:2,batting:"Melbourne Stars"}},"Adelaide Strikers Women","Melbourne Stars Women");
+ assert.equal(live.battingTeam,"Melbourne Stars Women");
+ assert.equal(live.team2Score,"90/2 (10.1 ov)");
+});
