@@ -54,8 +54,8 @@ function normalize(payload,team1,team2){
  let batting=text(battingRaw);
  if(battingRaw&&typeof battingRaw==="object")batting=text(battingRaw.name||battingRaw.team?.name||battingRaw.team||battingRaw.short_name);
  const statusLower=statusText;
- if(!batting&&/\\(\\s*away\\s*\\)/i.test(statusLower))batting=text(team2);
- if(!batting&&/\\(\\s*home\\s*\\)/i.test(statusLower))batting=text(team1);
+ if(!batting&&/\(\s*away\s*\)/i.test(statusLower))batting=text(team2);
+ if(!batting&&/\(\s*home\s*\)/i.test(statusLower))batting=text(team1);
  const battingKey=teamKey(batting);
  if(battingKey===teamKey(team1))batting=text(team1);
  else if(battingKey===teamKey(team2))batting=text(team2);
