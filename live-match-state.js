@@ -21,7 +21,7 @@ function normalize(payload,team1,team2){
  let tossWinner=text(d.toss_winner??d.tossWinner??tossObj.winner),tossDecision=text(d.toss_decision??d.tossDecision??tossObj.decision);
  const tossText=typeof d.toss==="string"?d.toss:"";
  if(!tossWinner&&tossText){const m=tossText.match(/^(.+?)\\s+won the toss/i);if(m)tossWinner=m[1].trim()}
- if(!tossDecision&&tossText){const m=tossText.match(/elected to\\s+(bat|field|bowl)/i);if(m)tossDecision=m[1].toLowerCase()}
+ if(!tossDecision&&tossText){const m=tossText.match(/(?:elected to|chose to|opted to)\\s+(bat|field|bowl)/i);if(m)tossDecision=m[1].toLowerCase()}
  if(/^batting$/i.test(tossDecision))tossDecision="bat";if(/^bowling$/i.test(tossDecision)||/^bowl$/i.test(tossDecision))tossDecision="field";
  return {team1Score:s1,team2Score:s2,battingTeam:batting,inningsNumber:phase,target:String(target??""),tossWinner,tossDecision,venue:text(d.venue),status:text(d.status_text??d.status??d.state),updatedAt:text(d.updated_at??d.updatedAt),raw:d};
 }
