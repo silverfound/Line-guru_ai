@@ -134,6 +134,8 @@ function normalizeMatch(m, source) {
   );
   const status = state || (m?.matchStarted === true || m?.is_live === true ? "Live"
     : (m?.matchEnded === true || m?.is_completed === true ? "Completed" : ""));
+  const statusTextRaw = first(m?.status_text, m?.statusText, m?.status?.text, m?.status?.description, m?.note, m?.info, m?.commentary);
+  const statusText = /^(?:abnormal|normal|unknown|n\/a|null|undefined)$/i.test(statusTextRaw) ? "" : statusTextRaw;
   const tossObject = m?.toss && typeof m.toss === "object" ? m.toss : {};
   const tossText = typeof m?.toss === "string" ? m.toss : first(m?.toss_text, m?.toss_result);
   let tossWinner = first(
@@ -155,7 +157,7 @@ function normalizeMatch(m, source) {
     source,
     date: startTime,
     status,
-    statusText: first(m?.status_text, m?.statusText, m?.status?.text, m?.status?.description, m?.note, m?.info, m?.commentary),
+    statusText,
     competition: competitionName(m),
     team1,
     team2,
