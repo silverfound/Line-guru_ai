@@ -1,15 +1,7 @@
 name: Refresh free cricket data
 
-# Refresh every hour; the script also enforces a 50-minute quota guard.
+# Manual-only refresh: do not consume provider quota on a schedule or push.
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/cricket-data-refresh.yml"
-      - "scripts/refresh-cricket-data.mjs"
-      - "scripts/feed-normalization.mjs"
-  schedule:
-    - cron: "13 * * * *"
   workflow_dispatch:
 
 permissions:
