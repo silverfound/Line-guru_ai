@@ -59,3 +59,14 @@ test("matches live provider fixtures when Women suffix is missing and home/away 
  assert.equal(sameTeams("Melbourne Stars Women","Adelaide Strikers Women","Adelaide Strikers","Melbourne Stars"),true);
  assert.equal(sameTeams("India","Australia","India A","Australia"),false);
 });
+
+test("infers batting side only from explicit home/away innings status marker",()=>{
+ const away=normalize({match:{status_text:"1st innings (away)"}}, "Pakistan", "Sri Lanka");
+ assert.equal(away.inningsNumber,1);
+ assert.equal(away.battingTeam,"Sri Lanka");
+ const home=normalize({match:{status_text:"2nd innings (home)"}}, "Pakistan", "Sri Lanka");
+ assert.equal(home.inningsNumber,2);
+ assert.equal(home.battingTeam,"Pakistan");
+ const unknown=normalize({match:{status_text:"1st innings"}}, "Pakistan", "Sri Lanka");
+ assert.equal(unknown.battingTeam,"");
+});
