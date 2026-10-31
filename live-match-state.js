@@ -41,6 +41,9 @@ function normalize(payload,team1,team2){
   state.innings,state.number,state.innings_number,d.inningsNo
  );
  let phase=Number(phaseRaw)||0;
+ const statusText=String(d.status_text||d.statusText||d.status||"").toLowerCase();
+ if(!phase&&/2nd innings|second innings|innings 2/.test(statusText))phase=2;
+ if(!phase&&/1st innings|first innings|innings 1/.test(statusText))phase=1;
  if(!phase&&rows.length)phase=Number(rows.find(x=>x.current||x.is_current)?.innings||rows.find(x=>x.current||x.is_current)?.number)||0;
  const rowFor=name=>rows.find(x=>teamKey(x.team||x.batting_team||x.name||x.team_name)===teamKey(name));
  const row1=rowFor(team1),row2=rowFor(team2);
@@ -53,6 +56,9 @@ function normalize(payload,team1,team2){
  const battingKey=teamKey(batting);
  if(battingKey===teamKey(team1))batting=text(team1);
  else if(battingKey===teamKey(team2))batting=text(team2);
+ const currentScore=rowScore(state);
+ const score1Final=score1||(battingKey===teamKey(team1)?currentScore:"");
+ const score2Final=score2||(battingKey===teamKey(team2)?currentScore:"");
  const explicitTarget=firstValue(d.target,d.chase_target,d.runs_target,d.target_score,state.target,state.chase_target,current.chase_target);
  let target=explicitTarget===undefined?"":String(explicitTarget);
  if(!target&&phase>1){
@@ -70,7 +76,7 @@ function normalize(payload,team1,team2){
  if(/^bowling$/i.test(tossDecision)||/^bowl$/i.test(tossDecision))tossDecision="field";
  const currentOvers=firstValue(current.overs,current.o,current.total?.overs,state.overs,d.overs,d.overs_bowled);
  return {
-  team1Score:score1,team2Score:score2,battingTeam:batting,inningsNumber:phase,
+  team1Score:score1Final,team2Score:score2Final,battingTeam:batting,inningsNumber:phase,
   target,tossWinner,tossDecision,venue:text(firstValue(d.venue,d.ground,d.venue_name)),
   status:text(firstValue(d.status_text,d.status,d.state)),updatedAt:text(firstValue(d.updated_at,d.updatedAt)),
   currentOvers:currentOvers===undefined?"":String(currentOvers),raw:d
