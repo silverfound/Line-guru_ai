@@ -96,7 +96,7 @@ async function predict(input){
  let raw=0;
  for(const t of m.trees) raw+=treeValue(t,row,m.categories);
  const p=sigmoid(raw);
- return {team1Win:p*100,team2Win:(1-p)*100,modelVersion:m.version,modelType:'Team-Aware pre-match',featureCoverage:{available:m.features.length-missing.size,total:m.features.length,missing:Array.from(missing)}};
+ return {team1Win:p*100,team2Win:(1-p)*100,modelVersion:m.version,modelType:m.model_type||'Team-Aware pre-match',featureCoverage:{available:m.features.length-missing.size,total:m.features.length,missing:Array.from(missing)}};
 }
 window["""+json.dumps(args.global_name or ("TeamAwarePostToss" if obj.get("model_type")=="team-aware-post-toss" else "TeamAwarePreMatch"))+"""]={load,predict};
 })();\n"""
