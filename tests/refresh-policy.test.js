@@ -10,11 +10,11 @@ test("cricket feed refresh remains manual-only", async () => {
   assert.doesNotMatch(workflow, /^\s*push:/m);
 });
 
-test("feed refresh quota guard matches the documented manual policy", async () => {
+test("manual feed refresh has no local cooldown but remains manual-only", async () => {
   const script = await readFile("scripts/refresh-cricket-data.mjs", "utf8");
-  assert.match(script, /5\.75\s*\*\s*60\s*\*\s*60\s*\*\s*1000/);
+  assert.doesNotMatch(script, /MIN_INTERVAL_MS|minimumHoursBetweenRuns|Refresh skipped by local quota guard/);
   assert.match(script, /scheduledRunsPerDay:\s*0/);
-  assert.match(script, /minimumHoursBetweenRuns:\s*5\.75/);
+  assert.match(script, /no local cooldown/i);
 });
 
 
