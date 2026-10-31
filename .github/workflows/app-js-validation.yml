@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "script.js"
+      - "live-match-state.js"
       - "teams-data.js"
       - "index.html"
       - "style.css"
