@@ -1,11 +1,10 @@
 {
   "schemaVersion": 1,
   "normalizerVersion": 2,
-  "generatedAt": "2026-10-31T11:45:12.705Z",
+  "generatedAt": "2026-10-31T12:24:23.494Z",
   "refreshPolicy": {
     "scheduledRunsPerDay": 0,
-    "minimumHoursBetweenRuns": 5.75,
-    "requestBudget": "Manual refresh only. Each permitted run makes at most 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Failed requests are not retried."
+    "requestBudget": "Manual refresh only, with no local cooldown. Every manual run makes at most 1 OpenCricket live request, 2 CricketData requests and 15 SportScore requests (live/recent, today fixtures, tomorrow fixtures, plus up to 12 live-match detail requests). Repeated manual runs consume provider quota; failed requests are not retried."
   },
   "providers": {
     "cricketData": {
@@ -18,13 +17,13 @@
           "slug": "",
           "source": "CricketData.org",
           "date": "2026-10-31T00:00:00.000Z",
-          "status": "United Arab Emirates need 132 runs",
+          "status": "United Arab Emirates need 89 runs in 84 balls",
           "statusText": "",
           "competition": "",
           "team1": "United Arab Emirates",
           "team2": "Netherlands",
-          "score1": "132/3 (26 ov)",
-          "score2": "263/4 (50 ov) & 132/3 (26 ov)",
+          "score1": "175/4 (36 ov)",
+          "score2": "263/4 (50 ov) & 175/4 (36 ov)",
           "venue": "ICC Academy Ground, Dubai",
           "tossWinner": "",
           "tossDecision": "",
@@ -503,7 +502,7 @@
           "source": "SportScore",
           "date": "2026-10-31T08:00:00.000Z",
           "status": "live",
-          "statusText": "1st innings (away)",
+          "statusText": "Innings break",
           "competition": "ODI Pakistan Tri-Series",
           "team1": "Pakistan",
           "team2": "Sri Lanka",
@@ -691,8 +690,8 @@
           "slug": "",
           "source": "SportScore",
           "date": "2026-10-31T12:30:00.000Z",
-          "status": "upcoming",
-          "statusText": "Not started",
+          "status": "live",
+          "statusText": "In progress",
           "competition": "T20 League",
           "team1": "Abu Dhabi",
           "team2": "Dubai",
@@ -729,6 +728,13 @@
           "competitionSource": "SportScore"
         }
       ]
+    },
+    "openCricket": {
+      "status": "error",
+      "message": "HTTP 502: The live data source answered HTTP 403. Try again shortly.",
+      "rawMatchCount": 0,
+      "matchCount": 0,
+      "matches": []
     }
   },
   "matches": [
@@ -737,13 +743,13 @@
       "slug": "",
       "source": "CricketData.org",
       "date": "2026-10-31T00:00:00.000Z",
-      "status": "United Arab Emirates need 132 runs",
+      "status": "United Arab Emirates need 89 runs in 84 balls",
       "statusText": "",
       "competition": "",
       "team1": "United Arab Emirates",
       "team2": "Netherlands",
-      "score1": "132/3 (26 ov)",
-      "score2": "263/4 (50 ov) & 132/3 (26 ov)",
+      "score1": "175/4 (36 ov)",
+      "score2": "263/4 (50 ov) & 175/4 (36 ov)",
       "venue": "ICC Academy Ground, Dubai",
       "tossWinner": "",
       "tossDecision": "",
@@ -1214,7 +1220,7 @@
       "source": "SportScore",
       "date": "2026-10-31T08:00:00.000Z",
       "status": "live",
-      "statusText": "1st innings (away)",
+      "statusText": "Innings break",
       "competition": "ODI Pakistan Tri-Series",
       "team1": "Pakistan",
       "team2": "Sri Lanka",
@@ -1402,8 +1408,8 @@
       "slug": "",
       "source": "SportScore",
       "date": "2026-10-31T12:30:00.000Z",
-      "status": "upcoming",
-      "statusText": "Not started",
+      "status": "live",
+      "statusText": "In progress",
       "competition": "T20 League",
       "team1": "Abu Dhabi",
       "team2": "Dubai",
