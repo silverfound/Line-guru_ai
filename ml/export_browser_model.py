@@ -8,14 +8,14 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
     ap.add_argument("--output", required=True)
-    ap.add_argument("--history", required=True)
+    ap.add_argument("--history", required=True)\n    ap.add_argument("--global-name", default=None)
     args=ap.parse_args()
     obj=joblib.load(args.model)
     booster=obj["model"].booster_
     dump=booster.dump_model()
     history=json.loads(Path(args.history).read_text(encoding="utf-8"))
     payload={
-      "version":"TeamAware-2026.10-v2",
+      "version":"TeamAware-2026.10-v3",\n      "model_type":obj.get("model_type", "team-aware-pre-match"),
       "history":history,
       "features":obj["features"],
       "categorical":obj["categorical"],
@@ -71,7 +71,7 @@ async function predict(input){
  const map={
   format:fmt, gender,
   team1:input.team1, team2:input.team2, venue:input.venue,
-  competition:input.competition,
+  competition:input.competition,\n  toss_won_by_team1:input.tossWonByTeam1,\n  team1_bats_first:input.team1BatsFirst,
   team1_strength_prior20:choose(input.team1Strength,h1.strength),
   team2_strength_prior20:choose(input.team2Strength,h2.strength),
   team1_form_prior10:choose(input.team1Form,h1.form),
@@ -98,7 +98,7 @@ async function predict(input){
  const p=sigmoid(raw);
  return {team1Win:p*100,team2Win:(1-p)*100,modelVersion:m.version,modelType:'Team-Aware pre-match',featureCoverage:{available:m.features.length-missing.size,total:m.features.length,missing:Array.from(missing)}};
 }
-window.TeamAwarePreMatch={load,predict};
+window["""+json.dumps(args.global_name or ("TeamAwarePostToss" if obj.get("model_type")=="team-aware-post-toss" else "TeamAwarePreMatch"))+"""]={load,predict};
 })();\n"""
     Path(args.output).write_text(js,encoding="utf-8")
     print(f"Exported {len(js)} bytes from existing artifact.")
