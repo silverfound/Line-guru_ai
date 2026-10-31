@@ -175,7 +175,8 @@ def main():
       "limitations":["Only players with observed batting or bowling innings are included; fielding-only appearances are not counted.",
         "Cricsheet coverage varies by competition, gender and season.",
         "No future XI, player fitness, pitch report or live availability is inferred.",
-        "Only observed batting/bowling contributors receive snapshots; confirmed playing-XI matching is required before use.",\n        "This is a research artifact; production predictions remain unchanged."]}
+        "Only observed batting/bowling contributors receive snapshots; confirmed playing-XI matching is required before use.",
+        "This is a research artifact; production predictions remain unchanged."]}
     (out/"player-dataset-summary.json").write_text(json.dumps(summary,indent=2),encoding="utf-8")
     print(json.dumps(summary,indent=2))
 if __name__=="__main__": main()
