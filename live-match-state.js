@@ -5,7 +5,7 @@ function text(v){
  if(typeof v==="object")return String(v.name||v.title||v.team||v.label||"").trim();
  return String(v).trim();
 }
-function teamKey(v){return text(v).toLowerCase().replace(/\\bwomen\\b/g,"").replace(/\\bwomens\\b/g,"").replace(/[^a-z0-9]+/g," ").trim()}
+function teamKey(v){return text(v).toLowerCase().replace(/\bwomen\b/g,"").replace(/\bwomens\b/g,"").replace(/[^a-z0-9]+/g," ").trim()}
 function firstValue(...values){return values.find(v=>v!==undefined&&v!==null&&String(v).trim()!=="")}
 function rowScore(row){
  if(!row)return "";
@@ -13,7 +13,7 @@ function rowScore(row){
  const wickets=firstValue(row.wickets,row.w,row.total?.wickets,row.score?.wickets);
  const overs=firstValue(row.overs,row.o,row.total?.overs,row.score?.overs,row.overs_bowled);
  if(runs===undefined)return "";
- if(typeof runs==="string"&&/[\\/(]/.test(runs))return runs.trim();
+ if(typeof runs==="string"&&/[\/(]/.test(runs))return runs.trim();
  return String(runs)+(wickets===undefined?"":"/"+wickets)+(overs===undefined?"":" ("+overs+" ov)");
 }
 function normalize(payload,team1,team2){
@@ -70,8 +70,8 @@ function normalize(payload,team1,team2){
  let tossWinner=text(firstValue(d.toss_winner,d.tossWinner,tossObj.winner,tossObj.won_by));
  let tossDecision=text(firstValue(d.toss_decision,d.tossDecision,tossObj.decision,tossObj.elected));
  const tossText=typeof d.toss==="string"?d.toss:"";
- if(!tossWinner&&tossText){const m=tossText.match(/^(.+?)\\s+won the toss/i);if(m)tossWinner=m[1].trim()}
- if(!tossDecision&&tossText){const m=tossText.match(/(?:elected to|chose to|opted to)\\s+(bat|field|bowl)/i);if(m)tossDecision=m[1].toLowerCase()}
+ if(!tossWinner&&tossText){const m=tossText.match(/^(.+?)\s+won the toss/i);if(m)tossWinner=m[1].trim()}
+ if(!tossDecision&&tossText){const m=tossText.match(/(?:elected to|chose to|opted to)\s+(bat|field|bowl)/i);if(m)tossDecision=m[1].toLowerCase()}
  if(/^batting$/i.test(tossDecision))tossDecision="bat";
  if(/^bowling$/i.test(tossDecision)||/^bowl$/i.test(tossDecision))tossDecision="field";
  const currentOvers=firstValue(current.overs,current.o,current.total?.overs,state.overs,d.overs,d.overs_bowled);
